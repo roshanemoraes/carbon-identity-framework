@@ -116,6 +116,7 @@
         <module>features/certificate-mgt</module>
         <module>features/servlet-mgt</module>
         <module>features/system-config-mgt</module>
+        <module>components/event-processor</module>
     </modules>
 
 
@@ -370,11 +371,11 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.wso2.carbon.identity.framework</groupId>
-                <artifactId>org.wso2.carbon.identity.user.pre.update.password.action</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.carbon.identity.framework</groupId>-->
+<!--                <artifactId>org.wso2.carbon.identity.user.pre.update.password.action</artifactId>-->
+<!--                <version>${project.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
