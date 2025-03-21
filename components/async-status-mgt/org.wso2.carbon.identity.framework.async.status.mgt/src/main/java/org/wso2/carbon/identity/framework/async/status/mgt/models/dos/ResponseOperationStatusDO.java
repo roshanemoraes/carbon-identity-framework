@@ -2,6 +2,11 @@ package org.wso2.carbon.identity.framework.async.status.mgt.models.dos;
 
 import java.sql.Timestamp;
 
+/**
+ * Represents the data object (DO) for the response of an asynchronous operation status,
+ * including timestamps for creation and modification.
+ * This class encapsulates all details of an operation, including its status and timestamps.
+ */
 public class ResponseOperationStatusDO {
 
     private String operationId;

@@ -1,5 +1,9 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.models.dos;
 
+/**
+ * Represents a record of a unit operation, which is a part of a larger asynchronous operation.
+ * This class encapsulates the details of a unit operation, including its status and related information.
+ */
 public class UnitOperationRecord {
 
     private String operationId;

@@ -8,9 +8,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.wso2.carbon.identity.framework.async.status.mgt.AsyncStatusMgtService;
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAOImpl;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+/**
+ * OSGi service component for asynchronous operation status management bundle.
+ */
 @Component(
         name = "org.wso2.carbon.identity.framework.internal."
                 + "AsyncStatusMgtServiceComponent",

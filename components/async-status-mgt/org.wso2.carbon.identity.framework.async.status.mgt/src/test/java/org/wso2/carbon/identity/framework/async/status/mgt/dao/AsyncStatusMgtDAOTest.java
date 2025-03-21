@@ -3,7 +3,6 @@ package org.wso2.carbon.identity.framework.async.status.mgt.dao;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
 import org.wso2.carbon.identity.common.testng.WithCarbonHome;
 import org.wso2.carbon.identity.common.testng.WithH2Database;
 import org.wso2.carbon.identity.framework.async.status.mgt.AsyncStatusMgtService;
@@ -14,8 +13,6 @@ import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseOp
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertThrows;
 import static org.testng.Assert.assertTrue;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_INITIATOR_ID_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_POLICY_1;
@@ -34,13 +31,13 @@ public class AsyncStatusMgtDAOTest {
     private AsyncStatusMgtService asyncStatusMgtService;
 
     @BeforeClass
-    public void initTest() throws Exception{
+    public void initTest() throws Exception {
         asyncStatusMgtService = new AsyncStatusMgtServiceImpl();
     }
 
     @DataProvider(name = "asyncOperationDetailProvider")
     public Object[][] asyncOperationDetailProvider() throws Exception {
-        return new Object[][]{
+        return new Object[][] {
                 {new OperationRecord(
                         IDN_OPERATION_TYPE_1,
                         "B2B_APPLICATION",
@@ -69,19 +66,20 @@ public class AsyncStatusMgtDAOTest {
     }
 
     @Test(dataProvider = "asyncOperationDetailProvider", priority = 1)
-    public void testRegisterOperationWithoutUpdateSuccess(OperationRecord testData){
+    public void testRegisterOperationWithoutUpdateSuccess(OperationRecord testData) {
 
         String addedOperationId = asyncStatusMgtService.registerOperationStatus(testData, false);
 
-        String fetchedOperationIdFromDB = asyncStatusMgtService.getLatestAsyncOperationStatus(testData.getOperationType(),testData.getOperationSubjectId()).getOperationId();
+        String fetchedOperationIdFromDB = asyncStatusMgtService.getLatestAsyncOperationStatus(
+                testData.getOperationType(), testData.getOperationSubjectId()).getOperationId();
 
         assertTrue(Integer.parseInt(addedOperationId) > 0,
-                "Expected a positive non-zero integer as the result for a clean record insertion to the database.");
+            "Expected a positive non-zero integer as the result for a clean record insertion to the database.");
         assertEquals(fetchedOperationIdFromDB, addedOperationId);
     }
 
     @Test
-    public void testRegisterOperationWithUpdateSuccess(){
+    public void testRegisterOperationWithUpdateSuccess() {
 
         OperationRecord testRecord1 = new OperationRecord(
                 IDN_OPERATION_TYPE_1,
@@ -101,7 +99,8 @@ public class AsyncStatusMgtDAOTest {
         );
         asyncStatusMgtService.registerOperationStatus(testRecord1, true);
         asyncStatusMgtService.registerOperationStatus(testRecord2, true);
-        List<ResponseOperationRecord> fetchedOperationListFromDB = asyncStatusMgtService.getAsyncOperationStatusWithCurser(IDN_OPERATION_TYPE_1, IDN_OPERATION_SUBJECT_ID_1);
+        List<ResponseOperationRecord> fetchedOperationListFromDB = asyncStatusMgtService
+                .getAsyncOperationStatusWithCurser(IDN_OPERATION_TYPE_1, IDN_OPERATION_SUBJECT_ID_1);
 
         assertEquals(fetchedOperationListFromDB.size(), 1);
         assertEquals(fetchedOperationListFromDB.get(0).getOperationPolicy(), IDN_OPERATION_POLICY_2);

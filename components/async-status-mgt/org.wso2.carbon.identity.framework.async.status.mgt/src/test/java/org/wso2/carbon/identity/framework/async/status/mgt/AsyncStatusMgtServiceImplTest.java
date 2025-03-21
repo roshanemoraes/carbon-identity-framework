@@ -17,7 +17,9 @@ import org.wso2.carbon.identity.framework.async.status.mgt.util.TestUtils;
 
 import java.nio.file.Paths;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for AsyncStatusMgtServiceImpl.
@@ -37,11 +39,12 @@ public class AsyncStatusMgtServiceImplTest {
     private static final String OPERATION_POLICY = "SHARE_WITH_ALL";
 
     private static final OperationRecord operationRecord = new OperationRecord(
-            OPERATION_TYPE, OPERATION_SUBJECT_TYPE, OPERATION_SUBJECT_ID, RESIDENT_ORG_ID, INITIATOR_ID, OPERATION_POLICY
+            OPERATION_TYPE, OPERATION_SUBJECT_TYPE, OPERATION_SUBJECT_ID, RESIDENT_ORG_ID,
+            INITIATOR_ID, OPERATION_POLICY
     );
 
     @BeforeMethod
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
 
         MockitoAnnotations.openMocks(this);
         AsyncStatusMgtDataHolder.getInstance().setAsyncStatusMgtDAO(asyncStatusMgtDAO);
@@ -61,18 +64,20 @@ public class AsyncStatusMgtServiceImplTest {
     }
 
     private void startTenantFlow() {
+
         String carbonHome = Paths.get(System.getProperty("user.dir"), "src/test/resources").toString();
         System.setProperty(CarbonBaseConstants.CARBON_HOME, carbonHome);
         PrivilegedCarbonContext.startTenantFlow();
     }
 
-
     @Test
     public void testRegisterOperationStatusWithoutUpdate() throws Exception {
 
         when(asyncStatusMgtDAO.registerAsyncOperationWithoutUpdate(operationRecord)).thenReturn("3");
-        String resolvedOperationIdWithoutUpdate = asyncStatusMgtService.registerOperationStatus(operationRecord, false);
-        verify(asyncStatusMgtDAO, times(1)).registerAsyncOperationWithoutUpdate(operationRecord);
+        String resolvedOperationIdWithoutUpdate = asyncStatusMgtService
+                .registerOperationStatus(operationRecord, false);
+        verify(asyncStatusMgtDAO, times(1))
+                .registerAsyncOperationWithoutUpdate(operationRecord);
         Assert.assertEquals(resolvedOperationIdWithoutUpdate, "3");
     }
 
@@ -80,7 +85,8 @@ public class AsyncStatusMgtServiceImplTest {
     public void testRegisterOperationStatusWithUpdate() throws Exception {
 
         when(asyncStatusMgtDAO.registerAsyncOperationWithUpdate(operationRecord)).thenReturn("3");
-        String resolvedOperationIdWithUpdate = asyncStatusMgtService.registerOperationStatus(operationRecord, true);
+        String resolvedOperationIdWithUpdate = asyncStatusMgtService
+                .registerOperationStatus(operationRecord, true);
         verify(asyncStatusMgtDAO, times(1)).registerAsyncOperationWithUpdate(operationRecord);
         Assert.assertEquals(resolvedOperationIdWithUpdate, "3");
     }
@@ -88,27 +94,36 @@ public class AsyncStatusMgtServiceImplTest {
     @Test
     public void testGetLatestAsyncOperationStatusInvocation() {
 
-        ResponseOperationRecord resolvedOperationResponseRecord = asyncStatusMgtService.getLatestAsyncOperationStatus("B2B_APPLICATION_UNSHARE", "23d7ab3f-023e-43ba-980b-c0fd59aeacf9");
+        ResponseOperationRecord resolvedOperationResponseRecord = asyncStatusMgtService.getLatestAsyncOperationStatus(
+                "B2B_APPLICATION_UNSHARE", "23d7ab3f-023e-43ba-980b-c0fd59aeacf9");
 
-        verify(asyncStatusMgtDAO, times(1)).getLatestAsyncOperationStatus("B2B_APPLICATION_UNSHARE", "23d7ab3f-023e-43ba-980b-c0fd59aeacf9");
+        verify(asyncStatusMgtDAO, times(1)).getLatestAsyncOperationStatus(
+                "B2B_APPLICATION_UNSHARE", "23d7ab3f-023e-43ba-980b-c0fd59aeacf9");
     }
 
     @Test
     public void testGetLatestAsyncOperationStatus() {
 
-        ResponseOperationRecord expectedResponse = new ResponseOperationRecord(
-                "6", "B2B_APPLICATION_UNSHARE", "B2B_APPLICATION", "23d7ab3f-023e-43ba-980b-c0fd59aeacf9", "10084a8d-113f-4211-a0d5-efe36b082211", "53c191dd-3f9f-454b-8a56-9ad72b5e4f30", "SUCCESS", "DO_NOT_SHARE"
+        ResponseOperationRecord expectedResponse = new ResponseOperationRecord("6",
+                "B2B_APPLICATION_UNSHARE", "B2B_APPLICATION",
+                "23d7ab3f-023e-43ba-980b-c0fd59aeacf9",
+                "10084a8d-113f-4211-a0d5-efe36b082211", "53c191dd-3f9f-454b-8a56-9ad72b5e4f30",
+                "SUCCESS", "DO_NOT_SHARE"
         );
 
-        when(asyncStatusMgtDAO.getLatestAsyncOperationStatus("B2B_APPLICATION_UNSHARE", "23d7ab3f-023e-43ba-980b-c0fd59aeacf9")).thenReturn(expectedResponse);
+        when(asyncStatusMgtDAO.getLatestAsyncOperationStatus("B2B_APPLICATION_UNSHARE",
+                "23d7ab3f-023e-43ba-980b-c0fd59aeacf9")).thenReturn(expectedResponse);
 
-        ResponseOperationRecord resolvedOperationResponseRecord = asyncStatusMgtService.getLatestAsyncOperationStatus("B2B_APPLICATION_UNSHARE", "23d7ab3f-023e-43ba-980b-c0fd59aeacf9");
+        ResponseOperationRecord resolvedOperationResponseRecord = asyncStatusMgtService
+                .getLatestAsyncOperationStatus("B2B_APPLICATION_UNSHARE",
+                        "23d7ab3f-023e-43ba-980b-c0fd59aeacf9");
 
         Assert.assertEquals(resolvedOperationResponseRecord, expectedResponse);
     }
 
     @DataProvider(name = "asyncOperationDetailProvider")
     public Object[][] asyncOperationDetailProvider() throws Exception {
+
         return new Object[][]{
                 {new OperationRecord(
                         "B2B_APPLICATION_SHARE",
@@ -122,7 +137,7 @@ public class AsyncStatusMgtServiceImplTest {
     }
 
     @Test(dataProvider = "asyncOperationDetailProvider", priority = 0)
-    public void testRegisterOperationStatusSuccess(OperationRecord testData){
+    public void testRegisterOperationStatusSuccess(OperationRecord testData) {
 
         OperationRecord operationRecord = new OperationRecord(
                 testData.getOperationType(),
@@ -133,12 +148,7 @@ public class AsyncStatusMgtServiceImplTest {
                 testData.getOperationPolicy()
         );
         String addedOperationId = asyncStatusMgtService.registerOperationStatus(operationRecord, false);
-
-//        ResponseOperationRecord expectedRecord = asyncStatusMgtService.getLatestAsyncOperationStatus(testData.getOperationType(), testData.getOperationSubjectId());
-
-//        Assert.assertTrue(expectedRecord.getOperationStatus());
-
         Assert.assertTrue(Integer.parseInt(addedOperationId) > 0,
-                "Expected a positive non-zero integer as the result for a clean record insertion to the database.");
+                "Expected a positive non-zero integer as the result for a record insertion to the database.");
     }
 }

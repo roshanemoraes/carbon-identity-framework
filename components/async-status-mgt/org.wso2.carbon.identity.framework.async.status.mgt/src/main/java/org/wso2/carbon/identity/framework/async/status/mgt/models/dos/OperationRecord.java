@@ -1,5 +1,9 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.models.dos;
 
+/**
+ * Represents a record of an asynchronous operation.
+ * This class encapsulates the details of an operation, such as its type, subject, organization, initiator, and policy.
+ */
 public class OperationRecord {
 
     private String operationType;

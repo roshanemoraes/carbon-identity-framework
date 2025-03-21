@@ -1,9 +1,15 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.constant;
 
+/**
+ * Asynchronous operation status management constants
+ */
 public class AsyncStatusMgtConstants {
 
     public static final String ERROR_PREFIX = "ASM-";
 
+    /**
+     * Enum for Error Message
+     */
     public enum ErrorMessage {
         ;
 

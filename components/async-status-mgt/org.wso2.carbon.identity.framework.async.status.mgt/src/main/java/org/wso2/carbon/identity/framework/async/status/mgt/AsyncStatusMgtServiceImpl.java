@@ -3,13 +3,20 @@ package org.wso2.carbon.identity.framework.async.status.mgt;
 import org.osgi.service.component.annotations.Component;
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAOImpl;
-import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.*;
+import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.OperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.UnitOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.queue.AsyncOperationDataBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Implementation of the {@link AsyncStatusMgtService} interface that manages asynchronous operation statuses.
+ * This service interacts with the {@link AsyncStatusMgtDAO} to perform persistence operations and
+ * uses an in-memory buffer to temporarily store unit operation records before batch processing.
+ */
 @Component(
         service = AsyncStatusMgtService.class,
         immediate = true

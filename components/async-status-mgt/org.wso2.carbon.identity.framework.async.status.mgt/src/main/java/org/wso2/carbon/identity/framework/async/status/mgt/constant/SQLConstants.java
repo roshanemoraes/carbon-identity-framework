@@ -1,5 +1,8 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.constant;
 
+/**
+ * This class contains database queries related to CRUD operations for status of asynchronous operations.
+ */
 public class SQLConstants {
 
     public static final String CREATE_ASYNC_OPERATION_IDN = "INSERT INTO IDN_ASYNC_OPERATION_STATUS(" +
@@ -63,6 +66,9 @@ public class SQLConstants {
                     "ORDER BY IDN_CREATED_TIME DESC " +
                     "LIMIT 1;";
 
+    /**
+     * SQL Placeholders.
+     */
     public static class OperationStatusTableColumns {
 
         public static final String IDN_OPERATION_ID = "IDN_OPERATION_ID";
@@ -77,6 +83,9 @@ public class SQLConstants {
         public static final String IDN_OPERATION_POLICY = "IDN_OPERATION_POLICY";
     }
 
+    /**
+     * SQL Placeholders.
+     */
     public static class UnitOperationStatusTableColumns {
 
         public static final String IDN_UNIT_OPERATION_ID = "IDN_UNIT_OPERATION_ID";

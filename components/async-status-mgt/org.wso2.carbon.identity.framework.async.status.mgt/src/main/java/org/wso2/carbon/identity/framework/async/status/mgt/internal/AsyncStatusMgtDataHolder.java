@@ -1,7 +1,6 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.internal;
 
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
-import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * Data holder for asynchronous operation status management.

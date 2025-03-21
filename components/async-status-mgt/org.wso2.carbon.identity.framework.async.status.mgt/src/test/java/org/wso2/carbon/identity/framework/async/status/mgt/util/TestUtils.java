@@ -9,12 +9,13 @@ import org.wso2.carbon.identity.organization.management.service.util.Utils;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.core.util.DatabaseUtil;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import static org.mockito.Mockito.mock;
 
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.mock;
  * Util methods needed for testing of Asynchronous Operation Status Management component.
  */
 public class TestUtils {
+
     public static final String DB_NAME = "testAsyncOperationStatusMgt_db";
     public static final String H2_SCRIPT_NAME = "h2.sql";
     public static Map<String, BasicDataSource> dataSourceMap = new HashMap<>();
@@ -79,11 +81,13 @@ public class TestUtils {
     }
 
     private static void setStatic(Field field, Object newValue) throws Exception {
+
         field.setAccessible(true);
         field.set(null, newValue);
     }
 
     private static String getExecuteUpdateQuery() {
+
         return "RUNSCRIPT FROM '" + getFilePath(H2_SCRIPT_NAME) + "'";
     }
 }
