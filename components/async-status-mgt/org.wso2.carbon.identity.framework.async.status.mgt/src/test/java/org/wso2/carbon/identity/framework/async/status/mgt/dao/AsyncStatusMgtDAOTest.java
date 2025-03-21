@@ -23,7 +23,6 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constants.Test
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_SUBJECT_ID_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_SUBJECT_TYPE_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_TYPE_1;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_TYPE_2;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_RESIDENT_ORG_ID_1;
 
 @Test
@@ -102,7 +101,7 @@ public class AsyncStatusMgtDAOTest {
         );
         asyncStatusMgtService.registerOperationStatus(testRecord1, true);
         asyncStatusMgtService.registerOperationStatus(testRecord2, true);
-        List<ResponseOperationRecord> fetchedOperationListFromDB = asyncStatusMgtService.getAsyncOperationStatus(IDN_OPERATION_TYPE_1, IDN_OPERATION_SUBJECT_ID_1);
+        List<ResponseOperationRecord> fetchedOperationListFromDB = asyncStatusMgtService.getAsyncOperationStatusWithCurser(IDN_OPERATION_TYPE_1, IDN_OPERATION_SUBJECT_ID_1);
 
         assertEquals(fetchedOperationListFromDB.size(), 1);
         assertEquals(fetchedOperationListFromDB.get(0).getOperationPolicy(), IDN_OPERATION_POLICY_2);

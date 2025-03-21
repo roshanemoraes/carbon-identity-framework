@@ -1,6 +1,8 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.models.dos;
 
-public class ResponseOperationRecord {
+import java.sql.Timestamp;
+
+public class ResponseOperationStatusDO {
 
     private String operationId;
     private String operationType;
@@ -10,14 +12,17 @@ public class ResponseOperationRecord {
     private String initiatorId;
     private String operationStatus;
     private String operationPolicy;
+    private Timestamp createdTime;
+    private Timestamp modifiedTime;
 
-    public ResponseOperationRecord() {
+    public ResponseOperationStatusDO() {
 
     }
 
-    public ResponseOperationRecord(String operationId, String operationType, String operationSubjectType,
-                                   String operationSubjectId, String residentOrgId, String initiatorId,
-                                   String operationStatus, String operationPolicy) {
+    public ResponseOperationStatusDO(String operationId, String operationType, String operationSubjectType,
+                                     String operationSubjectId, String residentOrgId, String initiatorId,
+                                     String operationStatus, String operationPolicy, Timestamp createdTime,
+                                     Timestamp modifiedTime) {
 
         this.operationId = operationId;
         this.operationType = operationType;
@@ -27,6 +32,8 @@ public class ResponseOperationRecord {
         this.initiatorId = initiatorId;
         this.operationStatus = operationStatus;
         this.operationPolicy = operationPolicy;
+        this.createdTime = createdTime;
+        this.modifiedTime = modifiedTime;
     }
 
     public String getOperationId() {
@@ -69,16 +76,6 @@ public class ResponseOperationRecord {
         this.operationSubjectId = operationSubjectId;
     }
 
-    public String getOperationPolicy() {
-
-        return operationPolicy;
-    }
-
-    public void setOperationPolicy(String operationPolicy) {
-
-        this.operationPolicy = operationPolicy;
-    }
-
     public String getResidentOrgId() {
 
         return residentOrgId;
@@ -107,5 +104,35 @@ public class ResponseOperationRecord {
     public void setOperationStatus(String operationStatus) {
 
         this.operationStatus = operationStatus;
+    }
+
+    public String getOperationPolicy() {
+
+        return operationPolicy;
+    }
+
+    public void setOperationPolicy(String operationPolicy) {
+
+        this.operationPolicy = operationPolicy;
+    }
+
+    public Timestamp getCreatedTime() {
+
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getModifiedTime() {
+
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(Timestamp modifiedTime) {
+
+        this.modifiedTime = modifiedTime;
     }
 }

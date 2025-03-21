@@ -4,20 +4,25 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SubOperationStatusQueue {
+
     private ConcurrentLinkedQueue<SubOperationStatusObject> subOperationList = new ConcurrentLinkedQueue<>();
 
     public SubOperationStatusQueue() {
+
     }
 
     public void add(SubOperationStatusObject subOperationStatusObject) {
+
         this.subOperationList.add(subOperationStatusObject);
     }
 
     public Iterator<SubOperationStatusObject> iterator() {
+
         return this.subOperationList.iterator();
     }
 
     public String getOperationStatus() {
+
         boolean allSuccess = true;
         boolean allFail = true;
 

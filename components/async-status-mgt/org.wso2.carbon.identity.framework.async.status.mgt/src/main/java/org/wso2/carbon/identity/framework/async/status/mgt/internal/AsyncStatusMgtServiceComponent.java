@@ -17,6 +17,7 @@ import java.util.logging.Logger;
         immediate = true
 )
 public class AsyncStatusMgtServiceComponent {
+
     private static final Logger LOGGER =
             Logger.getLogger(AsyncStatusMgtServiceComponent.class.getName());
 
@@ -24,6 +25,7 @@ public class AsyncStatusMgtServiceComponent {
 
     @Activate
     protected void activate(final ComponentContext context) {
+
         LOGGER.info("Async Status Mgt Component is activated");
         AsyncStatusMgtDataHolder.getInstance().setAsyncStatusMgtDAO(new AsyncStatusMgtDAOImpl());
         LOGGER.info("Async Status Mgt Component is activated");
@@ -31,17 +33,20 @@ public class AsyncStatusMgtServiceComponent {
 
     @Deactivate
     protected void deactivate(final ComponentContext context) {
+
         LOGGER.info("Async Status Mgt Component is deactivated");
     }
 
     @Reference
     protected void setAsyncStatusMgtService(
             final AsyncStatusMgtService service) {
+
         this.asyncStatusMgtService = service;
     }
 
     protected void unsetAsyncStatusMgtService(
             final AsyncStatusMgtService service) {
+
         this.asyncStatusMgtService = null;
     }
 }

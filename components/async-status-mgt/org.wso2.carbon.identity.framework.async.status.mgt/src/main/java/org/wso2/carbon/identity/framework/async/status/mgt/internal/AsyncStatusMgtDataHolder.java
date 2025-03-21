@@ -7,14 +7,17 @@ import org.wso2.carbon.user.core.service.RealmService;
  * Data holder for asynchronous operation status management.
  */
 public class AsyncStatusMgtDataHolder {
+
     private static final AsyncStatusMgtDataHolder dataHolder = new AsyncStatusMgtDataHolder();
 
     private AsyncStatusMgtDAO asyncStatusMgtDAO;
 
     private AsyncStatusMgtDataHolder() {
+
     }
 
     public static AsyncStatusMgtDataHolder getInstance() {
+
         return dataHolder;
     }
 
@@ -24,6 +27,7 @@ public class AsyncStatusMgtDataHolder {
      * @return asynchronous status management data access instance {@link AsyncStatusMgtDAO}.
      */
     public AsyncStatusMgtDAO getAsyncStatusMgtDAO() {
+
         return asyncStatusMgtDAO;
     }
 
@@ -33,6 +37,7 @@ public class AsyncStatusMgtDataHolder {
      * @param asyncStatusMgtDAO Instance of {@link AsyncStatusMgtDAO}.
      */
     public void setAsyncStatusMgtDAO(AsyncStatusMgtDAO asyncStatusMgtDAO) {
+
         this.asyncStatusMgtDAO = asyncStatusMgtDAO;
     }
 }
