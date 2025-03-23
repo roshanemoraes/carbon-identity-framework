@@ -112,6 +112,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                         "    FROM IDN_ASYNC_OPERATION_STATUS " +
                         "    WHERE IDN_OPERATION_TYPE = ? " +
                         "    AND IDN_OPERATION_SUBJECT_ID = ? " +
+                        "    AND IDN_RESIDENT_ORG_ID = ? " +
                         "    ORDER BY IDN_CREATED_TIME DESC " +
                         "    LIMIT 1 " +
                         ")";
@@ -119,6 +120,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 try (PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
                     deleteStatement.setString(1, record.getOperationType());
                     deleteStatement.setString(2, record.getOperationSubjectId());
+                    deleteStatement.setString(3, record.getResidentOrgId());
                     deleteStatement.executeUpdate();
                 }
             } else {
