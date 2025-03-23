@@ -7,13 +7,13 @@ public class SQLConstants {
 
     public static final String CREATE_ASYNC_OPERATION_IDN = "INSERT INTO IDN_ASYNC_OPERATION_STATUS(" +
             "IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID," +
-            "IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS," +
+            "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS," +
             "IDN_CREATED_TIME, IDN_LAST_MODIFIED, IDN_OPERATION_POLICY) VALUES(" +
             ":" + OperationStatusTableColumns.IDN_OPERATION_TYPE + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_SUBJECT_TYPE + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID + ";, " +
-            ":" + OperationStatusTableColumns.IDN_RESIDENT_ORG_ID + ";, " +
-            ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID + ";, " +
+            ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID + ";, " +
+            ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_STATUS + ";, " +
             ":" + OperationStatusTableColumns.IDN_CREATED_TIME + ";, " +
             ":" + OperationStatusTableColumns.IDN_LAST_MODIFIED + ";, " +
@@ -21,13 +21,13 @@ public class SQLConstants {
 
     public static final String CREATE_ASYNC_OPERATION_WITH_UPDATE = "UPDATE IDN_ASYNC_OPERATION_STATUS(" +
             "IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID," +
-            "IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS," +
+            "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS," +
             "IDN_CREATED_TIME, IDN_LAST_MODIFIED, IDN_OPERATION_POLICY) VALUES(" +
             ":" + OperationStatusTableColumns.IDN_OPERATION_TYPE + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_SUBJECT_TYPE + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID + ";, " +
-            ":" + OperationStatusTableColumns.IDN_RESIDENT_ORG_ID + ";, " +
-            ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID + ";, " +
+            ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID + ";, " +
+            ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_STATUS + ";, " +
             ":" + OperationStatusTableColumns.IDN_CREATED_TIME + ";, " +
             ":" + OperationStatusTableColumns.IDN_LAST_MODIFIED + ";, " +
@@ -56,12 +56,12 @@ public class SQLConstants {
 
     public static final String FETCH_LATEST_ASYNC_OPERATION_IDN =
             "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
-                    "IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
+                    "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS " +
                     "WHERE IDN_OPERATION_SUBJECT_ID = :" + OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID + " " +
-                    "AND IDN_RESIDENT_ORG_ID = :" + OperationStatusTableColumns.IDN_RESIDENT_ORG_ID + " " +
+                    "AND IDN_OPERATION_INITIATED_ORG_ID = :" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID + " " +
                     "AND IDN_OPERATION_POLICY = :" + OperationStatusTableColumns.IDN_OPERATION_POLICY + " " +
-                    "AND IDN_OPERATION_INITIATOR_ID = :" + OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID +
+                    "AND IDN_OPERATION_INITIATED_USER_ID = :" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID +
                     " " +
                     "ORDER BY IDN_CREATED_TIME DESC " +
                     "LIMIT 1;";
@@ -75,8 +75,8 @@ public class SQLConstants {
         public static final String IDN_OPERATION_TYPE = "IDN_OPERATION_TYPE";
         public static final String IDN_OPERATION_SUBJECT_TYPE = "IDN_OPERATION_SUBJECT_TYPE";
         public static final String IDN_OPERATION_SUBJECT_ID = "IDN_OPERATION_SUBJECT_ID";
-        public static final String IDN_RESIDENT_ORG_ID = "IDN_RESIDENT_ORG_ID";
-        public static final String IDN_OPERATION_INITIATOR_ID = "IDN_OPERATION_INITIATOR_ID";
+        public static final String IDN_OPERATION_INITIATED_ORG_ID = "IDN_OPERATION_INITIATED_ORG_ID";
+        public static final String IDN_OPERATION_INITIATED_USER_ID = "IDN_OPERATION_INITIATED_USER_ID";
         public static final String IDN_OPERATION_STATUS = "IDN_OPERATION_STATUS";
         public static final String IDN_CREATED_TIME = "IDN_CREATED_TIME";
         public static final String IDN_LAST_MODIFIED = "IDN_LAST_MODIFIED";

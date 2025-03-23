@@ -67,10 +67,10 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     record.getOperationSubjectType());
             statement.setString(
                     SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID, record.getOperationSubjectId());
-            statement.setString(SQLConstants.OperationStatusTableColumns.IDN_RESIDENT_ORG_ID,
+            statement.setString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID,
                     record.getResidentOrgId());
             statement.setString(
-                    SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID, record.getInitiatorId());
+                    SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID, record.getInitiatorId());
             statement.setString(
                     SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS, OperationStatus.ONGOING.toString());
             statement.setString(SQLConstants.OperationStatusTableColumns.IDN_CREATED_TIME, currentTimestamp);
@@ -112,7 +112,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                         "    FROM IDN_ASYNC_OPERATION_STATUS " +
                         "    WHERE IDN_OPERATION_TYPE = ? " +
                         "    AND IDN_OPERATION_SUBJECT_ID = ? " +
-                        "    AND IDN_RESIDENT_ORG_ID = ? " +
+                        "    AND IDN_OPERATION_INITIATED_ORG_ID = ? " +
                         "    ORDER BY IDN_CREATED_TIME DESC " +
                         "    LIMIT 1 " +
                         ")";
@@ -136,9 +136,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 statement.setString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID,
                         record.getOperationSubjectId());
                 statement.setString(
-                        SQLConstants.OperationStatusTableColumns.IDN_RESIDENT_ORG_ID, record.getResidentOrgId());
+                        SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID, record.getResidentOrgId());
                 statement.setString(
-                        SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID, record.getInitiatorId());
+                        SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID, record.getInitiatorId());
                 statement.setString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS,
                         OperationStatus.ONGOING.toString());
                 statement.setString(SQLConstants.OperationStatusTableColumns.IDN_CREATED_TIME, currentTimestamp);
@@ -239,7 +239,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         String sql =
                 "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID," +
-                        " IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY "
+                        " IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY "
                         + "FROM IDN_ASYNC_OPERATION_STATUS " +
                         "WHERE IDN_OPERATION_TYPE = ? " +
                         "AND IDN_OPERATION_SUBJECT_ID = ? " +
@@ -263,9 +263,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     responseContext.setOperationSubjectId(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID));
                     responseContext.setResidentOrgId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_RESIDENT_ORG_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID));
                     responseContext.setInitiatorId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID));
                     responseContext.setOperationStatus(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS));
                     responseContext.setOperationPolicy(
@@ -287,7 +287,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         String sql =
                 "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
-                    "IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
+                    "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
                     "AND IDN_OPERATION_SUBJECT_ID = ? ORDER BY IDN_CREATED_TIME DESC; ";
 
@@ -310,9 +310,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     responseContext.setOperationSubjectId(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID));
                     responseContext.setResidentOrgId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_RESIDENT_ORG_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID));
                     responseContext.setInitiatorId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID));
                     responseContext.setOperationStatus(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS));
                     responseContext.setOperationPolicy(
@@ -335,7 +335,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         String sql =
                 "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
-                    "IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
+                    "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_SUBJECT_TYPE = ? " +
                     "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_OPERATION_TYPE = ? " +
                     "ORDER BY IDN_CREATED_TIME DESC;";
@@ -360,9 +360,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     responseContext.setOperationSubjectId(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID));
                     responseContext.setResidentOrgId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_RESIDENT_ORG_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID));
                     responseContext.setInitiatorId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID));
                     responseContext.setOperationStatus(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS));
                     responseContext.setOperationPolicy(
@@ -393,7 +393,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         String sql =
                 "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_ID, IDN_OPERATION_SUBJECT_ID, " +
-                    "IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
+                    "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
                     "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_CREATED_TIME >= ? " +
                     "ORDER BY IDN_CREATED_TIME DESC;";
@@ -418,9 +418,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     responseContext.setOperationSubjectId(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID));
                     responseContext.setResidentOrgId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_RESIDENT_ORG_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID));
                     responseContext.setInitiatorId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID));
                     responseContext.setOperationStatus(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS));
                     responseContext.setOperationPolicy(
@@ -448,9 +448,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         String sql =
                 "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
-                    "IDN_RESIDENT_ORG_ID, IDN_OPERATION_INITIATOR_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
+                    "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
-                    "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_OPERATION_INITIATOR_ID = ? " +
+                    "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_OPERATION_INITIATED_USER_ID = ? " +
                     "ORDER BY IDN_CREATED_TIME DESC LIMIT 1; ";
         ResponseOperationRecord responseContext = new ResponseOperationRecord();
 
@@ -471,9 +471,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     responseContext.setOperationSubjectId(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_ID));
                     responseContext.setResidentOrgId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_RESIDENT_ORG_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID));
                     responseContext.setInitiatorId(
-                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATOR_ID));
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID));
                     responseContext.setOperationStatus(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS));
                     responseContext.setOperationPolicy(
