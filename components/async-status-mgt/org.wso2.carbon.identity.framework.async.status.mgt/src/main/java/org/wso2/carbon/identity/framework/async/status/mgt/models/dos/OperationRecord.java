@@ -6,6 +6,7 @@ package org.wso2.carbon.identity.framework.async.status.mgt.models.dos;
  */
 public class OperationRecord {
 
+    private String correlationId;
     private String operationType;
     private String operationSubjectType;
     private String operationSubjectId;
@@ -13,9 +14,10 @@ public class OperationRecord {
     private String initiatorId;
     private String operationPolicy;
 
-    public OperationRecord(String operationType, String operationSubjectType, String operationSubjectId,
+    public OperationRecord(String correlationId, String operationType, String operationSubjectType, String operationSubjectId,
                            String residentOrgId, String initiatorId, String operationPolicy) {
 
+        this.correlationId = correlationId;
         this.operationType = operationType;
         this.operationSubjectType = operationSubjectType;
         this.operationSubjectId = operationSubjectId;
@@ -82,6 +84,16 @@ public class OperationRecord {
     public void setInitiatorId(String initiatorId) {
 
         this.initiatorId = initiatorId;
+    }
+
+    public String getCorrelationId() {
+
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+
+        this.correlationId = correlationId;
     }
 
     @Override

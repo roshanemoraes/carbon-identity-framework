@@ -62,6 +62,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
              NamedPreparedStatement statement = new NamedPreparedStatement(connection,
                      CREATE_ASYNC_OPERATION_IDN, SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID)) {
 
+            statement.setString(SQLConstants.OperationStatusTableColumns.IDN_CORRELATION_ID, record.getCorrelationId());
             statement.setString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_TYPE, record.getOperationType());
             statement.setString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_TYPE,
                     record.getOperationSubjectType());
@@ -104,31 +105,35 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false)) {
 
-            if (hasExistingRecords(connection, record.getOperationType(), record.getOperationSubjectId())) {
+//            if (hasExistingRecords(connection, record.getOperationType(), record.getOperationSubjectId())) {
+//
+//                String deleteSql = "DELETE FROM IDN_ASYNC_OPERATION_STATUS " +
+//                        "WHERE IDN_OPERATION_ID = ( " +
+//                        "    SELECT IDN_OPERATION_ID " +
+//                        "    FROM IDN_ASYNC_OPERATION_STATUS " +
+//                        "    WHERE IDN_OPERATION_TYPE = ? " +
+//                        "    AND IDN_OPERATION_SUBJECT_ID = ? " +
+//                        "    AND IDN_OPERATION_INITIATED_ORG_ID = ? " +
+//                        "    ORDER BY IDN_CREATED_TIME DESC " +
+//                        "    LIMIT 1 " +
+//                        ")";
+//
+//                try (PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
+//                    deleteStatement.setString(1, record.getOperationType());
+//                    deleteStatement.setString(2, record.getOperationSubjectId());
+//                    deleteStatement.setString(3, record.getResidentOrgId());
+//                    deleteStatement.executeUpdate();
+//                }
+//            } else {
+//                LOGGER.info("No existing records found for update.");
+//            }
 
-                String deleteSql = "DELETE FROM IDN_ASYNC_OPERATION_STATUS " +
-                        "WHERE IDN_OPERATION_ID = ( " +
-                        "    SELECT IDN_OPERATION_ID " +
-                        "    FROM IDN_ASYNC_OPERATION_STATUS " +
-                        "    WHERE IDN_OPERATION_TYPE = ? " +
-                        "    AND IDN_OPERATION_SUBJECT_ID = ? " +
-                        "    AND IDN_OPERATION_INITIATED_ORG_ID = ? " +
-                        "    ORDER BY IDN_CREATED_TIME DESC " +
-                        "    LIMIT 1 " +
-                        ")";
-
-                try (PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
-                    deleteStatement.setString(1, record.getOperationType());
-                    deleteStatement.setString(2, record.getOperationSubjectId());
-                    deleteStatement.setString(3, record.getResidentOrgId());
-                    deleteStatement.executeUpdate();
-                }
-            } else {
-                LOGGER.info("No existing records found for update.");
-            }
+            deleteOldOperationalData(connection, record.getCorrelationId(), record.getOperationType(), record.getOperationSubjectId());
 
             try (NamedPreparedStatement statement = new NamedPreparedStatement(connection,
                     CREATE_ASYNC_OPERATION_IDN, SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID)) {
+                statement.setString(
+                        SQLConstants.OperationStatusTableColumns.IDN_CORRELATION_ID, record.getCorrelationId());
                 statement.setString(
                         SQLConstants.OperationStatusTableColumns.IDN_OPERATION_TYPE, record.getOperationType());
                 statement.setString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_SUBJECT_TYPE,
@@ -238,7 +243,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     public ResponseOperationRecord getLatestAsyncOperationStatus(String operationType, String operationSubjectId) {
 
         String sql =
-                "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID," +
+                "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID," +
                         " IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY "
                         + "FROM IDN_ASYNC_OPERATION_STATUS " +
                         "WHERE IDN_OPERATION_TYPE = ? " +
@@ -256,6 +261,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 if (resultSet.next()) {
                     responseContext.setOperationId(resultSet.getString(
                             SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID));
+                    responseContext.setCorrelationId(
+                            resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_CORRELATION_ID));
                     responseContext.setOperationType(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_TYPE));
                     responseContext.setOperationSubjectType(
@@ -286,7 +293,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             String operationType, String operationSubjectId) {
 
         String sql =
-                "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
+                "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
                     "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
                     "AND IDN_OPERATION_SUBJECT_ID = ? ORDER BY IDN_CREATED_TIME DESC; ";
@@ -303,6 +310,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     ResponseOperationRecord responseContext = new ResponseOperationRecord();
                     responseContext.setOperationId(resultSet.getString(
                             SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID));
+                    responseContext.setCorrelationId(resultSet.getString(
+                            SQLConstants.OperationStatusTableColumns.IDN_CORRELATION_ID));
                     responseContext.setOperationType(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_TYPE));
                     responseContext.setOperationSubjectType(
@@ -334,7 +343,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             String operationSubjectType, String operationSubjectId, String operationType) {
 
         String sql =
-                "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
+                "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
                     "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_SUBJECT_TYPE = ? " +
                     "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_OPERATION_TYPE = ? " +
@@ -353,6 +362,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     ResponseOperationRecord responseContext = new ResponseOperationRecord();
                     responseContext.setOperationId(resultSet.getString(
                             SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID));
+                    responseContext.setCorrelationId(resultSet.getString(
+                            SQLConstants.OperationStatusTableColumns.IDN_CORRELATION_ID));
                     responseContext.setOperationType(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_TYPE));
                     responseContext.setOperationSubjectType(
@@ -392,7 +403,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
         String cutoffTimestampString = sdf.format(cutoffTimestamp);
 
         String sql =
-                "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_ID, IDN_OPERATION_SUBJECT_ID, " +
+                "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_ID, IDN_OPERATION_SUBJECT_ID, " +
                     "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
                     "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_CREATED_TIME >= ? " +
@@ -411,6 +422,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     ResponseOperationRecord responseContext = new ResponseOperationRecord();
                     responseContext.setOperationId(resultSet.getString(
                             SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID));
+                    responseContext.setCorrelationId(resultSet.getString(
+                            SQLConstants.OperationStatusTableColumns.IDN_CORRELATION_ID));
                     responseContext.setOperationType(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_TYPE));
                     responseContext.setOperationSubjectType(
@@ -447,7 +460,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                                                               String initiatorId) {
 
         String sql =
-                "SELECT IDN_OPERATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
+                "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
                     "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                     "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
                     "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_OPERATION_INITIATED_USER_ID = ? " +
@@ -464,6 +477,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 if (resultSet.next()) {
                     responseContext.setOperationId(resultSet.getString(
                             SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID));
+                    responseContext.setCorrelationId(resultSet.getString(
+                            SQLConstants.OperationStatusTableColumns.IDN_CORRELATION_ID));
                     responseContext.setOperationType(
                             resultSet.getString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_TYPE));
                     responseContext.setOperationSubjectType(
@@ -531,5 +546,19 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             }
         }
         return false;
+    }
+
+    private void deleteOldOperationalData(Connection connection, String correlationId, String operationType,
+                                          String operationSubjectId) throws SQLException {
+
+        String deleteSql = "DELETE FROM IDN_ASYNC_OPERATION_STATUS " +
+                "WHERE IDN_OPERATION_TYPE = ? AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_CORRELATION_ID != ?";
+
+        try (PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
+            deleteStatement.setString(1, operationType);
+            deleteStatement.setString(2, operationSubjectId);
+            deleteStatement.setString(3, correlationId);
+            deleteStatement.executeUpdate();
+        }
     }
 }

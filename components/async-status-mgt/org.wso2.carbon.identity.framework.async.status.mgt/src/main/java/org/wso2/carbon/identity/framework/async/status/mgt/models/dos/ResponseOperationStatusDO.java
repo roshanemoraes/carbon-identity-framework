@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 public class ResponseOperationStatusDO {
 
     private String operationId;
+    private String correlationId;
     private String operationType;
     private String operationSubjectType;
     private String operationSubjectId;
@@ -24,12 +25,13 @@ public class ResponseOperationStatusDO {
 
     }
 
-    public ResponseOperationStatusDO(String operationId, String operationType, String operationSubjectType,
+    public ResponseOperationStatusDO(String operationId, String correlationId, String operationType, String operationSubjectType,
                                      String operationSubjectId, String residentOrgId, String initiatorId,
                                      String operationStatus, String operationPolicy, Timestamp createdTime,
                                      Timestamp modifiedTime) {
 
         this.operationId = operationId;
+        this.correlationId = correlationId;
         this.operationType = operationType;
         this.operationSubjectType = operationSubjectType;
         this.operationSubjectId = operationSubjectId;
@@ -139,5 +141,15 @@ public class ResponseOperationStatusDO {
     public void setModifiedTime(Timestamp modifiedTime) {
 
         this.modifiedTime = modifiedTime;
+    }
+
+    public String getCorrelationId() {
+
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+
+        this.correlationId = correlationId;
     }
 }

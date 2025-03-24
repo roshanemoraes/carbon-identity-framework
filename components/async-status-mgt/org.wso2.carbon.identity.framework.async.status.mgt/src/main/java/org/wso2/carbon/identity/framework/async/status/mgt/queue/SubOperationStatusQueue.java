@@ -35,17 +35,20 @@ public class SubOperationStatusQueue {
 
         for (SubOperationStatusObject statusObject : subOperationList) {
             String status = statusObject.getStatus();
-            if ("FAIL".equals(status)) {
+            if ("PARTIAL".equals(status)) {
+                return "PARTIAL";
+            } else if ("FAIL".equals(status)) {
                 allSuccess = false;
             } else if ("SUCCESS".equals(status)) {
                 allFail = false;
             }
         }
+
         if (allSuccess) {
             return "SUCCESS";
         } else if (allFail) {
             return "FAIL";
         }
-        return "PARTIAL";
+        return "SUCCESS";
     }
 }
