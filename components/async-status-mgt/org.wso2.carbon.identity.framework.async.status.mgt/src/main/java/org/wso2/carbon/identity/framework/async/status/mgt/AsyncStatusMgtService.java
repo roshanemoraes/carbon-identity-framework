@@ -22,6 +22,7 @@ import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.UnitOperationRecord;
+import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementClientException;
 
 import java.util.List;
 
@@ -138,7 +139,8 @@ public interface AsyncStatusMgtService {
     List<ResponseOperationRecord> getAsyncOperationStatusWithCurser(String operationSubjectType,
                                                                     String operationSubjectId, String operationType,
                                                                     String after, String before, Integer limit,
-                                                                    String filter, Boolean latest);
+                                                                    String filter, Boolean latest)
+            throws OrganizationManagementClientException;
 
     /**
      * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.

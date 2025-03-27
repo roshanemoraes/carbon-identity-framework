@@ -5,7 +5,7 @@ package org.wso2.carbon.identity.framework.async.status.mgt.constant;
  */
 public enum OperationStatus {
     ONGOING,
-    SUCCESSFULLY_COMPLETED,
+    SUCCESS,
     FAILED,
-    PARTIALLY_COMPLETED
+    PARTIAL
 }

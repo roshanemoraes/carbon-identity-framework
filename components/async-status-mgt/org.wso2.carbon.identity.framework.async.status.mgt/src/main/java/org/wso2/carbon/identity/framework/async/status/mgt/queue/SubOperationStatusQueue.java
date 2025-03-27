@@ -3,6 +3,10 @@ package org.wso2.carbon.identity.framework.async.status.mgt.queue;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.OperationStatus.FAILED;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.OperationStatus.PARTIAL;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.OperationStatus.SUCCESS;
+
 /**
  * A thread-safe queue that holds {@link SubOperationStatusObject} instances representing
  * the status of individual sub-operations within an asynchronous operation.
@@ -35,20 +39,20 @@ public class SubOperationStatusQueue {
 
         for (SubOperationStatusObject statusObject : subOperationList) {
             String status = statusObject.getStatus();
-            if ("PARTIAL".equals(status)) {
-                return "PARTIAL";
-            } else if ("FAIL".equals(status)) {
+            if (PARTIAL.toString().equals(status)) {
+                return PARTIAL.toString();
+            } else if (FAILED.toString().equals(status)) {
                 allSuccess = false;
-            } else if ("SUCCESS".equals(status)) {
+            } else if (SUCCESS.toString().equals(status)) {
                 allFail = false;
             }
         }
 
         if (allSuccess) {
-            return "SUCCESS";
+            return SUCCESS.toString();
         } else if (allFail) {
-            return "FAIL";
+            return FAILED.toString();
         }
-        return "SUCCESS";
+        return SUCCESS.toString();
     }
 }

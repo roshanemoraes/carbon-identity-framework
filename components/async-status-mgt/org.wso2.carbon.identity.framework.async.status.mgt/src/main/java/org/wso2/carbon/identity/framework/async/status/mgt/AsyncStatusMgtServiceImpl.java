@@ -7,6 +7,7 @@ import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.OperationR
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.UnitOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.queue.AsyncOperationDataBuffer;
+import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementClientException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +97,9 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
                                                                            String operationType, String after,
                                                                            String before,
                                                                            Integer limit, String filter,
-                                                                           Boolean latest) {
+                                                                           Boolean latest)
+            throws OrganizationManagementClientException {
+
 
         return new ArrayList<>();
     }

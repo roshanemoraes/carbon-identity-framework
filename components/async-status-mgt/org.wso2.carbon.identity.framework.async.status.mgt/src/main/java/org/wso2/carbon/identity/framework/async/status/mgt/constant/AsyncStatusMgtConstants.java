@@ -6,6 +6,8 @@ package org.wso2.carbon.identity.framework.async.status.mgt.constant;
 public class AsyncStatusMgtConstants {
 
     public static final String ERROR_PREFIX = "ASM-";
+    public static final String DESC_SORT_ORDER = "DESC";
+    public static final String ASC_SORT_ORDER = "ASC";
 
     /**
      * Enum for Error Message
