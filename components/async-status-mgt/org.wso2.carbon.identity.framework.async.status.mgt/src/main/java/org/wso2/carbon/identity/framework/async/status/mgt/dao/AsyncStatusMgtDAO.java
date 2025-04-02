@@ -101,20 +101,14 @@ public interface AsyncStatusMgtDAO {
     List<ResponseOperationRecord> getOperationStatusByOperationSubjectTypeAndOperationSubjectIdAndOperationType(
             String operationSubjectType, String operationSubjectId, String operationType);
 
+    List<ResponseOperationRecord> getOperationRecords(String operationSubjectType, String operationSubjectId,
+                                                      String operationType, Integer limit,
+                                                      List<ExpressionNode> expressionNodes)
+            throws AsyncStatusMgtServerException;
+
     List<ResponseUnitOperationRecord> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
                                                                             List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtServerException;
-
-    /**
-     * Retrieves the latest asynchronous operation status for a given resource type, operation subject, and initiator.
-     *
-     * @param operationType      The type of the operation.
-     * @param operationSubjectId The identifier of the subject related to the operation.
-     * @param initiatorId        The identifier of the initiator of the operation.
-     * @return A {@link ResponseOperationRecord} object containing the latest operation status, or null if not found.
-     */
-    ResponseOperationRecord getLatestAsyncOperationStatusByInitiatorId(String operationType, String operationSubjectId,
-                                                                       String initiatorId);
 
     /**
      * Retrieves a list of asynchronous operation statuses within a specified number of days.

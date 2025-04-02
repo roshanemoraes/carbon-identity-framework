@@ -100,7 +100,7 @@ public class AsyncStatusMgtDAOTest {
         asyncStatusMgtService.registerOperationStatus(testRecord1, true);
         asyncStatusMgtService.registerOperationStatus(testRecord2, true);
         List<ResponseOperationRecord> fetchedOperationListFromDB = asyncStatusMgtService
-                .getAsyncOperationStatusWithCurser(IDN_OPERATION_TYPE_1, IDN_OPERATION_SUBJECT_ID_1);
+                .getOperationStatusRecords(IDN_OPERATION_TYPE_1, IDN_OPERATION_SUBJECT_ID_1);
 
         assertEquals(fetchedOperationListFromDB.size(), 1);
         assertEquals(fetchedOperationListFromDB.get(0).getOperationPolicy(), IDN_OPERATION_POLICY_2);

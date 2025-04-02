@@ -4,6 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_CREATED_AT;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_OPERATION_STATUS_MESSAGE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_RESIDENT_RESOURCE_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_TARGET_ORG_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_UNIT_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_UNIT_OPERATION_STATUS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_OPERATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_OPERATION_STATUS_MESSAGE;
@@ -20,6 +27,8 @@ public class AsyncStatusMgtConstants {
     public static final String ERROR_PREFIX = "ASM-";
     public static final String DESC_SORT_ORDER = "DESC";
     public static final String ASC_SORT_ORDER = "ASC";
+    public static final String FILTER_PLACEHOLDER_PREFIX = "FILTER_ID_";
+
     private static final Map<String, String> attributeColumnMap = new HashMap<>();
     public static final Map<String, String> ATTRIBURE_COLUMN_MAP = Collections.unmodifiableMap(attributeColumnMap);
 
@@ -37,13 +46,13 @@ public class AsyncStatusMgtConstants {
     public static final String PAGINATION_BEFORE = "before";
 
     static {
-        attributeColumnMap.put("unitOperationId", IDN_UNIT_OPERATION_ID);
-        attributeColumnMap.put("operationId", IDN_OPERATION_ID);
-        attributeColumnMap.put("operationInitiatedResourceId", IDN_RESIDENT_RESOURCE_ID);
-        attributeColumnMap.put("targetOrgId", IDN_TARGET_ORG_ID);
-        attributeColumnMap.put("unitOperationStatus", IDN_UNIT_OPERATION_STATUS);
-        attributeColumnMap.put("statusMessage", IDN_OPERATION_STATUS_MESSAGE);
-        attributeColumnMap.put("createdTime", IDN_CREATED_AT);
+        attributeColumnMap.put(MODEL_UNIT_OPERATION_ID, IDN_UNIT_OPERATION_ID);
+        attributeColumnMap.put(MODEL_OPERATION_ID, IDN_OPERATION_ID);
+        attributeColumnMap.put(MODEL_RESIDENT_RESOURCE_ID, IDN_RESIDENT_RESOURCE_ID);
+        attributeColumnMap.put(MODEL_TARGET_ORG_ID, IDN_TARGET_ORG_ID);
+        attributeColumnMap.put(MODEL_UNIT_OPERATION_STATUS, IDN_UNIT_OPERATION_STATUS);
+        attributeColumnMap.put(MODEL_OPERATION_STATUS_MESSAGE, IDN_OPERATION_STATUS_MESSAGE);
+        attributeColumnMap.put(MODEL_CREATED_AT, IDN_CREATED_AT);
         attributeColumnMap.put(PAGINATION_AFTER, IDN_CREATED_AT);
         attributeColumnMap.put(PAGINATION_BEFORE, IDN_CREATED_AT);
     }
@@ -52,7 +61,8 @@ public class AsyncStatusMgtConstants {
      * Enum for Error Message
      */
     public static enum ErrorMessages {
-        ERROR_CODE_INVALID_REQUEST_BODY("xx001", "Invalid request.", "Provided request body content is not in the expected format.");
+        ERROR_CODE_INVALID_REQUEST_BODY("xx001", "Invalid request.",
+                "Provided request body content is not in the expected format.");
 
         private final String code;
         private final String message;

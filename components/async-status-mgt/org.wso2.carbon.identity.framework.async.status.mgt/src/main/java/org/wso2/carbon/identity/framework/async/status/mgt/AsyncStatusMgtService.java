@@ -85,21 +85,7 @@ public interface AsyncStatusMgtService {
      * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
      * or null if no matching operation is found.
      */
-    List<ResponseOperationRecord> getAsyncOperationStatusWithCurser(String operationType, String operationSubjectId);
-
-    /**
-     * Retrieve the latest asynchronous operation status for a specific resource type, operation subject, and initiator.
-     * This method extends the functionality of {@link #getLatestAsyncOperationStatus(String, String)} by allowing
-     * filtering based on the initiator of the operation, providing more granular control over status retrieval.
-     *
-     * @param operationType      The type of the asynchronous operation.
-     * @param operationSubjectId The identifier of the subject related to the operation.
-     * @param initiatorId        The identifier of the user or system that initiated the operation.
-     * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
-     * or null if no matching operation is found.
-     */
-    ResponseOperationRecord getLatestAsyncOperationStatusByInitiatorId(String operationType, String operationSubjectId,
-                                                                       String initiatorId);
+    List<ResponseOperationRecord> getOperationStatusRecords(String operationType, String operationSubjectId);
 
     /**
      * Retrieves a list of asynchronous operation statuses within a specified number of days for a given resource type
@@ -139,11 +125,11 @@ public interface AsyncStatusMgtService {
      * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
      * or null if no matching operation is found.
      */
-    List<ResponseOperationRecord> getAsyncOperationStatusWithCurser(String operationSubjectType,
-                                                                    String operationSubjectId, String operationType,
-                                                                    String after, String before, Integer limit,
-                                                                    String filter, Boolean latest)
-            throws OrganizationManagementClientException, AsyncStatusMgtClientException;
+    List<ResponseOperationRecord> getOperationStatusRecords(String operationSubjectType,
+                                                            String operationSubjectId, String operationType,
+                                                            String after, String before, Integer limit,
+                                                            String filter, Boolean latest)
+            throws OrganizationManagementClientException, AsyncStatusMgtClientException, AsyncStatusMgtServerException;
 
     /**
      * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.
@@ -159,8 +145,8 @@ public interface AsyncStatusMgtService {
     List<ResponseOperationRecord> getAsyncOperationStatusWithoutCurser(String operationSubjectType,
                                                                        String operationSubjectId, String operationType);
 
-    List<ResponseUnitOperationRecord> getUnitOperationRecordsWithCurser(String operationId, String after, String before,
-                                                                        Integer limit,
-                                                                        String filter)
+    List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after, String before,
+                                                                    Integer limit,
+                                                                    String filter)
             throws AsyncStatusMgtClientException, AsyncStatusMgtServerException;
 }
