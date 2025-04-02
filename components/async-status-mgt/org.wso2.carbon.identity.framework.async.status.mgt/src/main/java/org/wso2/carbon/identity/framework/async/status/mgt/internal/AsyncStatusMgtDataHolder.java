@@ -1,6 +1,10 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.internal;
 
+import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
+import org.wso2.carbon.user.core.util.DatabaseUtil;
+
+import javax.sql.DataSource;
 
 /**
  * Data holder for asynchronous operation status management.
@@ -8,8 +12,8 @@ import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO
 public class AsyncStatusMgtDataHolder {
 
     private static final AsyncStatusMgtDataHolder dataHolder = new AsyncStatusMgtDataHolder();
-
     private AsyncStatusMgtDAO asyncStatusMgtDAO;
+    private DataSource dataSource;
 
     private AsyncStatusMgtDataHolder() {
 
@@ -38,5 +42,12 @@ public class AsyncStatusMgtDataHolder {
     public void setAsyncStatusMgtDAO(AsyncStatusMgtDAO asyncStatusMgtDAO) {
 
         this.asyncStatusMgtDAO = asyncStatusMgtDAO;
+    }
+
+    public DataSource getDataSource(){
+        if (dataSource == null){
+            this.dataSource = IdentityDatabaseUtil.getDataSource();
+        }
+        return dataSource;
     }
 }

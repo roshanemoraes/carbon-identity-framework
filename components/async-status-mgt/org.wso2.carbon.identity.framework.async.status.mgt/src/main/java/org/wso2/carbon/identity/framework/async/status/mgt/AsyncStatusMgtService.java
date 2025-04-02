@@ -19,8 +19,11 @@
 package org.wso2.carbon.identity.framework.async.status.mgt;
 
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
+import org.wso2.carbon.identity.framework.async.status.mgt.exception.AsyncStatusMgtClientException;
+import org.wso2.carbon.identity.framework.async.status.mgt.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseUnitOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.UnitOperationRecord;
 import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementClientException;
 
@@ -140,7 +143,7 @@ public interface AsyncStatusMgtService {
                                                                     String operationSubjectId, String operationType,
                                                                     String after, String before, Integer limit,
                                                                     String filter, Boolean latest)
-            throws OrganizationManagementClientException;
+            throws OrganizationManagementClientException, AsyncStatusMgtClientException;
 
     /**
      * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.
@@ -155,4 +158,9 @@ public interface AsyncStatusMgtService {
      */
     List<ResponseOperationRecord> getAsyncOperationStatusWithoutCurser(String operationSubjectType,
                                                                        String operationSubjectId, String operationType);
+
+    List<ResponseUnitOperationRecord> getUnitOperationRecordsWithCurser(String operationId, String after, String before,
+                                                                        Integer limit,
+                                                                        String filter)
+            throws AsyncStatusMgtClientException, AsyncStatusMgtServerException;
 }

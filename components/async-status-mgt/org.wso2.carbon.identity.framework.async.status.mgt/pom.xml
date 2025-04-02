@@ -128,6 +128,7 @@
                             org.wso2.carbon.identity.framework.async.status.mgt.*,
                             org.wso2.carbon.identity.framework.async.status.mgt.models.dos
                             org.wso2.carbon.identity.framework.async.status.mgt.queue
+                            org.wso2.carbon.identity.framework.async.status.mgt.exception
 <!--                            TODO: explicitly add which packages to be added, and not. Also, put service component to a folder and export it-->
                         </Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

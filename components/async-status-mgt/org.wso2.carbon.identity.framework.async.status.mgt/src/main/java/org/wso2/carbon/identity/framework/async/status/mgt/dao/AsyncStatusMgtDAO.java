@@ -18,8 +18,11 @@
 
 package org.wso2.carbon.identity.framework.async.status.mgt.dao;
 
+import org.wso2.carbon.identity.core.model.ExpressionNode;
+import org.wso2.carbon.identity.framework.async.status.mgt.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseUnitOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.UnitOperationRecord;
 
 import java.util.List;
@@ -98,6 +101,10 @@ public interface AsyncStatusMgtDAO {
     List<ResponseOperationRecord> getOperationStatusByOperationSubjectTypeAndOperationSubjectIdAndOperationType(
             String operationSubjectType, String operationSubjectId, String operationType);
 
+    List<ResponseUnitOperationRecord> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
+                                                                            List<ExpressionNode> expressionNodes)
+            throws AsyncStatusMgtServerException;
+
     /**
      * Retrieves the latest asynchronous operation status for a given resource type, operation subject, and initiator.
      *
@@ -127,5 +134,7 @@ public interface AsyncStatusMgtDAO {
      * @param status      The new status of the operation.
      */
     void updateAsyncOperationStatus(String operationID, String status);
+
+
 
 }
