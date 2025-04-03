@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_CREATED_AT;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_OPERATION_STATUS_MESSAGE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_RESIDENT_RESOURCE_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_TARGET_ORG_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_UNIT_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_UNIT_OPERATION_STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_CREATED_AT;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_OPERATION_STATUS_MESSAGE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_RESIDENT_RESOURCE_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_TARGET_ORG_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_UNIT_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_UNIT_OPERATION_STATUS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_OPERATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_OPERATION_STATUS_MESSAGE;
@@ -46,13 +46,13 @@ public class AsyncStatusMgtConstants {
     public static final String PAGINATION_BEFORE = "before";
 
     static {
-        attributeColumnMap.put(MODEL_UNIT_OPERATION_ID, IDN_UNIT_OPERATION_ID);
-        attributeColumnMap.put(MODEL_OPERATION_ID, IDN_OPERATION_ID);
-        attributeColumnMap.put(MODEL_RESIDENT_RESOURCE_ID, IDN_RESIDENT_RESOURCE_ID);
-        attributeColumnMap.put(MODEL_TARGET_ORG_ID, IDN_TARGET_ORG_ID);
-        attributeColumnMap.put(MODEL_UNIT_OPERATION_STATUS, IDN_UNIT_OPERATION_STATUS);
-        attributeColumnMap.put(MODEL_OPERATION_STATUS_MESSAGE, IDN_OPERATION_STATUS_MESSAGE);
-        attributeColumnMap.put(MODEL_CREATED_AT, IDN_CREATED_AT);
+        attributeColumnMap.put(UNIT_OP_MODEL_UNIT_OPERATION_ID, IDN_UNIT_OPERATION_ID);
+        attributeColumnMap.put(UNIT_OP_MODEL_OPERATION_ID, IDN_OPERATION_ID);
+        attributeColumnMap.put(UNIT_OP_MODEL_RESIDENT_RESOURCE_ID, IDN_RESIDENT_RESOURCE_ID);
+        attributeColumnMap.put(UNIT_OP_MODEL_TARGET_ORG_ID, IDN_TARGET_ORG_ID);
+        attributeColumnMap.put(UNIT_OP_MODEL_UNIT_OPERATION_STATUS, IDN_UNIT_OPERATION_STATUS);
+        attributeColumnMap.put(UNIT_OP_MODEL_OPERATION_STATUS_MESSAGE, IDN_OPERATION_STATUS_MESSAGE);
+        attributeColumnMap.put(UNIT_OP_MODEL_CREATED_AT, IDN_CREATED_AT);
         attributeColumnMap.put(PAGINATION_AFTER, IDN_CREATED_AT);
         attributeColumnMap.put(PAGINATION_BEFORE, IDN_CREATED_AT);
     }

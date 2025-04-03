@@ -128,7 +128,7 @@ public interface AsyncStatusMgtService {
     List<ResponseOperationRecord> getOperationStatusRecords(String operationSubjectType,
                                                             String operationSubjectId, String operationType,
                                                             String after, String before, Integer limit,
-                                                            String filter, Boolean latest)
+                                                            String filter)
             throws OrganizationManagementClientException, AsyncStatusMgtClientException, AsyncStatusMgtServerException;
 
     /**

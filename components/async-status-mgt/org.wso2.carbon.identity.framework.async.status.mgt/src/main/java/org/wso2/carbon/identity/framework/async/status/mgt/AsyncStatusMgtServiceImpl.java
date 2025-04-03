@@ -102,8 +102,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
                                                                    String operationSubjectId,
                                                                    String operationType, String after,
                                                                    String before,
-                                                                   Integer limit, String filter,
-                                                                   Boolean latest)
+                                                                   Integer limit, String filter)
             throws AsyncStatusMgtClientException, AsyncStatusMgtServerException {
 
         List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, DESC_SORT_ORDER);

@@ -73,8 +73,8 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLCo
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusModelProperties.MODEL_OPERATION_SUBJECT_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusModelProperties.MODEL_OPERATION_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_CREATED_AT;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_CREATED_AT;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_OPERATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_OPERATION_STATUS_MESSAGE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_RESIDENT_RESOURCE_ID;
@@ -454,7 +454,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                                                                    List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtServerException {
 
-        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, MODEL_CREATED_AT);
+        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, UNIT_OP_MODEL_CREATED_AT);
         String sqlStmt = getUnitOperationsStatusSqlStmt(filterQueryBuilder);
 
         List<ResponseUnitOperationRecord> unitOperationRecords;
@@ -792,7 +792,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                             Integer limit, FilterQueryBuilder filterQueryBuilder)
             throws SQLException {
 
-        namedPreparedStatement.setString(MODEL_OPERATION_ID, operationId);
+        namedPreparedStatement.setString(UNIT_OP_MODEL_OPERATION_ID, operationId);
         setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
                 filterQueryBuilder.getTimestampFilterAttributes());
         namedPreparedStatement.setInt(LIMIT, limit);

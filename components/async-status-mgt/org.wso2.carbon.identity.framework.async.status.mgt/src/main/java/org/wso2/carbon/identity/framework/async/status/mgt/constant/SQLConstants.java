@@ -92,13 +92,13 @@ public class SQLConstants {
 
     public static class UnitOperationStatusModelProperties {
 
-        public static final String MODEL_UNIT_OPERATION_ID = "UNIT_OPERATION_ID";
-        public static final String MODEL_OPERATION_ID = "OPERATION_ID";
-        public static final String MODEL_RESIDENT_RESOURCE_ID = "OPERATION_INITIATED_RESOURCE_ID";
-        public static final String MODEL_TARGET_ORG_ID = "TARGET_ORG_ID";
-        public static final String MODEL_UNIT_OPERATION_STATUS = "UNIT_OPERATION_STATUS";
-        public static final String MODEL_OPERATION_STATUS_MESSAGE = "STATUS_MESSAGE";
-        public static final String MODEL_CREATED_AT = "CREATED_TIME";
+        public static final String UNIT_OP_MODEL_UNIT_OPERATION_ID = "UNIT_OPERATION_ID";
+        public static final String UNIT_OP_MODEL_OPERATION_ID = "OPERATION_ID";
+        public static final String UNIT_OP_MODEL_RESIDENT_RESOURCE_ID = "OPERATION_INITIATED_RESOURCE_ID";
+        public static final String UNIT_OP_MODEL_TARGET_ORG_ID = "TARGET_ORG_ID";
+        public static final String UNIT_OP_MODEL_UNIT_OPERATION_STATUS = "UNIT_OPERATION_STATUS";
+        public static final String UNIT_OP_MODEL_OPERATION_STATUS_MESSAGE = "STATUS_MESSAGE";
+        public static final String UNIT_OP_MODEL_CREATED_AT = "CREATED_TIME";
     }
 
     public static class OperationStatusModelProperties {
