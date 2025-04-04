@@ -69,12 +69,12 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLCo
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.GET_UNIT_OPERATIONS_TAIL;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusModelProperties.MODEL_CREATED_TIME;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusModelProperties.MODEL_OPERATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusModelProperties.MODEL_OPERATION_SUBJECT_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusModelProperties.MODEL_OPERATION_SUBJECT_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusModelProperties.MODEL_OPERATION_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationStatusTableColumns.IDN_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_CREATED_AT;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.UNIT_OP_MODEL_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusModelProperties.MODEL_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_OPERATION_STATUS_MESSAGE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationStatusTableColumns.IDN_RESIDENT_RESOURCE_ID;
@@ -113,7 +113,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     SQLConstants.OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID, record.getInitiatorId());
             statement.setString(
                     SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS, OperationStatus.ONGOING.toString());
-            statement.setString(SQLConstants.OperationStatusTableColumns.IDN_CREATED_TIME, currentTimestamp);
+            statement.setString(SQLConstants.OperationStatusTableColumns.IDN_CREATED_AT, currentTimestamp);
             statement.setString(SQLConstants.OperationStatusTableColumns.IDN_LAST_MODIFIED, currentTimestamp);
             statement.setString(
                     SQLConstants.OperationStatusTableColumns.IDN_OPERATION_POLICY, record.getOperationPolicy());
@@ -164,7 +164,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                         record.getInitiatorId());
                 statement.setString(SQLConstants.OperationStatusTableColumns.IDN_OPERATION_STATUS,
                         OperationStatus.ONGOING.toString());
-                statement.setString(SQLConstants.OperationStatusTableColumns.IDN_CREATED_TIME, currentTimestamp);
+                statement.setString(SQLConstants.OperationStatusTableColumns.IDN_CREATED_AT, currentTimestamp);
                 statement.setString(SQLConstants.OperationStatusTableColumns.IDN_LAST_MODIFIED, currentTimestamp);
                 statement.setString(
                         SQLConstants.OperationStatusTableColumns.IDN_OPERATION_POLICY, record.getOperationPolicy());
@@ -266,7 +266,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                         + "FROM IDN_ASYNC_OPERATION_STATUS " +
                         "WHERE IDN_OPERATION_TYPE = ? " +
                         "AND IDN_OPERATION_SUBJECT_ID = ? " +
-                        "ORDER BY IDN_CREATED_TIME DESC " +
+                        "ORDER BY IDN_CREATED_AT DESC " +
                         "LIMIT 1;";
         ResponseOperationRecord responseContext = new ResponseOperationRecord();
 
@@ -316,7 +316,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID, " +
                         "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                         "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
-                        "AND IDN_OPERATION_SUBJECT_ID = ? ORDER BY IDN_CREATED_TIME DESC; ";
+                        "AND IDN_OPERATION_SUBJECT_ID = ? ORDER BY IDN_CREATED_AT DESC; ";
 
         List<ResponseOperationRecord> responseContexts = new ArrayList<>();
 
@@ -369,7 +369,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                         "IDN_OPERATION_SUBJECT_ID, IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, " +
                         "IDN_OPERATION_STATUS, IDN_OPERATION_POLICY FROM IDN_ASYNC_OPERATION_STATUS " +
                         "WHERE IDN_OPERATION_SUBJECT_TYPE = ? AND IDN_OPERATION_SUBJECT_ID = ? " +
-                        "AND IDN_OPERATION_TYPE = ? ORDER BY IDN_CREATED_TIME DESC;";
+                        "AND IDN_OPERATION_TYPE = ? ORDER BY IDN_CREATED_AT DESC;";
 
         List<ResponseOperationRecord> responseContexts = new ArrayList<>();
 
@@ -454,7 +454,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                                                                    List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtServerException {
 
-        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, UNIT_OP_MODEL_CREATED_AT);
+        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, MODEL_CREATED_AT);
         String sqlStmt = getUnitOperationsStatusSqlStmt(filterQueryBuilder);
 
         List<ResponseUnitOperationRecord> unitOperationRecords;
@@ -496,8 +496,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_ID, IDN_OPERATION_SUBJECT_ID, " +
                         "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS, IDN_OPERATION_POLICY " +
                         "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_TYPE = ? " +
-                        "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_CREATED_TIME >= ? " +
-                        "ORDER BY IDN_CREATED_TIME DESC;";
+                        "AND IDN_OPERATION_SUBJECT_ID = ? AND IDN_CREATED_AT >= ? " +
+                        "ORDER BY IDN_CREATED_AT DESC;";
 
         List<ResponseOperationRecord> responseContexts = new ArrayList<>();
 
@@ -792,7 +792,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                             Integer limit, FilterQueryBuilder filterQueryBuilder)
             throws SQLException {
 
-        namedPreparedStatement.setString(UNIT_OP_MODEL_OPERATION_ID, operationId);
+        namedPreparedStatement.setString(MODEL_OPERATION_ID, operationId);
         setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
                 filterQueryBuilder.getTimestampFilterAttributes());
         namedPreparedStatement.setInt(LIMIT, limit);
@@ -829,7 +829,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 //                "SELECT IDN_UNIT_OPERATION_ID, IDN_OPERATION_ID, IDN_RESIDENT_RESOURCE_ID, IDN_TARGET_ORG_ID, IDN_UNIT_OPERATION_STATUS, " +
 //                        "IDN_OPERATION_STATUS_MESSAGE, IDN_CREATED_AT " +
 //                        "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_ID = ? " +
-//                        "ORDER BY IDN_CREATED_TIME DESC;";
+//                        "ORDER BY IDN_CREATED_AT DESC;";
 //
 //        List<ResponseUnitOperationRecord> responseContexts = new ArrayList<>();
 //

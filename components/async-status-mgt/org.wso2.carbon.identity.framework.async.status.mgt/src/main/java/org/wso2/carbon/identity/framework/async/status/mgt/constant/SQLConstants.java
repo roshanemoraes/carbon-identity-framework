@@ -10,7 +10,7 @@ public class SQLConstants {
     public static final String CREATE_ASYNC_OPERATION_IDN = "INSERT INTO IDN_ASYNC_OPERATION_STATUS(" +
             "IDN_CORRELATION_ID, IDN_OPERATION_TYPE, IDN_OPERATION_SUBJECT_TYPE, IDN_OPERATION_SUBJECT_ID," +
             "IDN_OPERATION_INITIATED_ORG_ID, IDN_OPERATION_INITIATED_USER_ID, IDN_OPERATION_STATUS," +
-            "IDN_CREATED_TIME, IDN_LAST_MODIFIED, IDN_OPERATION_POLICY) VALUES(" +
+            "IDN_CREATED_AT, IDN_LAST_MODIFIED, IDN_OPERATION_POLICY) VALUES(" +
             ":" + OperationStatusTableColumns.IDN_CORRELATION_ID + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_TYPE + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_SUBJECT_TYPE + ";, " +
@@ -18,7 +18,7 @@ public class SQLConstants {
             ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_ORG_ID + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_STATUS + ";, " +
-            ":" + OperationStatusTableColumns.IDN_CREATED_TIME + ";, " +
+            ":" + OperationStatusTableColumns.IDN_CREATED_AT + ";, " +
             ":" + OperationStatusTableColumns.IDN_LAST_MODIFIED + ";, " +
             ":" + OperationStatusTableColumns.IDN_OPERATION_POLICY + ";)";
 
@@ -41,7 +41,7 @@ public class SQLConstants {
                     "AND IDN_OPERATION_POLICY = :" + OperationStatusTableColumns.IDN_OPERATION_POLICY + " " +
                     "AND IDN_OPERATION_INITIATED_USER_ID = :" + OperationStatusTableColumns.IDN_OPERATION_INITIATED_USER_ID +
                     " " +
-                    "ORDER BY IDN_CREATED_TIME DESC " +
+                    "ORDER BY IDN_CREATED_AT DESC " +
                     "LIMIT 1;";
 
     public static final String GET_OPERATIONS = "SELECT IDN_OPERATION_ID, IDN_CORRELATION_ID, IDN_OPERATION_TYPE, " +
@@ -50,7 +50,7 @@ public class SQLConstants {
             "FROM IDN_ASYNC_OPERATION_STATUS WHERE IDN_OPERATION_SUBJECT_TYPE = :OPERATION_SUBJECT_TYPE; " +
             "AND IDN_OPERATION_SUBJECT_ID = :OPERATION_SUBJECT_ID; AND IDN_OPERATION_TYPE = :OPERATION_TYPE; ";
 
-    public static final String GET_OPERATIONS_TAIL = " ORDER BY IDN_CREATED_TIME DESC LIMIT :LIMIT; ;";
+    public static final String GET_OPERATIONS_TAIL = " ORDER BY IDN_CREATED_AT DESC LIMIT :LIMIT; ;";
 
     public static final String GET_UNIT_OPERATIONS = "SELECT IDN_UNIT_OPERATION_ID, IDN_OPERATION_ID, " +
             "IDN_RESIDENT_RESOURCE_ID, IDN_TARGET_ORG_ID, IDN_UNIT_OPERATION_STATUS, IDN_OPERATION_STATUS_MESSAGE, " +
@@ -71,7 +71,7 @@ public class SQLConstants {
         public static final String IDN_OPERATION_INITIATED_ORG_ID = "IDN_OPERATION_INITIATED_ORG_ID";
         public static final String IDN_OPERATION_INITIATED_USER_ID = "IDN_OPERATION_INITIATED_USER_ID";
         public static final String IDN_OPERATION_STATUS = "IDN_OPERATION_STATUS";
-        public static final String IDN_CREATED_TIME = "IDN_CREATED_TIME";
+        public static final String IDN_CREATED_AT = "IDN_CREATED_AT";
         public static final String IDN_LAST_MODIFIED = "IDN_LAST_MODIFIED";
         public static final String IDN_OPERATION_POLICY = "IDN_OPERATION_POLICY";
     }
@@ -92,13 +92,12 @@ public class SQLConstants {
 
     public static class UnitOperationStatusModelProperties {
 
-        public static final String UNIT_OP_MODEL_UNIT_OPERATION_ID = "UNIT_OPERATION_ID";
-        public static final String UNIT_OP_MODEL_OPERATION_ID = "OPERATION_ID";
-        public static final String UNIT_OP_MODEL_RESIDENT_RESOURCE_ID = "OPERATION_INITIATED_RESOURCE_ID";
-        public static final String UNIT_OP_MODEL_TARGET_ORG_ID = "TARGET_ORG_ID";
-        public static final String UNIT_OP_MODEL_UNIT_OPERATION_STATUS = "UNIT_OPERATION_STATUS";
-        public static final String UNIT_OP_MODEL_OPERATION_STATUS_MESSAGE = "STATUS_MESSAGE";
-        public static final String UNIT_OP_MODEL_CREATED_AT = "CREATED_TIME";
+        public static final String MODEL_UNIT_OPERATION_ID = "UNIT_OPERATION_ID";
+        public static final String MODEL_RESIDENT_RESOURCE_ID = "OPERATION_INITIATED_RESOURCE_ID";
+        public static final String MODEL_TARGET_ORG_ID = "TARGET_ORG_ID";
+        public static final String MODEL_UNIT_OPERATION_STATUS = "UNIT_OPERATION_STATUS";
+        public static final String MODEL_OPERATION_STATUS_MESSAGE = "STATUS_MESSAGE";
+        public static final String MODEL_CREATED_AT = "CREATED_TIME";
     }
 
     public static class OperationStatusModelProperties {
