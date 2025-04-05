@@ -1,5 +1,25 @@
+/*
+ * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.identity.framework.async.status.mgt.queue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.UnitOperationRecord;
 
@@ -7,14 +27,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * In-memory queue to store async operations, with database fallback.
  */
 public class AsyncOperationDataBuffer {
 
-    private static final Logger LOGGER = Logger.getLogger(AsyncOperationDataBuffer.class.getName());
+    private static final Log LOG = LogFactory.getLog(AsyncOperationDataBuffer.class);
     private final ConcurrentLinkedQueue<UnitOperationRecord> queue = new ConcurrentLinkedQueue<>();
     private final AsyncStatusMgtDAO asyncStatusMgtDAO;
     private final int threshold;
@@ -50,8 +69,7 @@ public class AsyncOperationDataBuffer {
 
         scheduler.scheduleAtFixedRate(() -> {
             if (!queue.isEmpty()) {
-                //TODO: rename lOGGER -> LOG , debug log
-                LOGGER.info("Periodic flush triggered.");
+                LOG.debug("Periodic flush triggered.");
                 persistToDatabase();
             }
         }, flushIntervalSeconds, flushIntervalSeconds, TimeUnit.SECONDS);
@@ -82,7 +100,6 @@ public class AsyncOperationDataBuffer {
      */
     private synchronized void persistToDatabase() {
 
-        LOGGER.info("Queue size exceeded threshold, persisting operations to DB...");
         if (!queue.isEmpty()) {
             asyncStatusMgtDAO.saveOperationsBatch(queue);
             queue.clear();

@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.AND;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.ASC_SORT_ORDER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.DESC_SORT_ORDER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.ErrorMessages
@@ -60,36 +61,12 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
 
     private static final  AsyncStatusMgtServiceImpl INSTANCE = new AsyncStatusMgtServiceImpl();
     private static final AsyncStatusMgtDAO asyncStatusMgtDAO = new AsyncStatusMgtDAOImpl();
-    private final AsyncOperationDataBuffer operationDataBuffer;
+    private static final AsyncOperationDataBuffer operationDataBuffer =
+            new AsyncOperationDataBuffer(asyncStatusMgtDAO, 100, 5);
 
-    public AsyncStatusMgtServiceImpl() {
-
-        this.operationDataBuffer = new AsyncOperationDataBuffer(asyncStatusMgtDAO, 100, 5);
-    }
     public static AsyncStatusMgtServiceImpl getInstance() {
 
         return INSTANCE;
-    }
-
-    @Override
-    public ResponseOperationRecord getLatestAsyncOperationStatus(String operationType, String operationSubjectId) {
-
-        return asyncStatusMgtDAO.getLatestAsyncOperationStatus(operationType, operationSubjectId);
-    }
-
-    @Override
-    public List<ResponseOperationRecord> getOperationStatusRecords(String operationType,
-                                                                   String operationSubjectId) {
-
-        return asyncStatusMgtDAO.getOperationStatusByOperationTypeAndOperationSubjectId(operationType,
-                operationSubjectId);
-    }
-
-    @Override
-    public List<ResponseOperationRecord> getAsyncOperationStatusWithinDays(String operationType,
-                                                                           String operationSubjectId, int days) {
-
-        return asyncStatusMgtDAO.getAsyncOperationStatusWithinDays(operationType, operationSubjectId, days);
     }
 
     @Override
@@ -114,25 +91,22 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     }
 
     @Override
+    public List<ResponseOperationRecord> getOperationStatusRecords(String operationType, String operationSubjectId) {
+
+        return asyncStatusMgtDAO.getOperationStatusByOperationTypeAndOperationSubjectId(operationType,
+                operationSubjectId);
+    }
+
+    @Override
     public List<ResponseOperationRecord> getOperationStatusRecords(String operationSubjectType,
                                                                    String operationSubjectId,
-                                                                   String operationType, String after,
-                                                                   String before,
+                                                                   String operationType, String after, String before,
                                                                    Integer limit, String filter)
             throws AsyncStatusMgtClientException, AsyncStatusMgtServerException {
 
         List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, DESC_SORT_ORDER);
         return asyncStatusMgtDAO.getOperationRecords(operationSubjectType, operationSubjectId, operationType,
                 limit, expressionNodes);
-    }
-
-    @Override
-    public List<ResponseOperationRecord> getAsyncOperationStatusWithoutCurser(String operationSubjectType,
-                                                                              String operationSubjectId,
-                                                                              String operationType) {
-
-        return asyncStatusMgtDAO.getOperationStatusByOperationSubjectTypeAndOperationSubjectIdAndOperationType(
-                operationSubjectType, operationSubjectId, operationType);
     }
 
     @Override
@@ -144,6 +118,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
         return asyncStatusMgtDAO.getUnitOperationRecordsForOperationId(operationId, limit, expressionNodes);
     }
 
+    // Helper methods for curser-based pagination and filtering.
     private List<ExpressionNode> getExpressionNodes(String filter, String after, String before,
                                                     String paginationSortOrder)
             throws AsyncStatusMgtClientException {
@@ -230,7 +205,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
             }
         } else if (node instanceof OperationNode) {
             String operation = ((OperationNode) node).getOperation();
-            if (!StringUtils.equalsIgnoreCase("and", operation)) {
+            if (!StringUtils.equalsIgnoreCase(AND, operation)) {
                 throw handleClientException(ERROR_CODE_INVALID_REQUEST_BODY);
             }
             setExpressionNodeList(node.getLeftNode(), expression);

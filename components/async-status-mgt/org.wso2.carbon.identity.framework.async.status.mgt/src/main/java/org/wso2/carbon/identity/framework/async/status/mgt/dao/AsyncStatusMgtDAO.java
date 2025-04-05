@@ -111,17 +111,6 @@ public interface AsyncStatusMgtDAO {
             throws AsyncStatusMgtServerException;
 
     /**
-     * Retrieves a list of asynchronous operation statuses within a specified number of days.
-     *
-     * @param operationType      The type of the operation.
-     * @param operationSubjectId The identifier of the subject related to the operations.
-     * @param days               The number of days within which to retrieve operation statuses.
-     * @return A list of {@link ResponseOperationRecord} objects, or an empty list if no matching operations are found.
-     */
-    List<ResponseOperationRecord> getAsyncOperationStatusWithinDays(String operationType, String operationSubjectId,
-                                                                    int days);
-
-    /**
      * Updates the status of an existing asynchronous operation.
      *
      * @param operationID The unique identifier of the operation to be updated.

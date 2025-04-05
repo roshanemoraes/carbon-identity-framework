@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.identity.framework.async.status.mgt;
 
-import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.exception.AsyncStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.OperationRecord;
@@ -66,44 +65,6 @@ public interface AsyncStatusMgtService {
     void updateOperationStatus(String operationId, String status);
 
     /**
-     * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.
-     * This method is useful for querying the most recent status of an operation related to a particular resource
-     * and subject, providing insight into the current state of asynchronous tasks.
-     *
-     * @param operationType      The type of the asynchronous operation.
-     * @param operationSubjectId The identifier of the subject (e.g., user, application) related to the operation.
-     * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
-     * or null if no matching operation is found.
-     */
-    ResponseOperationRecord getLatestAsyncOperationStatus(String operationType, String operationSubjectId);
-
-    /**
-     * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.
-     * This method is useful for querying the most recent status of an operation related to a particular resource
-     * and subject, providing insight into the current state of asynchronous tasks.
-     *
-     * @param operationType      The type of the asynchronous operation.
-     * @param operationSubjectId The identifier of the subject (e.g., user, application) related to the operation.
-     * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
-     * or null if no matching operation is found.
-     */
-    List<ResponseOperationRecord> getOperationStatusRecords(String operationType, String operationSubjectId);
-
-    /**
-     * Retrieves a list of asynchronous operation statuses within a specified number of days for a given resource type
-     * and operation subject. This method allows for the retrieval of historical operation statuses,
-     * enabling auditing and monitoring of past asynchronous tasks.
-     *
-     * @param operationType      The type of the asynchronous operation.
-     * @param operationSubjectId The identifier of the subject related to the operations.
-     * @param days               The number of days within which the operation statuses should be retrieved.
-     * @return A list of {@link ResponseOperationRecord} objects, each representing an operation status within the
-     * specified time frame. Returns an empty list if no matching operations are found.
-     */
-    List<ResponseOperationRecord> getAsyncOperationStatusWithinDays(String operationType, String operationSubjectId,
-                                                                    int days);
-
-    /**
      * Registers the status of a unit operation, which is a sub-task within a larger asynchronous operation.
      * This method is used to track the progress and status of individual units of work that make up a complex
      * asynchronous task.
@@ -119,17 +80,12 @@ public interface AsyncStatusMgtService {
      * This method is useful for querying the most recent status of an operation related to a particular resource
      * and subject, providing insight into the current state of asynchronous tasks.
      *
-     * @param operationSubjectType The identifier of the subject type(e.g., user, application) related to the operation.
-     * @param operationSubjectId   The identifier of the subject (e.g., userId, applicationId) related to the operation.
-     * @param operationType        The type of the asynchronous operation.
+     * @param operationType      The type of the asynchronous operation.
+     * @param operationSubjectId The identifier of the subject (e.g., user, application) related to the operation.
      * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
      * or null if no matching operation is found.
      */
-    List<ResponseOperationRecord> getOperationStatusRecords(String operationSubjectType,
-                                                            String operationSubjectId, String operationType,
-                                                            String after, String before, Integer limit,
-                                                            String filter)
-            throws OrganizationManagementClientException, AsyncStatusMgtClientException, AsyncStatusMgtServerException;
+    List<ResponseOperationRecord> getOperationStatusRecords(String operationType, String operationSubjectId);
 
     /**
      * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.
@@ -142,11 +98,12 @@ public interface AsyncStatusMgtService {
      * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
      * or null if no matching operation is found.
      */
-    List<ResponseOperationRecord> getAsyncOperationStatusWithoutCurser(String operationSubjectType,
-                                                                       String operationSubjectId, String operationType);
+    List<ResponseOperationRecord> getOperationStatusRecords(String operationSubjectType, String operationSubjectId,
+                                                            String operationType, String after, String before,
+                                                            Integer limit, String filter)
+            throws OrganizationManagementClientException, AsyncStatusMgtClientException, AsyncStatusMgtServerException;
 
     List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after, String before,
-                                                                    Integer limit,
-                                                                    String filter)
+                                                                    Integer limit, String filter)
             throws AsyncStatusMgtClientException, AsyncStatusMgtServerException;
 }

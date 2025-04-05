@@ -31,7 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.AND;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.ErrorMessages.ERROR_CODE_INVALID_REQUEST_BODY;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.NOT;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.AsyncStatusMgtConstants.OR;
 import static org.wso2.carbon.identity.framework.async.status.mgt.util.Utils.handleClientException;
 
 /**
@@ -89,9 +92,9 @@ public class FilterTreeBuilder {
                 tokenList.add(")");
             } else if (input.ttype == StreamTokenizer.TT_WORD) {
                 // Concatenate the string by adding spaces in between.
-                if (!(input.sval.equalsIgnoreCase("and") ||
-                        input.sval.equalsIgnoreCase("or") ||
-                        input.sval.equalsIgnoreCase("not"))) {
+                if (!(input.sval.equalsIgnoreCase(AND) ||
+                        input.sval.equalsIgnoreCase(OR) ||
+                        input.sval.equalsIgnoreCase(NOT))) {
                     concatenatedString.append(" ").append(input.sval);
                 } else {
                     concatenatedString = new StringBuilder(concatenatedString.toString().trim());
@@ -158,8 +161,8 @@ public class FilterTreeBuilder {
     private void factor() throws AsyncStatusMgtClientException {
 
         symbol = nextSymbol();
-        if (symbol.equals("not")) {
-            OperationNode not = new OperationNode("not");
+        if (symbol.equals(NOT)) {
+            OperationNode not = new OperationNode(NOT);
             factor();
             not.setRightNode(root);
             root = not;
