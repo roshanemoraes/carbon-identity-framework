@@ -32,6 +32,7 @@ import java.util.List;
 /**
  * Service that processes the status of asynchronous operations.
  */
+//TODO: rename class and package
 public interface AsyncStatusMgtService {
 
     /**
@@ -50,6 +51,7 @@ public interface AsyncStatusMgtService {
      *                       the new information; if false, a new record will be created.
      * @return The unique identifier (operation ID) of the registered or updated asynchronous operation.
      */
+
     String registerOperationStatus(OperationRecord record, boolean updateIfExists);
 
     /**
@@ -111,8 +113,6 @@ public interface AsyncStatusMgtService {
      *                  status message, and creation timestamp.
      */
     void registerUnitOperationStatus(UnitOperationRecord operation);
-
-    AsyncStatusMgtDAO getAsyncStatusMgtDAO();
 
     /**
      * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.

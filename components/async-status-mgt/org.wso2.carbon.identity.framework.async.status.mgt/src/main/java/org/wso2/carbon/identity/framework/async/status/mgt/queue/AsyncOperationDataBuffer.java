@@ -50,6 +50,7 @@ public class AsyncOperationDataBuffer {
 
         scheduler.scheduleAtFixedRate(() -> {
             if (!queue.isEmpty()) {
+                //TODO: rename lOGGER -> LOG , debug log
                 LOGGER.info("Periodic flush triggered.");
                 persistToDatabase();
             }

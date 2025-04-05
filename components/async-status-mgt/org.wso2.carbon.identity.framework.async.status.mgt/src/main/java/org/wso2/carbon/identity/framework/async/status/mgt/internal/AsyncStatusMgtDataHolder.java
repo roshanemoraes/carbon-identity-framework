@@ -2,7 +2,6 @@ package org.wso2.carbon.identity.framework.async.status.mgt.internal;
 
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
-import org.wso2.carbon.user.core.util.DatabaseUtil;
 
 import javax.sql.DataSource;
 
@@ -11,39 +10,28 @@ import javax.sql.DataSource;
  */
 public class AsyncStatusMgtDataHolder {
 
-    private static final AsyncStatusMgtDataHolder dataHolder = new AsyncStatusMgtDataHolder();
-    private AsyncStatusMgtDAO asyncStatusMgtDAO;
     private DataSource dataSource;
+    private static final AsyncStatusMgtDataHolder INSTANCE = new AsyncStatusMgtDataHolder();
 
     private AsyncStatusMgtDataHolder() {
 
     }
 
+    /**
+     * Get the instance of AsyncStatusMgtDataHolder.
+     *
+     * @return AsyncStatusMgtDataHolder instance.
+     */
     public static AsyncStatusMgtDataHolder getInstance() {
 
-        return dataHolder;
+        return INSTANCE;
     }
 
     /**
-     * Get {@link AsyncStatusMgtDAO}.
+     * Get the instance of Datasource.
      *
-     * @return asynchronous status management data access instance {@link AsyncStatusMgtDAO}.
+     * @return DataSource instance.
      */
-    public AsyncStatusMgtDAO getAsyncStatusMgtDAO() {
-
-        return asyncStatusMgtDAO;
-    }
-
-    /**
-     * Set {@link AsyncStatusMgtDAO}.
-     *
-     * @param asyncStatusMgtDAO Instance of {@link AsyncStatusMgtDAO}.
-     */
-    public void setAsyncStatusMgtDAO(AsyncStatusMgtDAO asyncStatusMgtDAO) {
-
-        this.asyncStatusMgtDAO = asyncStatusMgtDAO;
-    }
-
     public DataSource getDataSource(){
         if (dataSource == null){
             this.dataSource = IdentityDatabaseUtil.getDataSource();

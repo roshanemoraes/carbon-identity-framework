@@ -1,11 +1,15 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.internal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.wso2.carbon.identity.framework.async.status.mgt.AsyncStatusMgtService;
+import org.wso2.carbon.identity.framework.async.status.mgt.AsyncStatusMgtServiceImpl;
 import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAOImpl;
 
 import java.util.logging.Logger;
@@ -20,35 +24,21 @@ import java.util.logging.Logger;
 )
 public class AsyncStatusMgtServiceComponent {
 
-    private static final Logger LOGGER =
-            Logger.getLogger(AsyncStatusMgtServiceComponent.class.getName());
-
-    private AsyncStatusMgtService asyncStatusMgtService;
+    private static final Log LOG = LogFactory.getLog(AsyncStatusMgtServiceComponent.class);
 
     @Activate
-    protected void activate(final ComponentContext context) {
+    protected void activate(ComponentContext context) {
 
-        LOGGER.info("Async Status Mgt Component is activated");
-        AsyncStatusMgtDataHolder.getInstance().setAsyncStatusMgtDAO(new AsyncStatusMgtDAOImpl());
-        LOGGER.info("Async Status Mgt Component is activated");
+        BundleContext bundleCtx = context.getBundleContext();
+        bundleCtx.registerService(AsyncStatusMgtService.class.getName(), AsyncStatusMgtServiceImpl.getInstance(), null);
+        LOG.debug("Async status mgt bundle is activated");
     }
 
     @Deactivate
-    protected void deactivate(final ComponentContext context) {
+    protected void deactivate(ComponentContext context) {
 
-        LOGGER.info("Async Status Mgt Component is deactivated");
-    }
-
-    @Reference
-    protected void setAsyncStatusMgtService(
-            final AsyncStatusMgtService service) {
-
-        this.asyncStatusMgtService = service;
-    }
-
-    protected void unsetAsyncStatusMgtService(
-            final AsyncStatusMgtService service) {
-
-        this.asyncStatusMgtService = null;
+        BundleContext bundleCtx = context.getBundleContext();
+        bundleCtx.ungetService(bundleCtx.getServiceReference(AsyncStatusMgtService.class));
+        LOG.debug("Async status mgt bundle is deactivated");
     }
 }

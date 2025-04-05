@@ -1,5 +1,7 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.models.dos;
 
+import java.sql.Timestamp;
+
 /**
  * Represents the response record of an asynchronous operation, including its status.
  * This class encapsulates the details of an operation along with its current status.
@@ -15,6 +17,8 @@ public class ResponseOperationRecord {
     private String initiatorId;
     private String operationStatus;
     private String operationPolicy;
+    private Timestamp createdTime;
+    private Timestamp modifiedTime;
 
     public ResponseOperationRecord() {
 
@@ -22,7 +26,7 @@ public class ResponseOperationRecord {
 
     public ResponseOperationRecord(String operationId, String correlationId, String operationType, String operationSubjectType,
                                    String operationSubjectId, String residentOrgId, String initiatorId,
-                                   String operationStatus, String operationPolicy) {
+                                   String operationStatus, String operationPolicy, Timestamp createdTime, Timestamp modifiedTime) {
 
         this.operationId = operationId;
         this.correlationId = correlationId;
@@ -33,6 +37,8 @@ public class ResponseOperationRecord {
         this.initiatorId = initiatorId;
         this.operationStatus = operationStatus;
         this.operationPolicy = operationPolicy;
+        this.createdTime = createdTime;
+        this.modifiedTime = modifiedTime;
     }
 
     public String getOperationId() {
@@ -123,5 +129,25 @@ public class ResponseOperationRecord {
     public void setCorrelationId(String correlationId) {
 
         this.correlationId = correlationId;
+    }
+
+    public Timestamp getCreatedTime() {
+
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getModifiedTime() {
+
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(Timestamp modifiedTime) {
+
+        this.modifiedTime = modifiedTime;
     }
 }
