@@ -42,9 +42,11 @@ public class ResponseOperationRecord {
 
     }
 
-    public ResponseOperationRecord(String operationId, String correlationId, String operationType, String operationSubjectType,
+    public ResponseOperationRecord(String operationId, String correlationId, String operationType,
+                                   String operationSubjectType,
                                    String operationSubjectId, String residentOrgId, String initiatorId,
-                                   String operationStatus, String operationPolicy, Timestamp createdTime, Timestamp modifiedTime) {
+                                   String operationStatus, String operationPolicy, Timestamp createdTime,
+                                   Timestamp modifiedTime) {
 
         this.operationId = operationId;
         this.correlationId = correlationId;

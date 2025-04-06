@@ -54,10 +54,6 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.
  * This service interacts with the {@link AsyncStatusMgtDAO} to perform persistence operations and
  * uses an in-memory buffer to temporarily store unit operation records before batch processing.
  */
-@Component(
-        service = AsyncStatusMgtService.class,
-        immediate = true
-)
 public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
 
     private static final  AsyncStatusMgtServiceImpl INSTANCE = new AsyncStatusMgtServiceImpl();
@@ -89,13 +85,6 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     public void registerUnitOperationStatus(UnitOperationRecord unitOperationRecord) {
 
         operationDataBuffer.add(unitOperationRecord);
-    }
-
-    @Override
-    public List<ResponseOperationRecord> getOperationStatusRecords(String operationType, String operationSubjectId) {
-
-        return asyncStatusMgtDAO.getOperationStatusByOperationTypeAndOperationSubjectId(operationType,
-                operationSubjectId);
     }
 
     @Override

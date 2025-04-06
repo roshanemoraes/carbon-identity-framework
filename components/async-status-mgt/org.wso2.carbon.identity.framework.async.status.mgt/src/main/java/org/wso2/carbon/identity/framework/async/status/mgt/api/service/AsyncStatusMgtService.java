@@ -80,18 +80,6 @@ public interface AsyncStatusMgtService {
      * This method is useful for querying the most recent status of an operation related to a particular resource
      * and subject, providing insight into the current state of asynchronous tasks.
      *
-     * @param operationType      The type of the asynchronous operation.
-     * @param operationSubjectId The identifier of the subject (e.g., user, application) related to the operation.
-     * @return A {@link ResponseOperationRecord} object containing the details of the latest operation status,
-     * or null if no matching operation is found.
-     */
-    List<ResponseOperationRecord> getOperationStatusRecords(String operationType, String operationSubjectId);
-
-    /**
-     * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.
-     * This method is useful for querying the most recent status of an operation related to a particular resource
-     * and subject, providing insight into the current state of asynchronous tasks.
-     *
      * @param operationSubjectType The identifier of the subject type(e.g., user, application) related to the operation.
      * @param operationSubjectId   The identifier of the subject (e.g., userId, applicationId) related to the operation.
      * @param operationType        The type of the asynchronous operation.

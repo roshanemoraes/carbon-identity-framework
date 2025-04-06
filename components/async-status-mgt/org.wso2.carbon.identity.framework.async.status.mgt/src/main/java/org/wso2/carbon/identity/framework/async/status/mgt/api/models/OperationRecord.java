@@ -32,8 +32,9 @@ public class OperationRecord {
     private String initiatorId;
     private String operationPolicy;
 
-    public OperationRecord(String correlationId, String operationType, String operationSubjectType, String operationSubjectId,
-                           String residentOrgId, String initiatorId, String operationPolicy) {
+    public OperationRecord(String correlationId, String operationType, String operationSubjectType,
+                           String operationSubjectId, String residentOrgId, String initiatorId,
+                           String operationPolicy) {
 
         this.correlationId = correlationId;
         this.operationType = operationType;
