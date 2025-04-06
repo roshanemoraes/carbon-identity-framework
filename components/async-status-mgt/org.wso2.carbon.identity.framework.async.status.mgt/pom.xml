@@ -134,7 +134,7 @@
                         <DynamicImport-Package>*</DynamicImport-Package>
 <!--                        TODO: remove this now-->
                         <ListenerManager-RequiredServices>
-                            org.wso2.carbon.identity.framework.async.status.mgt.AsyncStatusMgtService
+                            org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService
                         </ListenerManager-RequiredServices>
                         <Import-Package>
                             javax.sql,
