@@ -101,7 +101,7 @@ public class AsyncOperationDataBuffer {
     private synchronized void persistToDatabase() {
 
         if (!queue.isEmpty()) {
-            asyncStatusMgtDAO.saveOperationsBatch(queue);
+            asyncStatusMgtDAO.registerAsyncStatusUnit(queue);
             queue.clear();
         }
     }

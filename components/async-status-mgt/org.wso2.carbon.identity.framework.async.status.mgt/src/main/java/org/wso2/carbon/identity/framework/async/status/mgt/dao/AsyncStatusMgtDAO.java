@@ -41,7 +41,7 @@ public interface AsyncStatusMgtDAO {
      * @param record The {@link OperationRecord} containing the details of the asynchronous operation.
      * @return The unique identifier (operation ID) of the newly registered operation.
      */
-    String registerAsyncOperationWithoutUpdate(OperationRecord record);
+    String registerAsyncStatusWithoutUpdate(OperationRecord record);
 
     /**
      * Registers a new asynchronous operation or updates an existing one if a record with the same operation ID exists.
@@ -51,18 +51,7 @@ public interface AsyncStatusMgtDAO {
      * @param record The {@link OperationRecord} containing the details of the asynchronous operation.
      * @return The unique identifier (operation ID) of the registered or updated operation.
      */
-    String registerAsyncOperationWithUpdate(OperationRecord record);
-
-    /**
-     * Registers a batch of unit asynchronous operations.
-     * This method efficiently inserts multiple unit operation statuses into the database.
-     *
-     * @param operationId   The unique identifier of the parent asynchronous operation.
-     * @param operationType The type of the parent asynchronous operation.
-     * @param queue         A queue containing {@link UnitOperationRecord} objects, each representing a unit operation.
-     */
-    void registerBulkUnitAsyncOperation(String operationId, String operationType,
-                                        ConcurrentLinkedQueue<UnitOperationRecord> queue);
+    String registerAsyncStatusWithUpdate(OperationRecord record);
 
     /**
      * Saves a batch of unit asynchronous operations to the database.
@@ -70,36 +59,7 @@ public interface AsyncStatusMgtDAO {
      *
      * @param queue A queue containing {@link UnitOperationRecord} objects to be saved.
      */
-    void saveOperationsBatch(ConcurrentLinkedQueue<UnitOperationRecord> queue);
-
-    /**
-     * Retrieves the latest asynchronous operation status for a given resource type and operation subject.
-     *
-     * @param operationType      The type of the operation.
-     * @param operationSubjectId The identifier of the subject related to the operation.
-     * @return A {@link ResponseOperationRecord} object containing the latest operation status, or null if not found.
-     */
-    ResponseOperationRecord getLatestAsyncOperationStatus(String operationType, String operationSubjectId);
-
-    /**
-     * Retrieves the latest asynchronous operation status for a given resource type and operation subject.
-     *
-     * @param operationType      The type of the operation.
-     * @param operationSubjectId The identifier of the subject related to the operation.
-     * @return A {@link ResponseOperationRecord} object containing the latest operation status, or null if not found.
-     */
-    List<ResponseOperationRecord> getOperationStatusByOperationTypeAndOperationSubjectId(String operationType,
-                                                                                         String operationSubjectId);
-
-    /**
-     * Retrieves the latest asynchronous operation status for a given resource type and operation subject.
-     *
-     * @param operationType      The type of the operation.
-     * @param operationSubjectId The identifier of the subject related to the operation.
-     * @return A {@link ResponseOperationRecord} object containing the latest operation status, or null if not found.
-     */
-    List<ResponseOperationRecord> getOperationStatusByOperationSubjectTypeAndOperationSubjectIdAndOperationType(
-            String operationSubjectType, String operationSubjectId, String operationType);
+    void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue);
 
     List<ResponseOperationRecord> getOperationRecords(String operationSubjectType, String operationSubjectId,
                                                       String operationType, Integer limit,
@@ -116,7 +76,7 @@ public interface AsyncStatusMgtDAO {
      * @param operationID The unique identifier of the operation to be updated.
      * @param status      The new status of the operation.
      */
-    void updateAsyncOperationStatus(String operationID, String status);
+    void updateAsyncStatus(String operationID, String status);
 
 
 

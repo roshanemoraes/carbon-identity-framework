@@ -73,15 +73,15 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     public String registerOperationStatus(OperationRecord record, boolean updateIfExists) {
 
         if (updateIfExists) {
-            return asyncStatusMgtDAO.registerAsyncOperationWithUpdate(record);
+            return asyncStatusMgtDAO.registerAsyncStatusWithUpdate(record);
         }
-        return asyncStatusMgtDAO.registerAsyncOperationWithoutUpdate(record);
+        return asyncStatusMgtDAO.registerAsyncStatusWithoutUpdate(record);
     }
 
     @Override
     public void updateOperationStatus(String operationId, String status) {
 
-        asyncStatusMgtDAO.updateAsyncOperationStatus(operationId, status);
+        asyncStatusMgtDAO.updateAsyncStatus(operationId, status);
     }
 
     @Override

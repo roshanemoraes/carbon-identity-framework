@@ -14,28 +14,28 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLCo
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.CORRELATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.LAST_MODIFIED;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.INITIATED_ORG_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.INITIATED_USER_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.OPERATION_POLICY;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.OPERATION_STATUS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.OPERATION_SUBJECT_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.OPERATION_SUBJECT_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.OperationPlaceholders.OPERATION_TYPE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.CORRELATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.LAST_MODIFIED;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.INITIATED_ORG_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.INITIATED_USER_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.OPERATION_POLICY;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.OPERATION_STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.OPERATION_SUBJECT_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.OPERATION_SUBJECT_TYPE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.OPERATION_TYPE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_CREATED_AT;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_RESIDENT_RESOURCE_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_STATUS_MESSAGE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_TARGET_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationModelProperties.MODEL_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationModelProperties.MODEL_STATUS_MESSAGE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationModelProperties.MODEL_RESIDENT_RESOURCE_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationModelProperties.MODEL_TARGET_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationModelProperties.MODEL_UNIT_OPERATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationModelProperties.MODEL_UNIT_OPERATION_STATUS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationPlaceholders.CREATED_AT;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationPlaceholders.OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationPlaceholders.OPERATION_STATUS_MESSAGE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationPlaceholders.RESIDENT_RESOURCE_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationPlaceholders.TARGET_ORG_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationPlaceholders.UNIT_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constant.SQLConstants.UnitOperationPlaceholders.UNIT_OPERATION_STATUS;
 
 /**
  * Asynchronous operation status management constants
@@ -68,11 +68,11 @@ public class AsyncStatusMgtConstants {
     static {
         attributeColumnMap.put(MODEL_UNIT_OPERATION_ID, UNIT_OPERATION_ID);
         attributeColumnMap.put(MODEL_OPERATION_ID, OPERATION_ID);
-        attributeColumnMap.put(MODEL_RESIDENT_RESOURCE_ID, RESIDENT_RESOURCE_ID);
-        attributeColumnMap.put(MODEL_TARGET_ORG_ID, TARGET_ORG_ID);
+        attributeColumnMap.put(MODEL_RESIDENT_RESOURCE_ID, UNIT_OPERATION_RESIDENT_RESOURCE_ID);
+        attributeColumnMap.put(MODEL_TARGET_ORG_ID, UNIT_OPERATION_TARGET_ORG_ID);
         attributeColumnMap.put(MODEL_UNIT_OPERATION_STATUS, UNIT_OPERATION_STATUS);
-        attributeColumnMap.put(MODEL_STATUS_MESSAGE, OPERATION_STATUS_MESSAGE);
-        attributeColumnMap.put(MODEL_CREATED_AT, CREATED_AT);
+        attributeColumnMap.put(MODEL_STATUS_MESSAGE, UNIT_OPERATION_STATUS_MESSAGE);
+        attributeColumnMap.put(MODEL_CREATED_AT, UNIT_OPERATION_CREATED_AT);
 
         attributeColumnMap.put(MODEL_CORRELATION_ID, CORRELATION_ID);
         attributeColumnMap.put(MODEL_OPERATION_TYPE, OPERATION_TYPE);
@@ -84,8 +84,8 @@ public class AsyncStatusMgtConstants {
         attributeColumnMap.put(MODEL_LAST_MODIFIED, LAST_MODIFIED);
         attributeColumnMap.put(MODEL_OPERATION_POLICY, OPERATION_POLICY);
 
-        attributeColumnMap.put(PAGINATION_AFTER, CREATED_AT);
-        attributeColumnMap.put(PAGINATION_BEFORE, CREATED_AT);
+        attributeColumnMap.put(PAGINATION_AFTER, UNIT_OPERATION_CREATED_AT);
+        attributeColumnMap.put(PAGINATION_BEFORE, UNIT_OPERATION_CREATED_AT);
     }
 
     /**
