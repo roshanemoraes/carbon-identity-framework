@@ -9,10 +9,10 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.wso2.carbon.base.CarbonBaseConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.identity.framework.async.status.mgt.dao.AsyncStatusMgtDAO;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.AsyncStatusMgtDataHolder;
-import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.OperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.models.dos.ResponseOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl.AsyncStatusMgtServiceImpl;
 import org.wso2.carbon.identity.framework.async.status.mgt.util.TestUtils;
 
 import java.nio.file.Paths;
@@ -48,9 +48,7 @@ public class AsyncStatusMgtServiceImplTest {
     public void setUp() throws Exception {
 
         MockitoAnnotations.openMocks(this);
-        AsyncStatusMgtDataHolder.getInstance().setAsyncStatusMgtDAO(asyncStatusMgtDAO);
         asyncStatusMgtService = new AsyncStatusMgtServiceImpl();
-//        asyncStatusMgtDAO = asyncStatusMgtService.getAsyncStatusMgtDAO();
 
         TestUtils.initiateH2Base();
         TestUtils.mockDataSource();

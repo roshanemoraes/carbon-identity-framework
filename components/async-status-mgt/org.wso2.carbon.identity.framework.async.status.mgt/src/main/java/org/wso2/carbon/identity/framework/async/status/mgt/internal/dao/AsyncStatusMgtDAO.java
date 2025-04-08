@@ -19,6 +19,7 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.internal.dao;
 
 import org.wso2.carbon.identity.core.model.ExpressionNode;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
@@ -41,7 +42,7 @@ public interface AsyncStatusMgtDAO {
      * @param record The {@link OperationRecord} containing the details of the asynchronous operation.
      * @return The unique identifier (operation ID) of the newly registered operation.
      */
-    String registerAsyncStatusWithoutUpdate(OperationRecord record);
+    String registerAsyncStatusWithoutUpdate(OperationRecord record) throws AsyncStatusMgtException;
 
     /**
      * Registers a new asynchronous operation or updates an existing one if a record with the same operation ID exists.
@@ -51,7 +52,7 @@ public interface AsyncStatusMgtDAO {
      * @param record The {@link OperationRecord} containing the details of the asynchronous operation.
      * @return The unique identifier (operation ID) of the registered or updated operation.
      */
-    String registerAsyncStatusWithUpdate(OperationRecord record);
+    String registerAsyncStatusWithUpdate(OperationRecord record) throws AsyncStatusMgtException;
 
     /**
      * Saves a batch of unit asynchronous operations to the database.
@@ -59,16 +60,16 @@ public interface AsyncStatusMgtDAO {
      *
      * @param queue A queue containing {@link UnitOperationRecord} objects to be saved.
      */
-    void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue);
+    void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue) throws AsyncStatusMgtException;
 
     List<ResponseOperationRecord> getOperationRecords(String operationSubjectType, String operationSubjectId,
                                                       String operationType, Integer limit,
                                                       List<ExpressionNode> expressionNodes)
-            throws AsyncStatusMgtServerException;
+            throws AsyncStatusMgtException;
 
     List<ResponseUnitOperationRecord> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
                                                                             List<ExpressionNode> expressionNodes)
-            throws AsyncStatusMgtServerException;
+            throws AsyncStatusMgtException;
 
     /**
      * Updates the status of an existing asynchronous operation.
@@ -76,8 +77,5 @@ public interface AsyncStatusMgtDAO {
      * @param operationID The unique identifier of the operation to be updated.
      * @param status      The new status of the operation.
      */
-    void updateAsyncStatus(String operationID, String status);
-
-
-
+    void updateAsyncStatus(String operationID, String status) throws AsyncStatusMgtException;
 }

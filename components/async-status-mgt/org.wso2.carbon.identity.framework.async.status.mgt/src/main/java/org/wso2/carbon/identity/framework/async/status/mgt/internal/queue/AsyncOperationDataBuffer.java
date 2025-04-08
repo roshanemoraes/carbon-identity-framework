@@ -20,6 +20,7 @@ package org.wso2.carbon.identity.framework.async.status.mgt.internal.queue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
 
@@ -54,7 +55,7 @@ public class AsyncOperationDataBuffer {
      *
      * @param operation The operation to add.
      */
-    public synchronized void add(UnitOperationRecord operation) {
+    public synchronized void add(UnitOperationRecord operation) throws AsyncStatusMgtException {
 
         queue.offer(operation);
         if (queue.size() >= threshold) {
@@ -70,7 +71,11 @@ public class AsyncOperationDataBuffer {
         scheduler.scheduleAtFixedRate(() -> {
             if (!queue.isEmpty()) {
                 LOG.debug("Periodic flush triggered.");
-                persistToDatabase();
+                try {
+                    persistToDatabase();
+                } catch (AsyncStatusMgtException e) {  //TODO: to rethrow or handle here?
+                    LOG.error("Error while flushing to the database.", e);
+                }
             }
         }, flushIntervalSeconds, flushIntervalSeconds, TimeUnit.SECONDS);
     }
@@ -98,7 +103,7 @@ public class AsyncOperationDataBuffer {
     /**
      * Persist queued operations to the database in batch.
      */
-    private synchronized void persistToDatabase() {
+    private synchronized void persistToDatabase() throws AsyncStatusMgtException {
 
         if (!queue.isEmpty()) {
             asyncStatusMgtDAO.registerAsyncStatusUnit(queue);

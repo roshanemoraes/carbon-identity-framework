@@ -32,8 +32,7 @@ import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl
  * OSGi service component for asynchronous operation status management bundle.
  */
 @Component(
-        name = "org.wso2.carbon.identity.framework.internal."
-                + "AsyncStatusMgtServiceComponent",
+        name = "async.status.mgt.service.component",
         immediate = true
 )
 public class AsyncStatusMgtServiceComponent {
@@ -43,16 +42,23 @@ public class AsyncStatusMgtServiceComponent {
     @Activate
     protected void activate(ComponentContext context) {
 
-        BundleContext bundleCtx = context.getBundleContext();
-        bundleCtx.registerService(AsyncStatusMgtService.class.getName(), AsyncStatusMgtServiceImpl.getInstance(), null);
-        LOG.debug("Async status mgt bundle is activated");
+        try{
+            BundleContext bundleCtx = context.getBundleContext();
+            bundleCtx.registerService(AsyncStatusMgtService.class, AsyncStatusMgtServiceImpl.getInstance(), null);
+            LOG.debug("Async status mgt bundle is activated");
+        } catch (Throwable e) {
+            LOG.error("Error while initializing Async statu management component.", e);
+        }
     }
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
-
-        BundleContext bundleCtx = context.getBundleContext();
-        bundleCtx.ungetService(bundleCtx.getServiceReference(AsyncStatusMgtService.class));
-        LOG.debug("Async status mgt bundle is deactivated");
+        try{
+            BundleContext bundleCtx = context.getBundleContext();
+            bundleCtx.ungetService(bundleCtx.getServiceReference(AsyncStatusMgtService.class));
+            LOG.debug("Async status mgt bundle is deactivated");
+        } catch (Throwable e) {
+            LOG.error("Error while deactivating Action management component.", e);
+        }
     }
 }

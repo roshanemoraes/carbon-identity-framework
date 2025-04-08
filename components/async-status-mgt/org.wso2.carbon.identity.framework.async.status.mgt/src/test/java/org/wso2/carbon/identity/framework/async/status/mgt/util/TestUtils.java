@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.base.CarbonBaseConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.internal.CarbonContextDataHolder;
-import org.wso2.carbon.identity.organization.management.service.util.Utils;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.util.Utils;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.core.util.DatabaseUtil;
 

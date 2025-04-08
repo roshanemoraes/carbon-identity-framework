@@ -65,18 +65,18 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-scr-scrdescriptor</id>
-                        <goals>
-                            <goal>scr</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.felix</groupId>-->
+<!--                <artifactId>maven-scr-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>generate-scr-scrdescriptor</id>-->
+<!--                        <goals>-->
+<!--                            <goal>scr</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -148,15 +148,14 @@
                         </Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <private-package>
-                            org.wso2.carbon.identity.framework.async.status.mgt.internal
+                            org.wso2.carbon.identity.framework.async.status.mgt.internal.*
                         </private-package>
                         <Export-Package>
                             !org.wso2.carbon.identity.framework.async.status.mgt.internal.*,
-                            org.wso2.carbon.identity.framework.async.status.mgt.api.*
+                            org.wso2.carbon.identity.framework.async.status.mgt.api.*;
+                            version="${carbon.identity.package.export.version}"
                         </Export-Package>
-                        <ListenerManager-RequiredServices>
-                            org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService
-                        </ListenerManager-RequiredServices>
+                        <Dynamic-import>*</Dynamic-import>
                         <Import-Package>
                             javax.sql,
                             org.apache.commons.lang; version="${commons-lang.wso2.osgi.version.range}",
@@ -166,21 +165,12 @@
                             org.osgi.service.component; version="${osgi.service.component.imp.pkg.version.range}",
                             org.wso2.carbon.database.utils.jdbc;version="${org.wso2.carbon.database.utils.version.range}",
                             org.wso2.carbon.database.utils.jdbc.exceptions;version="${org.wso2.carbon.database.utils.version.range}",
-                            org.wso2.carbon.identity.organization.management.service.util;version="${org.wso2.identity.organization.mgt.imp.pkg.version.range}",
                             org.wso2.carbon.identity.core.util;version="${carbon.identity.package.import.version.range}",
+                            *;resolution:=optional
                         </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.wso2.identity.organization.mgt.imp.pkg.version.range>[1.0.0,2.0.0)
-        </org.wso2.identity.organization.mgt.imp.pkg.version.range>
-    </properties>
-
 </project>

@@ -19,12 +19,12 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.api.service;
 
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
-import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementClientException;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public interface AsyncStatusMgtService {
      * @return The unique identifier (operation ID) of the registered or updated asynchronous operation.
      */
 
-    String registerOperationStatus(OperationRecord record, boolean updateIfExists);
+    String registerOperationStatus(OperationRecord record, boolean updateIfExists) throws AsyncStatusMgtException;
 
     /**
      * Updates the status of an existing asynchronous operation identified by its operation ID.
@@ -62,7 +62,7 @@ public interface AsyncStatusMgtService {
      * @param status      The new status of the operation, represented as a string (e.g., "COMPLETED", "FAILED",
      *                    "IN_PROGRESS").
      */
-    void updateOperationStatus(String operationId, String status);
+    void updateOperationStatus(String operationId, String status) throws AsyncStatusMgtException;
 
     /**
      * Registers the status of a unit operation, which is a sub-task within a larger asynchronous operation.
@@ -73,7 +73,7 @@ public interface AsyncStatusMgtService {
      *                  parent operation ID, resident resource ID, target organization, unit operation status,
      *                  status message, and creation timestamp.
      */
-    void registerUnitOperationStatus(UnitOperationRecord operation);
+    void registerUnitOperationStatus(UnitOperationRecord operation) throws AsyncStatusMgtException;
 
     /**
      * Retrieves the latest asynchronous operation status for a specific resource type and operation subject.
@@ -89,9 +89,9 @@ public interface AsyncStatusMgtService {
     List<ResponseOperationRecord> getOperationStatusRecords(String operationSubjectType, String operationSubjectId,
                                                             String operationType, String after, String before,
                                                             Integer limit, String filter)
-            throws OrganizationManagementClientException, AsyncStatusMgtClientException, AsyncStatusMgtServerException;
+            throws AsyncStatusMgtException;
 
     List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after, String before,
                                                                     Integer limit, String filter)
-            throws AsyncStatusMgtClientException, AsyncStatusMgtServerException;
+            throws AsyncStatusMgtException;
 }

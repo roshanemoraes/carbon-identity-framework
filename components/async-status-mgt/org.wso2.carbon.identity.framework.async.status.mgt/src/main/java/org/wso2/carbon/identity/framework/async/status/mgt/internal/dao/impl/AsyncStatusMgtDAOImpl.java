@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.framework.async.status.mgt.internal.dao;
+package org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +28,9 @@ import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.OperationStatus;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.FilterQueryBuilder;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
@@ -97,7 +99,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     private static final Log LOG = LogFactory.getLog(AsyncStatusMgtDAOImpl.class);
 
     @Override
-    public String registerAsyncStatusWithoutUpdate(OperationRecord record) {
+    public String registerAsyncStatusWithoutUpdate(OperationRecord record) throws AsyncStatusMgtException {
 
         String generatedOperationId;
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
@@ -125,15 +127,13 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 throw new SQLException("Creating operation failed, no ID obtained.");
             }
         } catch (SQLException e) {
-            String errorMessage =
-                    "Error while registering the asynchronous operation";
-            throw new RuntimeException(errorMessage, e);
+            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information in the system.", e);
         }
         return generatedOperationId;
     }
 
     @Override
-    public String registerAsyncStatusWithUpdate(OperationRecord record) {
+    public String registerAsyncStatusWithUpdate(OperationRecord record) throws AsyncStatusMgtException {
 
         String generatedOperationId;
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
@@ -164,15 +164,13 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 }
             }
         } catch (SQLException e) {
-            String errorMessage = "Error during Asynchronous operation-wu update (delete and insert).";
-            LOG.debug(errorMessage + e);
-            throw new RuntimeException(errorMessage, e);
+            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information in the system.", e);
         }
         return generatedOperationId;
     }
 
     @Override
-    public void updateAsyncStatus(String operationId, String status) {
+    public void updateAsyncStatus(String operationId, String status) throws AsyncStatusMgtException {
 
         try (NamedPreparedStatement statement = new NamedPreparedStatement(IdentityDatabaseUtil.getDBConnection(false), UPDATE_ASYNC_OPERATION)) {
             statement.setString(OPERATION_STATUS, status);
@@ -180,12 +178,12 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             statement.setString(OPERATION_ID, operationId);
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);  //TODO: exception
+            throw new AsyncStatusMgtServerException("Error while updating Async Status information in the system.", e);
         }
     }
 
     @Override
-    public void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue) {
+    public void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue) throws AsyncStatusMgtException {
 
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
 
@@ -202,8 +200,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 statement.setString(UNIT_OPERATION_CREATED_AT, currentTimestamp);
                 statement.addBatch();
             }
+            statement.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new AsyncStatusMgtServerException("Error while adding Async Status Units Initial information in the system.", e);
         }
     }
 
@@ -240,7 +239,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                     operationSubjectType, operationSubjectId, operationType, limit,
                                     filterQueryBuilder));
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information from the system.", e);
         }
         return operationRecords;
     }
@@ -271,7 +270,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     namedPreparedStatement -> setPreparedStatementParams(namedPreparedStatement,
                             operationId, limit, filterQueryBuilder));
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new AsyncStatusMgtServerException("Error while retrieving Async Status Unit information from the system.", e);
         }
         return unitOperationRecords;
     }

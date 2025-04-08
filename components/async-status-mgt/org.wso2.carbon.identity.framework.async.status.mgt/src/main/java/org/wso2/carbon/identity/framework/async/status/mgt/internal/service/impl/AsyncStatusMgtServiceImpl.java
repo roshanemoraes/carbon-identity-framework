@@ -19,15 +19,14 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.osgi.service.component.annotations.Component;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.model.Node;
 import org.wso2.carbon.identity.core.model.OperationNode;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAOImpl;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.impl.AsyncStatusMgtDAOImpl;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.filter.FilterTreeBuilder;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
@@ -67,7 +66,8 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     }
 
     @Override
-    public String registerOperationStatus(OperationRecord record, boolean updateIfExists) {
+    public String registerOperationStatus(OperationRecord record, boolean updateIfExists)
+            throws AsyncStatusMgtException {
 
         if (updateIfExists) {
             return asyncStatusMgtDAO.registerAsyncStatusWithUpdate(record);
@@ -76,13 +76,13 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     }
 
     @Override
-    public void updateOperationStatus(String operationId, String status) {
+    public void updateOperationStatus(String operationId, String status) throws AsyncStatusMgtException {
 
         asyncStatusMgtDAO.updateAsyncStatus(operationId, status);
     }
 
     @Override
-    public void registerUnitOperationStatus(UnitOperationRecord unitOperationRecord) {
+    public void registerUnitOperationStatus(UnitOperationRecord unitOperationRecord) throws AsyncStatusMgtException {
 
         operationDataBuffer.add(unitOperationRecord);
     }
@@ -92,7 +92,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
                                                                    String operationSubjectId,
                                                                    String operationType, String after, String before,
                                                                    Integer limit, String filter)
-            throws AsyncStatusMgtClientException, AsyncStatusMgtServerException {
+            throws AsyncStatusMgtException {
 
         List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, DESC_SORT_ORDER);
         return asyncStatusMgtDAO.getOperationRecords(operationSubjectType, operationSubjectId, operationType,
@@ -102,7 +102,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     @Override
     public List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after,
                                                                            String before, Integer limit, String filter)
-            throws AsyncStatusMgtClientException, AsyncStatusMgtServerException {
+            throws AsyncStatusMgtException {
 
         List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, DESC_SORT_ORDER);
         return asyncStatusMgtDAO.getUnitOperationRecordsForOperationId(operationId, limit, expressionNodes);
@@ -111,7 +111,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     // Helper methods for curser-based pagination and filtering.
     private List<ExpressionNode> getExpressionNodes(String filter, String after, String before,
                                                     String paginationSortOrder)
-            throws AsyncStatusMgtClientException {
+            throws AsyncStatusMgtException {
 
         List<ExpressionNode> expressionNodes = new ArrayList<>();
         if (StringUtils.isBlank(filter)) {
