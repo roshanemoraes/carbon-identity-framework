@@ -108,7 +108,8 @@ public class AsyncStatusMgtServiceImplTest {
                 "B2B_APPLICATION_UNSHARE", "B2B_APPLICATION",
                 "23d7ab3f-023e-43ba-980b-c0fd59aeacf9",
                 "10084a8d-113f-4211-a0d5-efe36b082211", "53c191dd-3f9f-454b-8a56-9ad72b5e4f30",
-                "SUCCESS", "DO_NOT_SHARE", Timestamp.valueOf("2025-04-03 14:50:37.871"), Timestamp.valueOf("2025-04-03 14:47:38.034")
+                "SUCCESS", "DO_NOT_SHARE", Timestamp.valueOf("2025-04-03 14:50:37.871"),
+                Timestamp.valueOf("2025-04-03 14:47:38.034")
         );
 
         when(asyncStatusMgtDAO.getLatestAsyncOperationStatus("B2B_APPLICATION_UNSHARE",

@@ -22,16 +22,20 @@ import org.apache.commons.lang.ArrayUtils;
 import org.wso2.carbon.database.utils.jdbc.NamedJdbcTemplate;
 import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants;
 
+/**
+ * Util Methods.
+ */
 public class Utils {
 
     private static boolean isDBTypeOf(String dbType) throws AsyncStatusMgtServerException {
         try {
             NamedJdbcTemplate jdbcTemplate = getNewTemplate();
-            return jdbcTemplate.getDriverName().toLowerCase().contains(dbType) || jdbcTemplate.getDatabaseProductName().toLowerCase().contains(dbType);
+            return jdbcTemplate.getDriverName().toLowerCase().contains(dbType) ||
+                    jdbcTemplate.getDatabaseProductName().toLowerCase().contains(dbType);
         } catch (DataAccessException e) {
             throw handleServerException(AsyncStatusMgtConstants.ErrorMessages.ERROR_CODE_INVALID_REQUEST_BODY, e);
         }

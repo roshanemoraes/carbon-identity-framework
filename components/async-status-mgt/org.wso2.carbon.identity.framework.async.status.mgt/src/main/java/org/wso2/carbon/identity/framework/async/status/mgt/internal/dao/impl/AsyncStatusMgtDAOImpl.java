@@ -30,12 +30,12 @@ import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.OperationStatus;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.FilterQueryBuilder;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.FilterQueryBuilder;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.util.Utils;
 
 import java.sql.Connection;
@@ -67,9 +67,9 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.const
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_CREATED_TIME;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CORRELATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_ORG_ID;
@@ -127,7 +127,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 throw new SQLException("Creating operation failed, no ID obtained.");
             }
         } catch (SQLException e) {
-            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information in the system.", e);
+            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information " +
+                    "in the system.", e);
         }
         return generatedOperationId;
     }
@@ -164,7 +165,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information in the system.", e);
+            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information " +
+                    "in the system.", e);
         }
         return generatedOperationId;
     }
@@ -172,7 +174,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     @Override
     public void updateAsyncStatus(String operationId, String status) throws AsyncStatusMgtException {
 
-        try (NamedPreparedStatement statement = new NamedPreparedStatement(IdentityDatabaseUtil.getDBConnection(false), UPDATE_ASYNC_OPERATION)) {
+        try (NamedPreparedStatement statement = new NamedPreparedStatement(IdentityDatabaseUtil
+                .getDBConnection(false), UPDATE_ASYNC_OPERATION)) {
             statement.setString(OPERATION_STATUS, status);
             statement.setString(LAST_MODIFIED, new Timestamp(new Date().getTime()).toString());
             statement.setString(OPERATION_ID, operationId);
@@ -183,7 +186,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     }
 
     @Override
-    public void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue) throws AsyncStatusMgtException {
+    public void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue)
+            throws AsyncStatusMgtException {
 
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
 
@@ -202,7 +206,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             }
             statement.executeBatch();
         } catch (SQLException e) {
-            throw new AsyncStatusMgtServerException("Error while adding Async Status Units Initial information in the system.", e);
+            throw new AsyncStatusMgtServerException("Error while adding Async Status Units Initial information " +
+                    "in the system.", e);
         }
     }
 
@@ -239,7 +244,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                     operationSubjectType, operationSubjectId, operationType, limit,
                                     filterQueryBuilder));
         } catch (DataAccessException e) {
-            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information from the system.", e);
+            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
+                    "from the system.", e);
         }
         return operationRecords;
     }
@@ -270,7 +276,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                     namedPreparedStatement -> setPreparedStatementParams(namedPreparedStatement,
                             operationId, limit, filterQueryBuilder));
         } catch (DataAccessException e) {
-            throw new AsyncStatusMgtServerException("Error while retrieving Async Status Unit information from the system.", e);
+            throw new AsyncStatusMgtServerException("Error while retrieving Async Status Unit information " +
+                    "from the system.", e);
         }
         return unitOperationRecords;
     }

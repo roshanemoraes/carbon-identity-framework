@@ -42,7 +42,7 @@ public class AsyncStatusMgtServiceComponent {
     @Activate
     protected void activate(ComponentContext context) {
 
-        try{
+        try {
             BundleContext bundleCtx = context.getBundleContext();
             bundleCtx.registerService(AsyncStatusMgtService.class, AsyncStatusMgtServiceImpl.getInstance(), null);
             LOG.debug("Async status mgt bundle is activated");
@@ -53,7 +53,7 @@ public class AsyncStatusMgtServiceComponent {
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
-        try{
+        try {
             BundleContext bundleCtx = context.getBundleContext();
             bundleCtx.ungetService(bundleCtx.getServiceReference(AsyncStatusMgtService.class));
             LOG.debug("Async status mgt bundle is deactivated");

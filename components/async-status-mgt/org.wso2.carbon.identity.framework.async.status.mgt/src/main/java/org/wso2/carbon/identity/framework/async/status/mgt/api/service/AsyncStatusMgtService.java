@@ -18,9 +18,7 @@
 
 package org.wso2.carbon.identity.framework.async.status.mgt.api.service;
 
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
@@ -91,6 +89,18 @@ public interface AsyncStatusMgtService {
                                                             Integer limit, String filter)
             throws AsyncStatusMgtException;
 
+    /**
+     * Retrieves the status of unit operations associated with a specific operation ID.
+     * This method is used to track the status of sub-tasks within a larger asynchronous operation.
+     *
+     * @param operationId The unique identifier of the asynchronous operation.
+     * @param after       The start timestamp for querying operations. Null or empty if no lower bound is required.
+     * @param before      The end timestamp for querying operations. Null or empty if no upper bound is required.
+     * @param limit       The maximum number of unit operation records to retrieve.
+     * @param filter      A filter expression to further refine the query (e.g., by status or type).
+     * @return A list of {@link ResponseUnitOperationRecord} objects representing the unit operation status records.
+     * @throws AsyncStatusMgtException If an error occurs while retrieving the unit operation status records.
+     */
     List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after, String before,
                                                                     Integer limit, String filter)
             throws AsyncStatusMgtException;

@@ -6,14 +6,9 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.common.testng.WithCarbonHome;
 import org.wso2.carbon.identity.common.testng.WithH2Database;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl.AsyncStatusMgtServiceImpl;
 
-import java.util.List;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_INITIATOR_ID_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_POLICY_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_POLICY_2;

@@ -20,6 +20,10 @@ package org.wso2.carbon.identity.framework.async.status.mgt.api.models;
 
 import java.sql.Timestamp;
 
+/**
+ * Represents the response unit record of an asynchronous operation, including its status.
+ * This class encapsulates the details of an unit operation along with its current status.
+ */
 public class ResponseUnitOperationRecord {
     private String unitOperationId;
     private String operationId;
