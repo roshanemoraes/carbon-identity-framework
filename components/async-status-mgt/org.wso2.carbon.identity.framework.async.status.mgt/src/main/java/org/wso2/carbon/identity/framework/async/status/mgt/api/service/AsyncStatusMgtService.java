@@ -89,6 +89,13 @@ public interface AsyncStatusMgtService {
                                                             Integer limit, String filter)
             throws AsyncStatusMgtException;
 
+    List<ResponseOperationRecord> getOperations(String after, String before, Integer limit, String filter)
+            throws AsyncStatusMgtException;
+
+    ResponseOperationRecord getOperation(String operationId) throws AsyncStatusMgtException;
+
+    ResponseUnitOperationRecord getUnitOperation(String unitOperationId) throws AsyncStatusMgtException;
+
     /**
      * Retrieves the status of unit operations associated with a specific operation ID.
      * This method is used to track the status of sub-tasks within a larger asynchronous operation.

@@ -10,11 +10,11 @@ import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStat
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl.AsyncStatusMgtServiceImpl;
 
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_INITIATOR_ID_1;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_POLICY_1;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_POLICY_2;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_SUBJECT_ID_1;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_SUBJECT_TYPE_1;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_OPERATION_TYPE_1;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.POLICY_1;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.POLICY_2;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_TYPE_1;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.OPERATION_TYPE_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.IDN_RESIDENT_ORG_ID_1;
 
 @Test
@@ -35,7 +35,7 @@ public class AsyncStatusMgtDAOTest {
         return new Object[][] {
                 {new OperationRecord(
                         "56565656565655",
-                        IDN_OPERATION_TYPE_1,
+                        OPERATION_TYPE_1,
                         "B2B_APPLICATION",
                         "23d7ab3f-023e-43ba-980b-c0fd59aeacf9",
                         "10084a8d-113f-4211-a0d5-efe36b082211",
@@ -43,7 +43,7 @@ public class AsyncStatusMgtDAOTest {
                         "SHARE_WITH_ALL"
                 )},
 //                {new OperationRecord(
-//                        IDN_OPERATION_TYPE_2,
+//                        OPERATION_TYPE_2,
 //                        "B2B_APPLICATION",
 //                        "23d7ab3f-023e-43ba-980b-c0fd59aeacf9",
 //                        "10084a8d-113f-4211-a0d5-efe36b082211",
@@ -51,7 +51,7 @@ public class AsyncStatusMgtDAOTest {
 //                        "SHARE_WITH_ALL"
 //                )},
 //                {new OperationRecord(
-//                        IDN_OPERATION_TYPE_1,
+//                        OPERATION_TYPE_1,
 //                        "B2B_APPLICATION",
 //                        "23d7ab3f-023e-43ba-980b-c0fd59aeacf9",
 //                        "10084a8d-113f-4211-a0d5-efe36b082211",
@@ -79,29 +79,29 @@ public class AsyncStatusMgtDAOTest {
 
         OperationRecord testRecord1 = new OperationRecord(
                 "56565656565655",
-                IDN_OPERATION_TYPE_1,
-                IDN_OPERATION_SUBJECT_TYPE_1,
-                IDN_OPERATION_SUBJECT_ID_1,
+                OPERATION_TYPE_1,
+                SUBJECT_TYPE_1,
+                SUBJECT_ID_1,
                 IDN_RESIDENT_ORG_ID_1,
                 IDN_OPERATION_INITIATOR_ID_1,
-                IDN_OPERATION_POLICY_1
+                POLICY_1
         );
         OperationRecord testRecord2 = new OperationRecord(
                 "56565656565655",
-                IDN_OPERATION_TYPE_1,
-                IDN_OPERATION_SUBJECT_TYPE_1,
-                IDN_OPERATION_SUBJECT_ID_1,
+                OPERATION_TYPE_1,
+                SUBJECT_TYPE_1,
+                SUBJECT_ID_1,
                 IDN_RESIDENT_ORG_ID_1,
                 IDN_OPERATION_INITIATOR_ID_1,
-                IDN_OPERATION_POLICY_2
+                POLICY_2
         );
         asyncStatusMgtService.registerOperationStatus(testRecord1, true);
         asyncStatusMgtService.registerOperationStatus(testRecord2, true);
 //        List<ResponseOperationRecord> fetchedOperationListFromDB = asyncStatusMgtService
-//                .getOperationStatusRecords(IDN_OPERATION_TYPE_1, IDN_OPERATION_SUBJECT_ID_1);
+//                .getOperationStatusRecords(OPERATION_TYPE_1, SUBJECT_ID_1);
 //
 //        assertEquals(fetchedOperationListFromDB.size(), 1);
-//        assertEquals(fetchedOperationListFromDB.get(0).getOperationPolicy(), IDN_OPERATION_POLICY_2);
+//        assertEquals(fetchedOperationListFromDB.get(0).getOperationPolicy(), POLICY_2);
     }
 
 }

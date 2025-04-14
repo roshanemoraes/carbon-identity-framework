@@ -100,6 +100,26 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     }
 
     @Override
+    public List<ResponseOperationRecord> getOperations(String after, String before, Integer limit, String filter)
+            throws AsyncStatusMgtException {
+
+        List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, DESC_SORT_ORDER);
+        return asyncStatusMgtDAO.getOperations(limit, expressionNodes);
+    }
+
+    @Override
+    public ResponseOperationRecord getOperation(String operationId) throws AsyncStatusMgtException {
+
+        return asyncStatusMgtDAO.getOperation(operationId);
+    }
+
+    @Override
+    public ResponseUnitOperationRecord getUnitOperation(String unitOperationId) throws AsyncStatusMgtException {
+
+        return asyncStatusMgtDAO.getUnitOperation(unitOperationId);
+    }
+
+    @Override
     public List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after,
                                                                            String before, Integer limit, String filter)
             throws AsyncStatusMgtException {
@@ -109,6 +129,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     }
 
     // Helper methods for curser-based pagination and filtering.
+
     private List<ExpressionNode> getExpressionNodes(String filter, String after, String before,
                                                     String paginationSortOrder)
             throws AsyncStatusMgtException {

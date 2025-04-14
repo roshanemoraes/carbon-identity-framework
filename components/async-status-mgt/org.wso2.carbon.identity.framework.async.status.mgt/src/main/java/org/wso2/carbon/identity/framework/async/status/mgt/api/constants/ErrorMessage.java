@@ -32,7 +32,15 @@ public enum ErrorMessage {
             "Error while persisting Async Status Unit in the system."),
     ERROR_WHILE_RETRIEVING_ASYNC_STATUS("65104",
             "Error while retrieving Async Status",
-            "Error while retrieving Async Status from the system.");
+            "Error while retrieving Async Status from the system."),
+
+    // Client errors.
+    ERROR_CODE_INVALID_OPERATION_ID("65105", "Invalid Operation ID",
+            "Operation with ID: %s doesn't exist."),
+    ERROR_CODE_INVALID_UNIT_OPERATION_ID("65106", "Invalid Unit Operation ID",
+            "Unit Operation with ID: %s doesn't exist."),
+    ERROR_CODE_USER_NOT_AUTHORIZED_TO_GET_STATUS("65107", "Unable to get async status.",
+            "Unauthorized request to get asynchronous operation status");
 
     private final String code;
     private final String message;

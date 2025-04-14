@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -45,6 +45,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.ATTRIBURE_COLUMN_MAP;
@@ -60,35 +61,35 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.const
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.CREATE_ASYNC_OPERATION;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.CREATE_ASYNC_OPERATION_UNIT_BATCH;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.DELETE_RECENT_OPERATION_RECORD;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATION;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS_NEW;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS_TAIL;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATION;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS_TAIL;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.LIMIT;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_CREATED_TIME;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_TYPE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.CREATED_TIME_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.OPERATION_TYPE_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.SUBJECT_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.SUBJECT_TYPE_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CORRELATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CREATED_AT;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_USER_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.LAST_MODIFIED;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_POLICY;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_STATUS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_SUBJECT_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_SUBJECT_TYPE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.POLICY;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_RESIDENT_RESOURCE_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_STATUS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_STATUS_MESSAGE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_TARGET_ORG_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.RESIDENT_RESOURCE_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS_MESSAGE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.TARGET_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UPDATE_ASYNC_OPERATION;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UnitOperationModelProperties.MODEL_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.Utils.isMSSqlDB;
 
 /**
@@ -103,21 +104,23 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         String generatedOperationId;
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
+        String operationId = UUID.randomUUID().toString();
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);
              NamedPreparedStatement statement = new NamedPreparedStatement(connection,
-                     CREATE_ASYNC_OPERATION, OPERATION_ID)) {
+                     CREATE_ASYNC_OPERATION, ID)) {
 
+            statement.setString(OPERATION_ID, operationId);
             statement.setString(CORRELATION_ID, record.getCorrelationId());
             statement.setString(OPERATION_TYPE, record.getOperationType());
-            statement.setString(OPERATION_SUBJECT_TYPE, record.getOperationSubjectType());
-            statement.setString(OPERATION_SUBJECT_ID, record.getOperationSubjectId());
+            statement.setString(SUBJECT_TYPE, record.getOperationSubjectType());
+            statement.setString(SUBJECT_ID, record.getOperationSubjectId());
             statement.setString(INITIATED_ORG_ID, record.getResidentOrgId());
             statement.setString(INITIATED_USER_ID, record.getInitiatorId());
-            statement.setString(OPERATION_STATUS, OperationStatus.ONGOING.toString());
+            statement.setString(STATUS, OperationStatus.ONGOING.toString());
             statement.setString(CREATED_AT, currentTimestamp);
             statement.setString(LAST_MODIFIED, currentTimestamp);
-            statement.setString(OPERATION_POLICY, record.getOperationPolicy());
+            statement.setString(POLICY, record.getOperationPolicy());
             statement.executeUpdate();
 
             ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -138,23 +141,26 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         String generatedOperationId;
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
+        String operationId = UUID.randomUUID().toString();
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false)) {
             deleteOldOperationalData(connection, record.getCorrelationId(), record.getOperationType(),
                     record.getOperationSubjectId());
 
             try (NamedPreparedStatement statement = new NamedPreparedStatement(connection,
-                    CREATE_ASYNC_OPERATION, OPERATION_ID)) {
+                    CREATE_ASYNC_OPERATION, ID)) {
+
+                statement.setString(OPERATION_ID, operationId);
                 statement.setString(CORRELATION_ID, record.getCorrelationId());
                 statement.setString(OPERATION_TYPE, record.getOperationType());
-                statement.setString(OPERATION_SUBJECT_TYPE, record.getOperationSubjectType());
-                statement.setString(OPERATION_SUBJECT_ID, record.getOperationSubjectId());
+                statement.setString(SUBJECT_TYPE, record.getOperationSubjectType());
+                statement.setString(SUBJECT_ID, record.getOperationSubjectId());
                 statement.setString(INITIATED_ORG_ID, record.getResidentOrgId());
                 statement.setString(INITIATED_USER_ID, record.getInitiatorId());
-                statement.setString(OPERATION_STATUS, OperationStatus.ONGOING.toString());
+                statement.setString(STATUS, OperationStatus.ONGOING.toString());
                 statement.setString(CREATED_AT, currentTimestamp);
                 statement.setString(LAST_MODIFIED, currentTimestamp);
-                statement.setString(OPERATION_POLICY, record.getOperationPolicy());
+                statement.setString(POLICY, record.getOperationPolicy());
                 statement.executeUpdate();
 
                 ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -176,7 +182,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         try (NamedPreparedStatement statement = new NamedPreparedStatement(IdentityDatabaseUtil
                 .getDBConnection(false), UPDATE_ASYNC_OPERATION)) {
-            statement.setString(OPERATION_STATUS, status);
+            statement.setString(STATUS, status);
             statement.setString(LAST_MODIFIED, new Timestamp(new Date().getTime()).toString());
             statement.setString(OPERATION_ID, operationId);
             statement.executeUpdate();
@@ -193,15 +199,17 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);
              NamedPreparedStatement statement = new NamedPreparedStatement(connection,
-                     CREATE_ASYNC_OPERATION_UNIT_BATCH, UNIT_OPERATION_ID)) {
+                     CREATE_ASYNC_OPERATION_UNIT_BATCH, ID)) {
 
             for (UnitOperationRecord context : queue) {
+                String unitOperationId = UUID.randomUUID().toString();
                 statement.setString(OPERATION_ID, context.getOperationId());
-                statement.setString(UNIT_OPERATION_RESIDENT_RESOURCE_ID, context.getOperationInitiatedResourceId());
-                statement.setString(UNIT_OPERATION_TARGET_ORG_ID, context.getTargetOrgId());
-                statement.setString(UNIT_OPERATION_STATUS, context.getUnitOperationStatus());
-                statement.setString(UNIT_OPERATION_STATUS_MESSAGE, context.getStatusMessage());
-                statement.setString(UNIT_OPERATION_CREATED_AT, currentTimestamp);
+                statement.setString(UNIT_OPERATION_ID, unitOperationId);
+                statement.setString(RESIDENT_RESOURCE_ID, context.getOperationInitiatedResourceId());
+                statement.setString(TARGET_ORG_ID, context.getTargetOrgId());
+                statement.setString(STATUS, context.getUnitOperationStatus());
+                statement.setString(STATUS_MESSAGE, context.getStatusMessage());
+                statement.setString(CREATED_AT, currentTimestamp);
                 statement.addBatch();
             }
             statement.executeBatch();
@@ -217,7 +225,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                                              List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtServerException {
 
-        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, MODEL_CREATED_TIME);
+        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
         String sqlStmt = getOperationsStatusSqlStmt(filterQueryBuilder);
 
         List<ResponseOperationRecord> operationRecords;
@@ -251,11 +259,77 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     }
 
     @Override
+    public List<ResponseOperationRecord> getOperations(Integer limit, List<ExpressionNode> expressionNodes)
+            throws AsyncStatusMgtException {
+
+        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
+        String sqlStmt = getOperationsNewStatusSqlStmt(filterQueryBuilder);
+
+        List<ResponseOperationRecord> operationRecords;
+        NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
+        try {
+            operationRecords = namedJdbcTemplate.executeQuery(sqlStmt,
+                    (resultSet, rowNumber) -> {
+                        ResponseOperationRecord record = new ResponseOperationRecord();
+                        record.setOperationId(resultSet.getString(1));
+                        record.setCorrelationId(resultSet.getString(2));
+                        record.setOperationType(resultSet.getString(3));
+                        record.setOperationSubjectType(resultSet.getString(4));
+                        record.setOperationSubjectId(resultSet.getString(5));
+                        record.setResidentOrgId(resultSet.getString(6));
+                        record.setInitiatorId(resultSet.getString(7));
+                        record.setOperationStatus(resultSet.getString(8));
+                        record.setOperationPolicy(resultSet.getString(9));
+                        record.setCreatedTime(Timestamp.valueOf(resultSet.getString(10)));
+                        record.setModifiedTime(Timestamp.valueOf(resultSet.getString(11)));
+                        return record;
+                    },
+                    namedPreparedStatement -> {
+                        setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
+                                filterQueryBuilder.getTimestampFilterAttributes());
+                        namedPreparedStatement.setInt(LIMIT, limit);
+                    });
+        } catch (DataAccessException e) {
+            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
+                    "from the system.", e);
+        }
+        return operationRecords;
+    }
+
+    @Override
+    public ResponseOperationRecord getOperation(String operationId) throws AsyncStatusMgtException {
+
+        ResponseOperationRecord operationRecord;
+        NamedJdbcTemplate jdbcTemplate = Utils.getNewTemplate();
+        try {
+            operationRecord = jdbcTemplate.fetchSingleRecord(GET_OPERATION, (resultSet, rowNumber) -> {
+                ResponseOperationRecord record = new ResponseOperationRecord();
+                record.setOperationId(resultSet.getString(1));
+                record.setCorrelationId(resultSet.getString(2));
+                record.setOperationType(resultSet.getString(3));
+                record.setOperationSubjectType(resultSet.getString(4));
+                record.setOperationSubjectId(resultSet.getString(5));
+                record.setResidentOrgId(resultSet.getString(6));
+                record.setInitiatorId(resultSet.getString(7));
+                record.setOperationStatus(resultSet.getString(8));
+                record.setOperationPolicy(resultSet.getString(9));
+                record.setCreatedTime(Timestamp.valueOf(resultSet.getString(10)));
+                record.setModifiedTime(Timestamp.valueOf(resultSet.getString(11)));
+                return record;
+            }, preparedStatement -> preparedStatement.setString(OPERATION_ID, operationId));
+            return operationRecord;
+        } catch (DataAccessException e) {
+            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
+                    "from the system.", e);
+        }
+    }
+
+    @Override
     public List<ResponseUnitOperationRecord> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
                                                                                    List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtServerException {
 
-        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, MODEL_CREATED_AT);
+        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
         String sqlStmt = getUnitOperationsStatusSqlStmt(filterQueryBuilder);
 
         List<ResponseUnitOperationRecord> unitOperationRecords;
@@ -282,13 +356,37 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
         return unitOperationRecords;
     }
 
+    @Override
+    public ResponseUnitOperationRecord getUnitOperation(String unitOperationId) throws AsyncStatusMgtException {
+
+        ResponseUnitOperationRecord unitOperationRecord;
+        NamedJdbcTemplate jdbcTemplate = Utils.getNewTemplate();
+        try {
+            unitOperationRecord = jdbcTemplate.fetchSingleRecord(GET_UNIT_OPERATION, (resultSet, rowNumber) -> {
+                ResponseUnitOperationRecord record = new ResponseUnitOperationRecord();
+                record.setUnitOperationId(resultSet.getString(1));
+                record.setOperationId(resultSet.getString(2));
+                record.setOperationInitiatedResourceId(resultSet.getString(3));
+                record.setTargetOrgId(resultSet.getString(4));
+                record.setUnitOperationStatus(resultSet.getString(5));
+                record.setStatusMessage(resultSet.getString(6));
+                record.setCreatedTime(Timestamp.valueOf(resultSet.getString(7)));
+                return record;
+            }, preparedStatement -> preparedStatement.setString(UNIT_OPERATION_ID, unitOperationId));
+            return unitOperationRecord;
+        } catch (DataAccessException e) {
+            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
+                    "from the system.", e);
+        }
+    }
+
     private void deleteOldOperationalData(Connection connection, String correlationId, String operationType,
                                           String operationSubjectId) throws SQLException {
 
         try (NamedPreparedStatement statement = new NamedPreparedStatement(connection,
                 DELETE_RECENT_OPERATION_RECORD)) {
             statement.setString(OPERATION_TYPE, operationType);
-            statement.setString(OPERATION_SUBJECT_ID, operationSubjectId);
+            statement.setString(SUBJECT_ID, operationSubjectId);
             statement.setString(CORRELATION_ID, correlationId);
             statement.executeUpdate();
         }
@@ -319,7 +417,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
                 if (StringUtils.isNotBlank(attributeName) && StringUtils.isNotBlank(value) && StringUtils
                         .isNotBlank(operation)) {
-                    if (UNIT_OPERATION_CREATED_AT.equals(attributeName)) {
+                    if (CREATED_AT.equals(attributeName)) {
                         filterQueryBuilder.addTimestampFilterAttributes(FILTER_PLACEHOLDER_PREFIX);
                     }
                     switch (operation) {
@@ -456,7 +554,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
 
     private boolean isDateTimeAndMSSql(String attributeName) throws AsyncStatusMgtServerException {
 
-        return (UNIT_OPERATION_CREATED_AT.equals(attributeName)) && isMSSqlDB();
+        return (CREATED_AT.equals(attributeName)) && isMSSqlDB();
     }
 
     private static String getOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
@@ -466,6 +564,15 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             return GET_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + GET_OPERATIONS_TAIL;
         }
         return GET_OPERATIONS + GET_OPERATIONS_TAIL;
+    }
+
+    private static String getOperationsNewStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
+            throws AsyncStatusMgtServerException {
+
+        if (StringUtils.isNotBlank(filterQueryBuilder.getFilterQuery())) {
+            return GET_OPERATIONS_NEW + " WHERE " + filterQueryBuilder.getFilterQuery() + GET_OPERATIONS_TAIL;
+        }
+        return GET_OPERATIONS_NEW + GET_OPERATIONS_TAIL;
     }
 
     private static String getUnitOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
@@ -481,7 +588,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                             Integer limit, FilterQueryBuilder filterQueryBuilder)
             throws SQLException {
 
-        namedPreparedStatement.setString(MODEL_OPERATION_ID, operationId);
+        namedPreparedStatement.setString(OPERATION_ID, operationId);
         setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
                 filterQueryBuilder.getTimestampFilterAttributes());
         namedPreparedStatement.setInt(LIMIT, limit);
@@ -493,9 +600,9 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                                                  FilterQueryBuilder filterQueryBuilder)
             throws SQLException {
 
-        namedPreparedStatement.setString(MODEL_SUBJECT_TYPE, operationSubjectType);
-        namedPreparedStatement.setString(MODEL_SUBJECT_ID, operationSubjectId);
-        namedPreparedStatement.setString(MODEL_OPERATION_TYPE, operationType);
+        namedPreparedStatement.setString(SUBJECT_TYPE_FILTER, operationSubjectType);
+        namedPreparedStatement.setString(SUBJECT_ID_FILTER, operationSubjectId);
+        namedPreparedStatement.setString(OPERATION_TYPE_FILTER, operationType);
         setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
                 filterQueryBuilder.getTimestampFilterAttributes());
         namedPreparedStatement.setInt(LIMIT, limit);

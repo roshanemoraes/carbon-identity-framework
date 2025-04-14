@@ -78,6 +78,11 @@ public interface AsyncStatusMgtDAO {
                                                       List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtException;
 
+    List<ResponseOperationRecord> getOperations(Integer limit, List<ExpressionNode> expressionNodes)
+            throws AsyncStatusMgtException;
+
+    ResponseOperationRecord getOperation(String operationId) throws AsyncStatusMgtException;
+
     /**
      * Retrieves a list of unit operation records for a specific operation ID.
      * This method supports pagination and filtering based on various criteria.
@@ -91,6 +96,8 @@ public interface AsyncStatusMgtDAO {
     List<ResponseUnitOperationRecord> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
                                                                             List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtException;
+
+    ResponseUnitOperationRecord getUnitOperation(String unitOperationId) throws AsyncStatusMgtException;
 
     /**
      * Updates the status of an existing asynchronous operation.

@@ -4,38 +4,36 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_CORRELATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_INITIATED_ORG_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_INITIATED_USER_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_LAST_MODIFIED;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_POLICY;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_STATUS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_OPERATION_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.OperationModelProperties.MODEL_SUBJECT_TYPE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.CORRELATION_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.CREATED_TIME_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.INITIATED_ORG_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.INITIATED_RESOURCE_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.INITIATED_USER_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.MODIFIED_TIME_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.OPERATION_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.POLICY_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.STATUS_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.OPERATION_TYPE_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.STATUS_MESSAGE_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.SUBJECT_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.SUBJECT_TYPE_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.TARGET_ORG_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.UNIT_OPERATION_ID_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CORRELATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_USER_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.LAST_MODIFIED;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_POLICY;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_STATUS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_SUBJECT_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_SUBJECT_TYPE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.POLICY;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_RESIDENT_RESOURCE_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_STATUS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_STATUS_MESSAGE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_TARGET_ORG_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UnitOperationModelProperties.MODEL_CREATED_AT;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UnitOperationModelProperties.MODEL_RESIDENT_RESOURCE_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UnitOperationModelProperties.MODEL_STATUS_MESSAGE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UnitOperationModelProperties.MODEL_TARGET_ORG_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UnitOperationModelProperties.MODEL_UNIT_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UnitOperationModelProperties.MODEL_UNIT_OPERATION_STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.RESIDENT_RESOURCE_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS_MESSAGE;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.TARGET_ORG_ID;
 
 /**
  * Asynchronous operation status management constants
@@ -66,32 +64,32 @@ public class AsyncStatusMgtConstants {
     public static final String PAGINATION_BEFORE = "before";
 
     static {
-        attributeColumnMap.put(MODEL_UNIT_OPERATION_ID, UNIT_OPERATION_ID);
-        attributeColumnMap.put(MODEL_OPERATION_ID, OPERATION_ID);
-        attributeColumnMap.put(MODEL_RESIDENT_RESOURCE_ID, UNIT_OPERATION_RESIDENT_RESOURCE_ID);
-        attributeColumnMap.put(MODEL_TARGET_ORG_ID, UNIT_OPERATION_TARGET_ORG_ID);
-        attributeColumnMap.put(MODEL_UNIT_OPERATION_STATUS, UNIT_OPERATION_STATUS);
-        attributeColumnMap.put(MODEL_STATUS_MESSAGE, UNIT_OPERATION_STATUS_MESSAGE);
-        attributeColumnMap.put(MODEL_CREATED_AT, UNIT_OPERATION_CREATED_AT);
+        attributeColumnMap.put(UNIT_OPERATION_ID_FILTER, UNIT_OPERATION_ID);
+        attributeColumnMap.put(OPERATION_ID_FILTER, OPERATION_ID);
+        attributeColumnMap.put(INITIATED_RESOURCE_ID_FILTER, RESIDENT_RESOURCE_ID);
+        attributeColumnMap.put(TARGET_ORG_ID_FILTER, TARGET_ORG_ID);
+        attributeColumnMap.put(STATUS_FILTER, STATUS);
+        attributeColumnMap.put(STATUS_MESSAGE_FILTER, STATUS_MESSAGE);
+        attributeColumnMap.put(CREATED_TIME_FILTER, CREATED_AT);
 
-        attributeColumnMap.put(MODEL_CORRELATION_ID, CORRELATION_ID);
-        attributeColumnMap.put(MODEL_OPERATION_TYPE, OPERATION_TYPE);
-        attributeColumnMap.put(MODEL_SUBJECT_TYPE, OPERATION_SUBJECT_TYPE);
-        attributeColumnMap.put(MODEL_SUBJECT_ID, OPERATION_SUBJECT_ID);
-        attributeColumnMap.put(MODEL_INITIATED_ORG_ID, INITIATED_ORG_ID);
-        attributeColumnMap.put(MODEL_INITIATED_USER_ID, INITIATED_USER_ID);
-        attributeColumnMap.put(MODEL_OPERATION_STATUS, OPERATION_STATUS);
-        attributeColumnMap.put(MODEL_LAST_MODIFIED, LAST_MODIFIED);
-        attributeColumnMap.put(MODEL_OPERATION_POLICY, OPERATION_POLICY);
+        attributeColumnMap.put(CORRELATION_ID_FILTER, CORRELATION_ID);
+        attributeColumnMap.put(OPERATION_TYPE_FILTER, OPERATION_TYPE);
+        attributeColumnMap.put(SUBJECT_TYPE_FILTER, SUBJECT_TYPE);
+        attributeColumnMap.put(SUBJECT_ID_FILTER, SUBJECT_ID);
+        attributeColumnMap.put(INITIATED_ORG_ID_FILTER, INITIATED_ORG_ID);
+        attributeColumnMap.put(INITIATED_USER_ID_FILTER, INITIATED_USER_ID);
+        attributeColumnMap.put(MODIFIED_TIME_FILTER, LAST_MODIFIED);
+        attributeColumnMap.put(POLICY_FILTER, POLICY);
 
-        attributeColumnMap.put(PAGINATION_AFTER, UNIT_OPERATION_CREATED_AT);
-        attributeColumnMap.put(PAGINATION_BEFORE, UNIT_OPERATION_CREATED_AT);
+        attributeColumnMap.put(PAGINATION_AFTER, CREATED_AT);
+        attributeColumnMap.put(PAGINATION_BEFORE, CREATED_AT);
     }
 
     /**
      * Enum for Error Message
      */
     public static enum ErrorMessages {
+
         ERROR_CODE_INVALID_REQUEST_BODY("xx001", "Invalid request.",
                 "Provided request body content is not in the expected format.");
 
@@ -127,7 +125,4 @@ public class AsyncStatusMgtConstants {
             return code + " | " + message;
         }
     }
-
-
-
 }
