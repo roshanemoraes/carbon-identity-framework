@@ -22,9 +22,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.wso2.carbon.database.utils.jdbc.NamedJdbcTemplate;
 import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants;
 
 /**
  * Util Methods.
@@ -37,7 +37,7 @@ public class Utils {
             return jdbcTemplate.getDriverName().toLowerCase().contains(dbType) ||
                     jdbcTemplate.getDatabaseProductName().toLowerCase().contains(dbType);
         } catch (DataAccessException e) {
-            throw handleServerException(AsyncStatusMgtConstants.ErrorMessages.ERROR_CODE_INVALID_REQUEST_BODY, e);
+            throw handleServerException(ErrorMessage.ERROR_CODE_INVALID_REQUEST_BODY, e);
         }
     }
 
@@ -62,7 +62,7 @@ public class Utils {
      * @return OrganizationManagementClientException
      */
     public static AsyncStatusMgtClientException handleClientException(
-            AsyncStatusMgtConstants.ErrorMessages error, String... data) {
+            ErrorMessage error, String... data) {
 
         String description = error.getDescription();
         if (ArrayUtils.isNotEmpty(data)) {
@@ -80,7 +80,7 @@ public class Utils {
      * @return AsyncStatusMgtServerException
      */
     public static AsyncStatusMgtServerException handleServerException(
-            AsyncStatusMgtConstants.ErrorMessages error, Throwable e, String... data) {
+            ErrorMessage error, Throwable e, String... data) {
 
         String description = error.getDescription();
         if (ArrayUtils.isNotEmpty(data)) {

@@ -27,7 +27,9 @@ import org.wso2.carbon.database.utils.jdbc.NamedPreparedStatement;
 import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.OperationStatus;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
@@ -48,6 +50,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.ATTRIBURE_COLUMN_MAP;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.CO;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.EQ;
@@ -217,45 +220,6 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             throw new AsyncStatusMgtServerException("Error while adding Async Status Units Initial information " +
                     "in the system.", e);
         }
-    }
-
-    @Override
-    public List<ResponseOperationRecord> getOperationRecords(String operationSubjectType, String operationSubjectId,
-                                                             String operationType, Integer limit,
-                                                             List<ExpressionNode> expressionNodes)
-            throws AsyncStatusMgtServerException {
-
-        FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
-        String sqlStmt = getOperationsStatusSqlStmt(filterQueryBuilder);
-
-        List<ResponseOperationRecord> operationRecords;
-        NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
-        try {
-            operationRecords = namedJdbcTemplate.executeQuery(sqlStmt,
-                    (resultSet, rowNumber) -> {
-                        ResponseOperationRecord record = new ResponseOperationRecord();
-                        record.setOperationId(resultSet.getString(1));
-                        record.setCorrelationId(resultSet.getString(2));
-                        record.setOperationType(resultSet.getString(3));
-                        record.setOperationSubjectType(resultSet.getString(4));
-                        record.setOperationSubjectId(resultSet.getString(5));
-                        record.setResidentOrgId(resultSet.getString(6));
-                        record.setInitiatorId(resultSet.getString(7));
-                        record.setOperationStatus(resultSet.getString(8));
-                        record.setOperationPolicy(resultSet.getString(9));
-                        record.setCreatedTime(Timestamp.valueOf(resultSet.getString(10)));
-                        record.setModifiedTime(Timestamp.valueOf(resultSet.getString(11)));
-                        return record;
-                    },
-                    namedPreparedStatement ->
-                            setPreparedStatementParamsForGetOperationStatus(namedPreparedStatement,
-                                    operationSubjectType, operationSubjectId, operationType, limit,
-                                    filterQueryBuilder));
-        } catch (DataAccessException e) {
-            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
-                    "from the system.", e);
-        }
-        return operationRecords;
     }
 
     @Override

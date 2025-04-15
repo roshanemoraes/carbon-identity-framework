@@ -40,7 +40,10 @@ public enum ErrorMessage {
     ERROR_CODE_INVALID_UNIT_OPERATION_ID("65106", "Invalid Unit Operation ID",
             "Unit Operation with ID: %s doesn't exist."),
     ERROR_CODE_USER_NOT_AUTHORIZED_TO_GET_STATUS("65107", "Unable to get async status.",
-            "Unauthorized request to get asynchronous operation status");
+            "Unauthorized request to get asynchronous operation status"),
+    ERROR_CODE_INVALID_LIMIT("65108", "Invalid Limit.", "Invalid limit requested."),
+    ERROR_CODE_INVALID_REQUEST_BODY("xx001", "Invalid request.",
+            "Provided request body content is not in the expected format.");
 
     private final String code;
     private final String message;

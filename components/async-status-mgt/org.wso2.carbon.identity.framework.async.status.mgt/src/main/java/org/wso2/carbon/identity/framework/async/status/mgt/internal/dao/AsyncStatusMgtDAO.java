@@ -61,23 +61,6 @@ public interface AsyncStatusMgtDAO {
      */
     void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue) throws AsyncStatusMgtException;
 
-    /**
-     * Retrieves a list of operation records based on the provided filters.
-     * This method supports pagination and filtering based on various criteria.
-     *
-     * @param operationSubjectType The type of the operation subject (e.g., user, organization).
-     * @param operationSubjectId   The unique identifier of the operation subject.
-     * @param operationType        The type of the operation.
-     * @param limit                The maximum number of records to retrieve.
-     * @param expressionNodes      A list of {@link ExpressionNode} objects used for filtering the query.
-     * @return A list of {@link ResponseOperationRecord} objects matching the specified filters.
-     * @throws AsyncStatusMgtException If an error occurs while retrieving the operation records.
-     */
-    List<ResponseOperationRecord> getOperationRecords(String operationSubjectType, String operationSubjectId,
-                                                      String operationType, Integer limit,
-                                                      List<ExpressionNode> expressionNodes)
-            throws AsyncStatusMgtException;
-
     List<ResponseOperationRecord> getOperations(Integer limit, List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtException;
 

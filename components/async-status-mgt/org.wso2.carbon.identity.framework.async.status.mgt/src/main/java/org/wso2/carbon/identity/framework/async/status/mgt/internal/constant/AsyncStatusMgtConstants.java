@@ -84,45 +84,4 @@ public class AsyncStatusMgtConstants {
         attributeColumnMap.put(PAGINATION_AFTER, CREATED_AT);
         attributeColumnMap.put(PAGINATION_BEFORE, CREATED_AT);
     }
-
-    /**
-     * Enum for Error Message
-     */
-    public static enum ErrorMessages {
-
-        ERROR_CODE_INVALID_REQUEST_BODY("xx001", "Invalid request.",
-                "Provided request body content is not in the expected format.");
-
-        private final String code;
-        private final String message;
-        private final String description;
-
-        private ErrorMessages(String code, String message, String description) {
-
-            this.code = code;
-            this.message = message;
-            this.description = description;
-        }
-
-        public String getCode() {
-
-            return ERROR_PREFIX + code;
-        }
-
-        public String getMessage() {
-
-            return message;
-        }
-
-        public String getDescription() {
-
-            return description;
-        }
-
-        @Override
-        public String toString() {
-
-            return code + " | " + message;
-        }
-    }
 }

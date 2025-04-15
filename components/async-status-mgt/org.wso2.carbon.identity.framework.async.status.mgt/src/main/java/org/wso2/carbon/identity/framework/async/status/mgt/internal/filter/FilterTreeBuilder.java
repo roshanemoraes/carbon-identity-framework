@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_REQUEST_BODY;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.AND;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.ErrorMessages.ERROR_CODE_INVALID_REQUEST_BODY;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.NOT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.OR;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.Utils.handleClientException;
