@@ -64,20 +64,13 @@ public class AsyncOperationDataBuffer {
     }
 
     /**
-     * Periodically flushes the queue to avoid long delays for small workloads.
+     * Check if the queue is empty.
+     *
+     * @return True if the queue is empty, false otherwise.
      */
-    private void startPeriodicFlushTask() {
+    public boolean isEmpty() {
 
-        scheduler.scheduleAtFixedRate(() -> {
-            if (!queue.isEmpty()) {
-                LOG.debug("Periodic flush triggered.");
-                try {
-                    persistToDatabase();
-                } catch (AsyncStatusMgtException e) {  //TODO: to rethrow or handle here?
-                    LOG.error("Error while flushing to the database.", e);
-                }
-            }
-        }, flushIntervalSeconds, flushIntervalSeconds, TimeUnit.SECONDS);
+        return queue.isEmpty();
     }
 
     /**
@@ -91,13 +84,11 @@ public class AsyncOperationDataBuffer {
     }
 
     /**
-     * Check if the queue is empty.
-     *
-     * @return True if the queue is empty, false otherwise.
+     * Shuts down the scheduled task.
      */
-    public boolean isEmpty() {
+    public void shutdown() {
 
-        return queue.isEmpty();
+        scheduler.shutdown();
     }
 
     /**
@@ -112,11 +103,20 @@ public class AsyncOperationDataBuffer {
     }
 
     /**
-     * Shuts down the scheduled task.
+     * Periodically flushes the queue to avoid long delays for small workloads.
      */
-    public void shutdown() {
+    private void startPeriodicFlushTask() {
 
-        scheduler.shutdown();
+        scheduler.scheduleAtFixedRate(() -> {
+            if (!queue.isEmpty()) {
+                LOG.debug("Periodic flush triggered.");
+                try {
+                    persistToDatabase();
+                } catch (AsyncStatusMgtException e) {  //TODO: to rethrow or handle here?
+                    LOG.error("Error while flushing to the database.", e);
+                }
+            }
+        }, flushIntervalSeconds, flushIntervalSeconds, TimeUnit.SECONDS);
     }
 
 }

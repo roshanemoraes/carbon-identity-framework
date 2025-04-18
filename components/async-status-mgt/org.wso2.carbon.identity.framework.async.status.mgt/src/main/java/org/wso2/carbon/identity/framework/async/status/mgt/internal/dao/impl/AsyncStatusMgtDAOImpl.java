@@ -395,16 +395,6 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                             count++;
                             break;
                         }
-                        case EW: {
-                            endWithFilterBuilder(count, value, attributeName, filter, filterQueryBuilder);
-                            count++;
-                            break;
-                        }
-                        case CO: {
-                            containsFilterBuilder(count, value, attributeName, filter, filterQueryBuilder);
-                            count++;
-                            break;
-                        }
                         case GE: {
                             greaterThanOrEqualFilterBuilder(count, value, attributeName, filter, filterQueryBuilder);
                             count++;
@@ -458,22 +448,6 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
         String filterString = String.format(" like :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
         filter.append(attributeName).append(filterString);
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value + "%");
-    }
-
-    private void endWithFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
-                                      FilterQueryBuilder filterQueryBuilder) {
-
-        String filterString = String.format(" like :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
-        filter.append(attributeName).append(filterString);
-        filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, "%" + value);
-    }
-
-    private void containsFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
-                                       FilterQueryBuilder filterQueryBuilder) {
-
-        String filterString = String.format(" like :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
-        filter.append(attributeName).append(filterString);
-        filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, "%" + value + "%");
     }
 
     private void greaterThanOrEqualFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
@@ -553,20 +527,6 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             throws SQLException {
 
         namedPreparedStatement.setString(OPERATION_ID, operationId);
-        setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
-                filterQueryBuilder.getTimestampFilterAttributes());
-        namedPreparedStatement.setInt(LIMIT, limit);
-    }
-
-    private void setPreparedStatementParamsForGetOperationStatus(NamedPreparedStatement namedPreparedStatement,
-                                                                 String operationSubjectType, String operationSubjectId,
-                                                                 String operationType, Integer limit,
-                                                                 FilterQueryBuilder filterQueryBuilder)
-            throws SQLException {
-
-        namedPreparedStatement.setString(SUBJECT_TYPE_FILTER, operationSubjectType);
-        namedPreparedStatement.setString(SUBJECT_ID_FILTER, operationSubjectId);
-        namedPreparedStatement.setString(OPERATION_TYPE_FILTER, operationType);
         setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
                 filterQueryBuilder.getTimestampFilterAttributes());
         namedPreparedStatement.setInt(LIMIT, limit);

@@ -132,9 +132,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
         if (StringUtils.isBlank(filter)) {
             filter = StringUtils.EMPTY;
         }
-        String paginatedFilter = paginationSortOrder.equals(ASC_SORT_ORDER) ?
-                getPaginatedFilterForAscendingOrder(filter, after, before) :
-                getPaginatedFilterForDescendingOrder(filter, after, before);
+        String paginatedFilter = getPaginatedFilterForDescendingOrder(filter, after, before);
         try {
             if (StringUtils.isNotBlank(paginatedFilter)) {
                 FilterTreeBuilder filterTreeBuilder = new FilterTreeBuilder(paginatedFilter);
@@ -147,24 +145,24 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
         return expressionNodes;
     }
 
-    private String getPaginatedFilterForAscendingOrder(String paginatedFilter, String after, String before)
-            throws AsyncStatusMgtClientException {
-
-        try {
-            if (StringUtils.isNotBlank(before)) {
-                String decodedString = new String(Base64.getDecoder().decode(before), StandardCharsets.UTF_8);
-                paginatedFilter += StringUtils.isNotBlank(paginatedFilter) ? " and before lt "
-                        + decodedString : "before lt " + decodedString;
-            } else if (StringUtils.isNotBlank(after)) {
-                String decodedString = new String(Base64.getDecoder().decode(after), StandardCharsets.UTF_8);
-                paginatedFilter += StringUtils.isNotBlank(paginatedFilter) ? " and after gt "
-                        + decodedString : "after gt " + decodedString;
-            }
-        } catch (IllegalArgumentException e) {
-            throw handleClientException(ERROR_CODE_INVALID_REQUEST_BODY);
-        }
-        return paginatedFilter;
-    }
+//    private String getPaginatedFilterForAscendingOrder(String paginatedFilter, String after, String before)
+//            throws AsyncStatusMgtClientException {
+//
+//        try {
+//            if (StringUtils.isNotBlank(before)) {
+//                String decodedString = new String(Base64.getDecoder().decode(before), StandardCharsets.UTF_8);
+//                paginatedFilter += StringUtils.isNotBlank(paginatedFilter) ? " and before lt "
+//                        + decodedString : "before lt " + decodedString;
+//            } else if (StringUtils.isNotBlank(after)) {
+//                String decodedString = new String(Base64.getDecoder().decode(after), StandardCharsets.UTF_8);
+//                paginatedFilter += StringUtils.isNotBlank(paginatedFilter) ? " and after gt "
+//                        + decodedString : "after gt " + decodedString;
+//            }
+//        } catch (IllegalArgumentException e) {
+//            throw handleClientException(ERROR_CODE_INVALID_REQUEST_BODY);
+//        }
+//        return paginatedFilter;
+//    }
 
     private String getPaginatedFilterForDescendingOrder(String paginatedFilter, String after, String before)
             throws AsyncStatusMgtClientException {

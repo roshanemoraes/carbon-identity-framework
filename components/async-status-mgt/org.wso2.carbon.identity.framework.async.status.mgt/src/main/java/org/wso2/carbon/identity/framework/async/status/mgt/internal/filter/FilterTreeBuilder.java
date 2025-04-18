@@ -214,11 +214,6 @@ public class FilterTreeBuilder {
                 if (filterParts.length >= 2) {
                     setExpressionNodeValues(filterParts[0], " sw ", filterParts[1], expressionNode);
                 }
-            } else if (Pattern.compile(Pattern.quote(" ew "), Pattern.CASE_INSENSITIVE).matcher(filterString).find()) {
-                filterParts = trimmedFilter.split(" ew | EW | eW | Ew ");
-                if (filterParts.length >= 2) {
-                    setExpressionNodeValues(filterParts[0], " ew ", filterParts[1], expressionNode);
-                }
             } else if (Pattern.compile(Pattern.quote(" pr"), Pattern.CASE_INSENSITIVE).matcher(filterString).find()) {
                 //with filter PR, there should not be whitespace after.
                 filterParts = trimmedFilter.split(" pr| PR| pR| Pr");

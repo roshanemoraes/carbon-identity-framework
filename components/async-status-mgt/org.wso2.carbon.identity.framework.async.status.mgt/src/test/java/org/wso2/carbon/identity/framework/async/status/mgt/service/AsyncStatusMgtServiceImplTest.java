@@ -21,6 +21,8 @@ import org.wso2.carbon.identity.framework.async.status.mgt.util.TestUtils;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -125,6 +127,15 @@ public class AsyncStatusMgtServiceImplTest {
             service.registerOperationStatus(operation, false);
         }
 
+        // paginating in descending order by timestamp.
+        assertEquals(10, service.getOperations(StringUtils.EMPTY, getStartOfCurrentYearBase64(),
+                100, StringUtils.EMPTY).size());
+        assertEquals(10, service.getOperations(getStartOfNextYearBase64(), StringUtils.EMPTY,
+                100, StringUtils.EMPTY).size());
+        assertEquals(10, service.getOperations(getStartOfNextYearBase64(), getStartOfCurrentYearBase64(),
+                100, StringUtils.EMPTY).size());
+        assertEquals(10, service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY,
+                100, StringUtils.EMPTY).size());
         assertEquals(10, service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY, 100,
                 StringUtils.EMPTY).size());
         assertEquals(5, service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY, 5,
@@ -240,6 +251,33 @@ public class AsyncStatusMgtServiceImplTest {
 
         assertEquals(2, unitOperations.size());
         assertEquals(returnedId, unitOperations.get(0).getOperationId());
+    }
+
+    public static String getStartOfCurrentYearBase64() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+        return Base64.getEncoder().encodeToString(timestamp.toString().getBytes());
+    }
+
+    public static String getStartOfNextYearBase64() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.add(Calendar.YEAR, 1);
+
+        Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+        return Base64.getEncoder().encodeToString(timestamp.toString().getBytes());
     }
 
     private void cleanUpDB() throws Exception {
