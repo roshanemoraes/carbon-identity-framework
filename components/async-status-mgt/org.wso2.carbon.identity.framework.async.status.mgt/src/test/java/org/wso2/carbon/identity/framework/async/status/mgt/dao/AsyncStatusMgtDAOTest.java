@@ -140,13 +140,12 @@ public class AsyncStatusMgtDAOTest {
             OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
-            DAO.registerAsyncStatusWithUpdate(operation1);
+            String initialOperationId = DAO.registerAsyncStatusWithUpdate(operation1);
 
             ResponseOperationRecord fetchedOperation = DAO.getOperations(1000, null).get(0);
             String initialStatus = fetchedOperation.getOperationStatus();
             assertEquals(STATUS_ONGOING, initialStatus);
 
-            String initialOperationId = fetchedOperation.getOperationId();
             DAO.updateAsyncStatus(initialOperationId, STATUS_SUCCESS);
             assertEquals(1, getOperationTableSize());
 

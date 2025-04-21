@@ -187,7 +187,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 .getDBConnection(false), UPDATE_ASYNC_OPERATION)) {
             statement.setString(STATUS, status);
             statement.setString(LAST_MODIFIED, new Timestamp(new Date().getTime()).toString());
-            statement.setString(OPERATION_ID, operationId);
+            statement.setString(ID, operationId);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new AsyncStatusMgtServerException("Error while updating Async Status information in the system.", e);
