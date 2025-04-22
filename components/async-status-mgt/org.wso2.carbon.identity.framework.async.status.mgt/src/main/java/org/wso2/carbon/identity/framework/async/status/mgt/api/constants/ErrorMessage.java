@@ -35,15 +35,19 @@ public enum ErrorMessage {
             "Error while retrieving Async Status from the system."),
 
     // Client errors.
-    ERROR_CODE_INVALID_OPERATION_ID("65105", "Invalid Operation ID",
+    ERROR_CODE_INVALID_OPERATION_ID("65120", "Invalid Operation ID",
             "Operation with ID: %s doesn't exist."),
-    ERROR_CODE_INVALID_UNIT_OPERATION_ID("65106", "Invalid Unit Operation ID",
+    ERROR_CODE_INVALID_UNIT_OPERATION_ID("65121", "Invalid Unit Operation ID",
             "Unit Operation with ID: %s doesn't exist."),
-    ERROR_CODE_USER_NOT_AUTHORIZED_TO_GET_STATUS("65107", "Unable to get async status.",
+    ERROR_CODE_USER_NOT_AUTHORIZED_TO_GET_STATUS("65122", "Unable to get async status.",
             "Unauthorized request to get asynchronous operation status"),
-    ERROR_CODE_INVALID_LIMIT("65108", "Invalid Limit.", "Invalid limit requested."),
-    ERROR_CODE_INVALID_REQUEST_BODY("xx001", "Invalid request.",
-            "Provided request body content is not in the expected format.");
+    ERROR_CODE_INVALID_LIMIT("65123", "Invalid Limit.", "Invalid limit requested."),
+    ERROR_CODE_INVALID_REQUEST_BODY("65124", "Invalid request.",
+            "Provided request body content is not in the expected format."),
+    ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP("65125", "Error while retrieving org names.",
+            "Error while retrieving org names from org id map."),
+    ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID("65124", "Error while retrieving org name.",
+            "Error while retrieving org name from org id.");
 
     private final String code;
     private final String message;

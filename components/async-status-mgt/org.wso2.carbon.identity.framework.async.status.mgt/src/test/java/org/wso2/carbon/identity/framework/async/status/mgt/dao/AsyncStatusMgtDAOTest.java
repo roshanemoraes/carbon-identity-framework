@@ -9,10 +9,10 @@ import org.wso2.carbon.identity.common.testng.WithCarbonHome;
 import org.wso2.carbon.identity.common.testng.WithH2Database;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.impl.AsyncStatusMgtDAOImpl;
 
@@ -61,7 +61,7 @@ public class AsyncStatusMgtDAOTest {
     public Object[][] asyncOperationDetailProvider() throws Exception {
 
         return new Object[][] {
-                {new OperationRecord(
+                {new OperationInitDTO(
                         "56565656565655",
                         TYPE_USER_SHARE,
                         "B2B_APPLICATION",
@@ -93,10 +93,12 @@ public class AsyncStatusMgtDAOTest {
     public void testRegisterOperationWithoutUpdateSuccess() {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
-            OperationRecord operation2 = new OperationRecord(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
             String insertedOperationId_1 = DAO.registerAsyncStatusWithoutUpdate(operation1);
@@ -112,13 +114,15 @@ public class AsyncStatusMgtDAOTest {
     }
 
     @Test(dataProvider = "asyncOperationDetailProvider", priority = 2)
-    public void testRegisterOperationWithUpdateSuccess(OperationRecord testData) {
+    public void testRegisterOperationWithUpdateSuccess(OperationInitDTO testData) {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
-            OperationRecord operation2 = new OperationRecord(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
             String insertedOperationId_1 = DAO.registerAsyncStatusWithUpdate(operation1);
@@ -137,12 +141,13 @@ public class AsyncStatusMgtDAOTest {
     public void testUpdateAsyncStatus() {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
             String initialOperationId = DAO.registerAsyncStatusWithUpdate(operation1);
 
-            ResponseOperationRecord fetchedOperation = DAO.getOperations(1000, null).get(0);
+            OperationDO fetchedOperation = DAO.getOperations(1000, null).get(0);
             String initialStatus = fetchedOperation.getOperationStatus();
             assertEquals(STATUS_ONGOING, initialStatus);
 
@@ -160,16 +165,17 @@ public class AsyncStatusMgtDAOTest {
     public void testRegisterAsyncStatusUnit() {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
             String returnedId = DAO.registerAsyncStatusWithUpdate(operation1);
             String fetchedOperationId = DAO.getOperations(1000, null).get(0).getOperationId();
 
-            UnitOperationRecord unit1 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
+            UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                     RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
-            UnitOperationRecord unit2 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
+            UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                     RESIDENT_ORG_ID_3, STATUS_FAIL, "Invalid User Id.");
-            ConcurrentLinkedQueue<UnitOperationRecord> list = new ConcurrentLinkedQueue<>();
+            ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             list.add(unit2);
             DAO.registerAsyncStatusUnit(list);
@@ -185,9 +191,11 @@ public class AsyncStatusMgtDAOTest {
     public void testGetOperationRecords() {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-            OperationRecord operation2 = new OperationRecord(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
             assertEquals(0, DAO.getOperations(100, null).size());
@@ -205,12 +213,13 @@ public class AsyncStatusMgtDAOTest {
     public void testGetOperation() {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
             DAO.registerAsyncStatusWithoutUpdate(operation1);
             String fetchedOperationId = DAO.getOperations(100, null).get(0).getOperationId();
-            ResponseOperationRecord record = DAO.getOperation(fetchedOperationId);
+            OperationDO record = DAO.getOperation(fetchedOperationId);
 
             assertEquals(TYPE_USER_SHARE, record.getOperationType());
             assertEquals(SUBJECT_ID_1, record.getOperationSubjectId());
@@ -226,16 +235,17 @@ public class AsyncStatusMgtDAOTest {
     public void testGetUnitOperationRecordsForOperationId() {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
             String returnedId = DAO.registerAsyncStatusWithUpdate(operation1);
             String fetchedOperationId = DAO.getOperations(1000, null).get(0).getOperationId();
 
-            UnitOperationRecord unit1 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
+            UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                     RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
-            UnitOperationRecord unit2 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
+            UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                     RESIDENT_ORG_ID_3, STATUS_FAIL, "Invalid User Id.");
-            ConcurrentLinkedQueue<UnitOperationRecord> list = new ConcurrentLinkedQueue<>();
+            ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             list.add(unit2);
             DAO.registerAsyncStatusUnit(list);
@@ -251,21 +261,22 @@ public class AsyncStatusMgtDAOTest {
     public void testGetUnitOperation() {
 
         try {
-            OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+            OperationInitDTO
+                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                     RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
             String returnedId = DAO.registerAsyncStatusWithUpdate(operation1);
             String fetchedOperationId = DAO.getOperations(1000, null).get(0).getOperationId();
 
-            UnitOperationRecord unit1 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
+            UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                     RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
-            ConcurrentLinkedQueue<UnitOperationRecord> list = new ConcurrentLinkedQueue<>();
+            ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             DAO.registerAsyncStatusUnit(list);
             DAO.updateAsyncStatus(returnedId, STATUS_PARTIAL);
 
             String addedUnitOpId = DAO.getUnitOperationRecordsForOperationId(fetchedOperationId, 100, null).get(0).getUnitOperationId();
 
-            ResponseUnitOperationRecord record = DAO.getUnitOperation(addedUnitOpId);
+            UnitOperationDO record = DAO.getUnitOperation(addedUnitOpId);
             assertEquals(returnedId, record.getOperationId());
             assertEquals(RESIDENT_ORG_ID_1, record.getOperationInitiatedResourceId());
             assertEquals(RESIDENT_ORG_ID_4, record.getTargetOrgId());

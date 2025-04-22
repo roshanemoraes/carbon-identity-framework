@@ -4,7 +4,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.queue.AsyncOperationDataBuffer;
 
@@ -51,7 +51,7 @@ public class AsyncOperationDataBufferTest {
     @Test
     void testAddBelowThreshold() throws Exception {
 
-        UnitOperationRecord record = new UnitOperationRecord();
+        UnitOperationInitDTO record = new UnitOperationInitDTO();
         dataBuffer.add(record);
 
         assertFalse(dataBuffer.isEmpty());
@@ -62,7 +62,7 @@ public class AsyncOperationDataBufferTest {
     void testAddExceedThresholdTriggersPersistence() throws Exception {
 
         for (int i = 0; i < threshold; i++) {
-            dataBuffer.add(new UnitOperationRecord());
+            dataBuffer.add(new UnitOperationInitDTO());
         }
 
         TimeUnit.MILLISECONDS.sleep(2000);
@@ -73,7 +73,7 @@ public class AsyncOperationDataBufferTest {
     @Test
     void testPeriodicFlush() throws Exception {
 
-        UnitOperationRecord record = new UnitOperationRecord();
+        UnitOperationInitDTO record = new UnitOperationInitDTO();
         dataBuffer.add(record);
 
         TimeUnit.SECONDS.sleep(flushIntervalSeconds + 1);

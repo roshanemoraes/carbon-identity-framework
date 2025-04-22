@@ -22,7 +22,7 @@ package org.wso2.carbon.identity.framework.async.status.mgt.api.models;
  * Represents a record of a unit operation, which is a part of a larger asynchronous operation.
  * This class encapsulates the details of a unit operation, including its status and related information.
  */
-public class UnitOperationRecord {
+public class UnitOperationInitDTO {
 
     private String operationId;
     private String operationInitiatedResourceId;
@@ -30,12 +30,12 @@ public class UnitOperationRecord {
     private String unitOperationStatus;
     private String statusMessage;
 
-    public UnitOperationRecord() {
+    public UnitOperationInitDTO() {
 
     }
 
-    public UnitOperationRecord(String operationId, String operationInitiatedResourceId, String targetOrgId,
-                               String unitOperationStatus, String statusMessage) {
+    public UnitOperationInitDTO(String operationId, String operationInitiatedResourceId, String targetOrgId,
+                                String unitOperationStatus, String statusMessage) {
 
         this.operationId = operationId;
         this.operationInitiatedResourceId = operationInitiatedResourceId;

@@ -21,7 +21,7 @@ package org.wso2.carbon.identity.framework.async.status.mgt.internal.queue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class AsyncOperationDataBuffer {
 
     private static final Log LOG = LogFactory.getLog(AsyncOperationDataBuffer.class);
-    private final ConcurrentLinkedQueue<UnitOperationRecord> queue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<UnitOperationInitDTO> queue = new ConcurrentLinkedQueue<>();
     private final AsyncStatusMgtDAO asyncStatusMgtDAO;
     private final int threshold;
     private final int flushIntervalSeconds;
@@ -55,7 +55,7 @@ public class AsyncOperationDataBuffer {
      *
      * @param operation The operation to add.
      */
-    public synchronized void add(UnitOperationRecord operation) throws AsyncStatusMgtException {
+    public synchronized void add(UnitOperationInitDTO operation) throws AsyncStatusMgtException {
 
         queue.offer(operation);
         if (queue.size() >= threshold) {
@@ -78,7 +78,7 @@ public class AsyncOperationDataBuffer {
      *
      * @return The next operation, or null if the queue is empty.
      */
-    public synchronized UnitOperationRecord dequeue() {
+    public synchronized UnitOperationInitDTO dequeue() {
 
         return queue.poll();
     }

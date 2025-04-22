@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.framework.async.status.mgt.api.models;
+package org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos;
 
 import java.sql.Timestamp;
 
@@ -24,7 +24,7 @@ import java.sql.Timestamp;
  * Represents the response record of an asynchronous operation, including its status.
  * This class encapsulates the details of an operation along with its current status.
  */
-public class ResponseOperationRecord {
+public class OperationDO {
 
     private String operationId;
     private String correlationId;
@@ -38,15 +38,15 @@ public class ResponseOperationRecord {
     private Timestamp createdTime;
     private Timestamp modifiedTime;
 
-    public ResponseOperationRecord() {
+    public OperationDO() {
 
     }
 
-    public ResponseOperationRecord(String operationId, String correlationId, String operationType,
-                                   String operationSubjectType,
-                                   String operationSubjectId, String residentOrgId, String initiatorId,
-                                   String operationStatus, String operationPolicy, Timestamp createdTime,
-                                   Timestamp modifiedTime) {
+    public OperationDO(String operationId, String correlationId, String operationType,
+                       String operationSubjectType,
+                       String operationSubjectId, String residentOrgId, String initiatorId,
+                       String operationStatus, String operationPolicy, Timestamp createdTime,
+                       Timestamp modifiedTime) {
 
         this.operationId = operationId;
         this.correlationId = correlationId;

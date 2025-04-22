@@ -19,10 +19,9 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.api.service;
 
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.*;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
 
 import java.util.List;
 
@@ -34,13 +33,13 @@ public interface AsyncStatusMgtService {
 
     /**
      * Registers a new asynchronous operation status or updates an existing one based on the provided
-     * {@link OperationRecord}.
+     * {@link OperationInitDTO}.
      * This method is used to initiate the tracking of an asynchronous operation,
      * capturing its initial state and metadata.
      * If an operation with the same identifier already exists, the method can either create a new record or
      * update the existing one,depending on the 'updateIfExists' flag.
      *
-     * @param record         The {@link OperationRecord} containing details of the asynchronous operation,
+     * @param record         The {@link OperationInitDTO} containing details of the asynchronous operation,
      *                       including its type, subject, resource type, resident organization, initiator,
      *                       and initial status.
      * @param updateIfExists A boolean flag that determines whether to update an existing operation record
@@ -49,7 +48,7 @@ public interface AsyncStatusMgtService {
      * @return The unique identifier (operation ID) of the registered or updated asynchronous operation.
      */
 
-    String registerOperationStatus(OperationRecord record, boolean updateIfExists) throws AsyncStatusMgtException;
+    String registerOperationStatus(OperationInitDTO record, boolean updateIfExists) throws AsyncStatusMgtException;
 
     /**
      * Updates the status of an existing asynchronous operation identified by its operation ID.
@@ -67,18 +66,18 @@ public interface AsyncStatusMgtService {
      * This method is used to track the progress and status of individual units of work that make up a complex
      * asynchronous task.
      *
-     * @param operation The {@link UnitOperationRecord} containing details of the unit operation, including its
+     * @param operation The {@link UnitOperationInitDTO} containing details of the unit operation, including its
      *                  parent operation ID, resident resource ID, target organization, unit operation status,
      *                  status message, and creation timestamp.
      */
-    void registerUnitOperationStatus(UnitOperationRecord operation) throws AsyncStatusMgtException;
+    void registerUnitOperationStatus(UnitOperationInitDTO operation) throws AsyncStatusMgtException;
 
-    List<ResponseOperationRecord> getOperations(String after, String before, Integer limit, String filter)
+    List<OperationResponseDTO> getOperations(String after, String before, Integer limit, String filter)
             throws AsyncStatusMgtException;
 
-    ResponseOperationRecord getOperation(String operationId) throws AsyncStatusMgtException;
+    OperationResponseDTO getOperation(String operationId) throws AsyncStatusMgtException;
 
-    ResponseUnitOperationRecord getUnitOperation(String unitOperationId) throws AsyncStatusMgtException;
+    UnitOperationResponseDTO getUnitOperation(String unitOperationId) throws AsyncStatusMgtException;
 
     /**
      * Retrieves the status of unit operations associated with a specific operation ID.
@@ -89,10 +88,10 @@ public interface AsyncStatusMgtService {
      * @param before      The end timestamp for querying operations. Null or empty if no upper bound is required.
      * @param limit       The maximum number of unit operation records to retrieve.
      * @param filter      A filter expression to further refine the query (e.g., by status or type).
-     * @return A list of {@link ResponseUnitOperationRecord} objects representing the unit operation status records.
+     * @return A list of {@link UnitOperationDO} objects representing the unit operation status records.
      * @throws AsyncStatusMgtException If an error occurs while retrieving the unit operation status records.
      */
-    List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after, String before,
-                                                                    Integer limit, String filter)
+    List<UnitOperationResponseDTO> getUnitOperationStatusRecords(String operationId, String after, String before,
+                                                                 Integer limit, String filter)
             throws AsyncStatusMgtException;
 }

@@ -20,10 +20,10 @@ package org.wso2.carbon.identity.framework.async.status.mgt.internal.dao;
 
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -38,33 +38,33 @@ public interface AsyncStatusMgtDAO {
      * Registers a new asynchronous operation without checking for existing records.
      * This method directly inserts a new operation record into the database.
      *
-     * @param record The {@link OperationRecord} containing the details of the asynchronous operation.
+     * @param record The {@link OperationInitDTO} containing the details of the asynchronous operation.
      * @return The unique identifier (operation ID) of the newly registered operation.
      */
-    String registerAsyncStatusWithoutUpdate(OperationRecord record) throws AsyncStatusMgtException;
+    String registerAsyncStatusWithoutUpdate(OperationInitDTO record) throws AsyncStatusMgtException;
 
     /**
      * Registers a new asynchronous operation or updates an existing one if a record with the same operation ID exists.
      * This method allows for idempotent operation registration, ensuring that subsequent calls with the same record
      * either create a new entry or update the existing one.
      *
-     * @param record The {@link OperationRecord} containing the details of the asynchronous operation.
+     * @param record The {@link OperationInitDTO} containing the details of the asynchronous operation.
      * @return The unique identifier (operation ID) of the registered or updated operation.
      */
-    String registerAsyncStatusWithUpdate(OperationRecord record) throws AsyncStatusMgtException;
+    String registerAsyncStatusWithUpdate(OperationInitDTO record) throws AsyncStatusMgtException;
 
     /**
      * Saves a batch of unit asynchronous operations to the database.
      * This method is optimized for bulk insertion of unit operation records.
      *
-     * @param queue A queue containing {@link UnitOperationRecord} objects to be saved.
+     * @param queue A queue containing {@link UnitOperationInitDTO} objects to be saved.
      */
-    void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationRecord> queue) throws AsyncStatusMgtException;
+    void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationInitDTO> queue) throws AsyncStatusMgtException;
 
-    List<ResponseOperationRecord> getOperations(Integer limit, List<ExpressionNode> expressionNodes)
+    List<OperationDO> getOperations(Integer limit, List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtException;
 
-    ResponseOperationRecord getOperation(String operationId) throws AsyncStatusMgtException;
+    OperationDO getOperation(String operationId) throws AsyncStatusMgtException;
 
     /**
      * Retrieves a list of unit operation records for a specific operation ID.
@@ -73,14 +73,14 @@ public interface AsyncStatusMgtDAO {
      * @param operationId          The unique identifier of the operation.
      * @param limit                The maximum number of unit operation records to retrieve.
      * @param expressionNodes      A list of {@link ExpressionNode} objects used for filtering the query.
-     * @return A list of {@link ResponseUnitOperationRecord} objects matching the specified filters.
+     * @return A list of {@link UnitOperationDO} objects matching the specified filters.
      * @throws AsyncStatusMgtException If an error occurs while retrieving the unit operation records.
      */
-    List<ResponseUnitOperationRecord> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
-                                                                            List<ExpressionNode> expressionNodes)
+    List<UnitOperationDO> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
+                                                                List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtException;
 
-    ResponseUnitOperationRecord getUnitOperation(String unitOperationId) throws AsyncStatusMgtException;
+    UnitOperationDO getUnitOperation(String unitOperationId) throws AsyncStatusMgtException;
 
     /**
      * Updates the status of an existing asynchronous operation.

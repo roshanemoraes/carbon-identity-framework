@@ -27,15 +27,17 @@ import org.wso2.carbon.identity.core.model.OperationNode;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.*;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.impl.AsyncStatusMgtDAOImpl;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.filter.FilterTreeBuilder;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.queue.AsyncOperationDataBuffer;
+import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
+import org.wso2.carbon.identity.organization.management.service.OrganizationManagerImpl;
+import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,9 +45,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_REQUEST_BODY;
+import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.AND;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.ASC_SORT_ORDER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.DESC_SORT_ORDER;
@@ -60,6 +65,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
 
     private static final Log LOG = LogFactory.getLog(AsyncStatusMgtServiceImpl.class);
     private static final  AsyncStatusMgtServiceImpl INSTANCE = new AsyncStatusMgtServiceImpl();
+    private static final OrganizationManager organizationManager = new OrganizationManagerImpl();
     private static final AsyncStatusMgtDAO asyncStatusMgtDAO = new AsyncStatusMgtDAOImpl();
     private static final AsyncOperationDataBuffer operationDataBuffer =
             new AsyncOperationDataBuffer(asyncStatusMgtDAO, 100, 3);
@@ -70,7 +76,7 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     }
 
     @Override
-    public String registerOperationStatus(OperationRecord record, boolean updateIfExists)
+    public String registerOperationStatus(OperationInitDTO record, boolean updateIfExists)
             throws AsyncStatusMgtException {
 
         if (updateIfExists) {
@@ -86,40 +92,115 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
     }
 
     @Override
-    public void registerUnitOperationStatus(UnitOperationRecord unitOperationRecord) throws AsyncStatusMgtException {
+    public void registerUnitOperationStatus(UnitOperationInitDTO unitOperationInitDTO) throws AsyncStatusMgtException {
 
-        operationDataBuffer.add(unitOperationRecord);
+        operationDataBuffer.add(unitOperationInitDTO);
     }
 
     @Override
-    public List<ResponseOperationRecord> getOperations(String after, String before, Integer limit, String filter)
+    public List<OperationResponseDTO> getOperations(String after, String before, Integer limit, String filter)
             throws AsyncStatusMgtException {
 
         limit = validateLimit(limit);
         List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, DESC_SORT_ORDER);
-        return asyncStatusMgtDAO.getOperations(limit, expressionNodes);
+        List<OperationDO> operationDOList = asyncStatusMgtDAO.getOperations(limit, expressionNodes);
+
+        List<OperationResponseDTO> operationResponseDTOList = new ArrayList<>();
+        for (OperationDO operationDO : operationDOList) {
+
+            OperationResponseDTO dto = new OperationResponseDTO.Builder()
+                    .operationId(operationDO.getOperationId())
+                    .correlationId(operationDO.getCorrelationId())
+                    .operationType(operationDO.getOperationType())
+                    .operationSubjectType(operationDO.getOperationSubjectType())
+                    .operationSubjectId(operationDO.getOperationSubjectId())
+                    .residentOrgId(operationDO.getResidentOrgId())
+                    .initiatorId(operationDO.getInitiatorId())
+                    .operationStatus(operationDO.getOperationStatus())
+                    .operationPolicy(operationDO.getOperationPolicy())
+                    .createdTime(operationDO.getCreatedTime())
+                    .modifiedTime(operationDO.getModifiedTime())
+                    .build();
+            operationResponseDTOList.add(dto);
+        }
+        return operationResponseDTOList;
     }
 
     @Override
-    public ResponseOperationRecord getOperation(String operationId) throws AsyncStatusMgtException {
+    public OperationResponseDTO getOperation(String operationId) throws AsyncStatusMgtException {
 
-        return asyncStatusMgtDAO.getOperation(operationId);
+        OperationDO operationDO = asyncStatusMgtDAO.getOperation(operationId);
+
+        return new OperationResponseDTO.Builder()
+                .operationId(operationDO.getOperationId())
+                .correlationId(operationDO.getCorrelationId())
+                .operationType(operationDO.getOperationType())
+                .operationSubjectType(operationDO.getOperationSubjectType())
+                .operationSubjectId(operationDO.getOperationSubjectId())
+                .residentOrgId(operationDO.getResidentOrgId())
+                .initiatorId(operationDO.getInitiatorId())
+                .operationStatus(operationDO.getOperationStatus())
+                .operationPolicy(operationDO.getOperationPolicy())
+                .createdTime(operationDO.getCreatedTime())
+                .modifiedTime(operationDO.getModifiedTime())
+                .build();
     }
 
     @Override
-    public ResponseUnitOperationRecord getUnitOperation(String unitOperationId) throws AsyncStatusMgtException {
+    public UnitOperationResponseDTO getUnitOperation(String unitOperationId) throws AsyncStatusMgtException {
 
-        return asyncStatusMgtDAO.getUnitOperation(unitOperationId);
+        UnitOperationDO unitOperationDO = asyncStatusMgtDAO.getUnitOperation(unitOperationId);
+        String targetOrgName;
+        try {
+            targetOrgName = organizationManager.getOrganizationNameById(unitOperationDO.getTargetOrgId());
+        } catch (OrganizationManagementException e) {
+            throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID);
+        }
+        return new UnitOperationResponseDTO.Builder()
+                .unitOperationId(unitOperationDO.getUnitOperationId())
+                .operationId(unitOperationDO.getOperationId())
+                .operationInitiatedResourceId(unitOperationDO.getOperationInitiatedResourceId())
+                .targetOrgId(unitOperationDO.getTargetOrgId())
+                .targetOrgName(targetOrgName)
+                .unitOperationStatus(unitOperationDO.getUnitOperationStatus())
+                .statusMessage(unitOperationDO.getStatusMessage())
+                .createdTime(unitOperationDO.getCreatedTime())
+                .build();
     }
 
     @Override
-    public List<ResponseUnitOperationRecord> getUnitOperationStatusRecords(String operationId, String after,
-                                                                           String before, Integer limit, String filter)
+    public List<UnitOperationResponseDTO> getUnitOperationStatusRecords(String operationId, String after,
+                                                                        String before, Integer limit, String filter)
             throws AsyncStatusMgtException {
 
         limit = validateLimit(limit);
         List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, ASC_SORT_ORDER);
-        return asyncStatusMgtDAO.getUnitOperationRecordsForOperationId(operationId, limit, expressionNodes);
+        List<UnitOperationDO> unitOperations = asyncStatusMgtDAO.getUnitOperationRecordsForOperationId(operationId, limit, expressionNodes);
+        List<String> targetOrgIds = new ArrayList<>();
+        for (UnitOperationDO unitOperationDO : unitOperations) {
+            targetOrgIds.add(unitOperationDO.getTargetOrgId());
+        }
+        Map<String, String> orgIdToNameMap;
+        try {
+            orgIdToNameMap = organizationManager.getOrganizationIdToNameMap(targetOrgIds);
+        } catch (OrganizationManagementException e) {
+            throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP);
+        }
+        List<UnitOperationResponseDTO> unitOperationResponseDTOList = new ArrayList<>();
+        for (UnitOperationDO unitOperationDO : unitOperations) {
+            UnitOperationResponseDTO dto = new UnitOperationResponseDTO.Builder()
+                    .unitOperationId(unitOperationDO.getUnitOperationId())
+                    .operationId(unitOperationDO.getOperationId())
+                    .operationInitiatedResourceId(unitOperationDO.getOperationInitiatedResourceId())
+                    .targetOrgId(unitOperationDO.getTargetOrgId())
+                    .targetOrgName(orgIdToNameMap.get(unitOperationDO.getTargetOrgId()))
+                    .unitOperationStatus(unitOperationDO.getUnitOperationStatus())
+                    .statusMessage(unitOperationDO.getStatusMessage())
+                    .createdTime(unitOperationDO.getCreatedTime())
+                    .build();
+            unitOperationResponseDTOList.add(dto);
+        }
+        return unitOperationResponseDTOList;
     }
 
     // Helper methods for curser-based pagination and filtering.
@@ -144,25 +225,6 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
         }
         return expressionNodes;
     }
-
-//    private String getPaginatedFilterForAscendingOrder(String paginatedFilter, String after, String before)
-//            throws AsyncStatusMgtClientException {
-//
-//        try {
-//            if (StringUtils.isNotBlank(before)) {
-//                String decodedString = new String(Base64.getDecoder().decode(before), StandardCharsets.UTF_8);
-//                paginatedFilter += StringUtils.isNotBlank(paginatedFilter) ? " and before lt "
-//                        + decodedString : "before lt " + decodedString;
-//            } else if (StringUtils.isNotBlank(after)) {
-//                String decodedString = new String(Base64.getDecoder().decode(after), StandardCharsets.UTF_8);
-//                paginatedFilter += StringUtils.isNotBlank(paginatedFilter) ? " and after gt "
-//                        + decodedString : "after gt " + decodedString;
-//            }
-//        } catch (IllegalArgumentException e) {
-//            throw handleClientException(ERROR_CODE_INVALID_REQUEST_BODY);
-//        }
-//        return paginatedFilter;
-//    }
 
     private String getPaginatedFilterForDescendingOrder(String paginatedFilter, String after, String before)
             throws AsyncStatusMgtClientException {

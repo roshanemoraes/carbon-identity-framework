@@ -1,6 +1,9 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -10,13 +13,17 @@ import org.wso2.carbon.identity.common.testng.WithH2Database;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.ResponseUnitOperationRecord;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationRecord;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationResponseDTO;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationResponseDTO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl.AsyncStatusMgtServiceImpl;
 import org.wso2.carbon.identity.framework.async.status.mgt.util.TestUtils;
+import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
+import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementException;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -24,12 +31,15 @@ import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.when;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_1_PREFIX;
@@ -44,7 +54,6 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constants.Test
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_4;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAIL;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_ONGOING;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_PARTIAL;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1_PREFIX;
@@ -65,6 +74,10 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constants.Test
         files = { "dbScripts/async_operation_status.sql" })
 public class AsyncStatusMgtServiceImplTest {
 
+    @Mock
+    private OrganizationManager organizationManager;
+
+    @InjectMocks
     private AsyncStatusMgtService service;
 
     @BeforeClass
@@ -77,6 +90,7 @@ public class AsyncStatusMgtServiceImplTest {
     public void setUp() throws Exception {
 
         cleanUpDB();
+        MockitoAnnotations.openMocks(this);
     }
 
     @AfterClass
@@ -88,9 +102,9 @@ public class AsyncStatusMgtServiceImplTest {
     @Test(priority = 0)
     public void testRegisterOperationStatusWithoutUpdate() throws AsyncStatusMgtException {
 
-        OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_APP_SHARE, SUBJECT_TYPE_APPLICATION,
+        OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_APP_SHARE, SUBJECT_TYPE_APPLICATION,
                 SUBJECT_ID_1, RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-        OperationRecord operation2 = new OperationRecord(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_2,
+        OperationInitDTO operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_2,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
         service.registerOperationStatus(operation1, false);
@@ -104,9 +118,9 @@ public class AsyncStatusMgtServiceImplTest {
     @Test(priority = 1)
     public void testRegisterOperationStatusWithUpdate() throws AsyncStatusMgtException {
 
-        OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+        OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-        OperationRecord operation2 = new OperationRecord(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+        OperationInitDTO operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
         service.registerOperationStatus(operation1, true);
@@ -121,7 +135,7 @@ public class AsyncStatusMgtServiceImplTest {
     public void testPagination() throws AsyncStatusMgtException {
 
         for (int i = 0; i < 10; i++) {
-            OperationRecord operation = new OperationRecord(CORR_ID_1_PREFIX + i, TYPE_USER_SHARE,
+            OperationInitDTO operation = new OperationInitDTO(CORR_ID_1_PREFIX + i, TYPE_USER_SHARE,
                     SUBJECT_TYPE_USER, SUBJECT_ID_1_PREFIX + i, RESIDENT_ORG_ID_1, INITIATOR_ID_1,
                     POLICY_SELECTIVE_SHARE);
             service.registerOperationStatus(operation, false);
@@ -156,13 +170,14 @@ public class AsyncStatusMgtServiceImplTest {
     @Test(priority = 3)
     public void testFiltering() throws AsyncStatusMgtException, InterruptedException {
 
-        OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_APP_SHARE, SUBJECT_TYPE_APPLICATION,
+        OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_APP_SHARE, SUBJECT_TYPE_APPLICATION,
                 SUBJECT_ID_1, RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-        OperationRecord operation2 = new OperationRecord(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_2,
+        OperationInitDTO operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_2,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-        OperationRecord operation3 = new OperationRecord(CORR_ID_3, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_3,
+        OperationInitDTO operation3 = new OperationInitDTO(CORR_ID_3, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_3,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-        OperationRecord operation4 = new OperationRecord(CORR_ID_4, TYPE_USER_BULK_IMPORT, SUBJECT_TYPE_USER, SUBJECT_ID_3,
+        OperationInitDTO
+                operation4 = new OperationInitDTO(CORR_ID_4, TYPE_USER_BULK_IMPORT, SUBJECT_TYPE_USER, SUBJECT_ID_3,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
         service.registerOperationStatus(operation1, false);
@@ -195,12 +210,12 @@ public class AsyncStatusMgtServiceImplTest {
     @Test(priority = 4)
     public void testUpdateOperationStatus() throws AsyncStatusMgtException {
 
-        OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+        OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
         service.registerOperationStatus(operation1, false);
 
-        ResponseOperationRecord fetchedOperation = service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY,
+        OperationResponseDTO fetchedOperation = service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY,
                 null, StringUtils.EMPTY).get(0);
         String initialStatus = fetchedOperation.getOperationStatus();
         assertEquals(STATUS_ONGOING, initialStatus);
@@ -214,16 +229,22 @@ public class AsyncStatusMgtServiceImplTest {
     }
 
     @Test(priority = 5)
-    public void testRegisterUnitOperationStatus() throws AsyncStatusMgtException, InterruptedException {
+    public void testRegisterUnitOperationStatus()
+            throws AsyncStatusMgtException, InterruptedException, OrganizationManagementException {
 
-        OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+        OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
         String returnedId = service.registerOperationStatus(operation1, false);
         String fetchedOperationId = service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY, 5, StringUtils.EMPTY).get(0).getOperationId();
 
-        UnitOperationRecord unit1 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
-                RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
+        UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
+                "10084a8d-113f-4211-a0d5-efe36b082211", STATUS_SUCCESS, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
+
+        Map<String, String> mockedOrgMap = new HashMap<>();
+        mockedOrgMap.put(RESIDENT_ORG_ID_4, "Organization 4");
+        when(organizationManager.getOrganizationIdToNameMap(anyList())).thenReturn(mockedOrgMap);
+
         Thread.sleep(4000);
 
         String returnedOperationId = service.getUnitOperationStatusRecords(fetchedOperationId, StringUtils.EMPTY, StringUtils.EMPTY, 10, StringUtils.EMPTY).get(0).getOperationId();
@@ -233,21 +254,21 @@ public class AsyncStatusMgtServiceImplTest {
     @Test(priority = 6)
     public void testGetUnitOperationStatusRecords() throws AsyncStatusMgtException, InterruptedException {
 
-        OperationRecord operation1 = new OperationRecord(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+        OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
         String returnedId = service.registerOperationStatus(operation1, false);
         String fetchedOperationId = service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY, 5, StringUtils.EMPTY).get(0).getOperationId();
 
-        UnitOperationRecord unit1 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
+        UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                 RESIDENT_ORG_ID_2, STATUS_SUCCESS, StringUtils.EMPTY);
-        UnitOperationRecord unit2 = new UnitOperationRecord(returnedId, RESIDENT_ORG_ID_1,
+        UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                 RESIDENT_ORG_ID_3, STATUS_FAIL, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
         service.registerUnitOperationStatus(unit2);
         Thread.sleep(4000);
 
-        List<ResponseUnitOperationRecord> unitOperations = service.getUnitOperationStatusRecords(fetchedOperationId, StringUtils.EMPTY, StringUtils.EMPTY, 10, StringUtils.EMPTY);
+        List<UnitOperationResponseDTO> unitOperations = service.getUnitOperationStatusRecords(fetchedOperationId, StringUtils.EMPTY, StringUtils.EMPTY, 10, StringUtils.EMPTY);
 
         assertEquals(2, unitOperations.size());
         assertEquals(returnedId, unitOperations.get(0).getOperationId());

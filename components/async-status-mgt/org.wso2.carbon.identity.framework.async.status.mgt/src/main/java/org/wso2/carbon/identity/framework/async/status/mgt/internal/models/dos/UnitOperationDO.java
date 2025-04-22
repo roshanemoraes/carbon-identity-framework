@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.framework.async.status.mgt.api.models;
+package org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos;
 
 import java.sql.Timestamp;
 
@@ -24,7 +24,7 @@ import java.sql.Timestamp;
  * Represents the response unit record of an asynchronous operation, including its status.
  * This class encapsulates the details of an unit operation along with its current status.
  */
-public class ResponseUnitOperationRecord {
+public class UnitOperationDO {
     private String unitOperationId;
     private String operationId;
     private String operationInitiatedResourceId;
@@ -33,9 +33,9 @@ public class ResponseUnitOperationRecord {
     private String statusMessage;
     private Timestamp createdTime;
 
-    public ResponseUnitOperationRecord(String unitOperationId, String operationId, String operationInitiatedResourceId,
-                                       String targetOrgId, String unitOperationStatus, String statusMessage,
-                                       Timestamp createdTime) {
+    public UnitOperationDO(String unitOperationId, String operationId, String operationInitiatedResourceId,
+                           String targetOrgId, String unitOperationStatus, String statusMessage,
+                           Timestamp createdTime) {
 
         this.unitOperationId = unitOperationId;
         this.operationId = operationId;
@@ -46,7 +46,7 @@ public class ResponseUnitOperationRecord {
         this.createdTime = createdTime;
     }
 
-    public ResponseUnitOperationRecord() {
+    public UnitOperationDO() {
 
     }
 
