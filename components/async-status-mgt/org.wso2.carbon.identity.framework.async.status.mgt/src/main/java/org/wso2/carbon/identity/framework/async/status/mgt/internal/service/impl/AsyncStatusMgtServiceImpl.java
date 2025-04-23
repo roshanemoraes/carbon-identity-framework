@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -29,6 +29,7 @@ import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncSt
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.*;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.component.AsyncStatusMgtDataHolder;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.impl.AsyncStatusMgtDAOImpl;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.filter.FilterTreeBuilder;
@@ -36,7 +37,6 @@ import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.O
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.queue.AsyncOperationDataBuffer;
 import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
-import org.wso2.carbon.identity.organization.management.service.OrganizationManagerImpl;
 import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementException;
 
 import java.io.IOException;
@@ -64,8 +64,9 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.
 public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
 
     private static final Log LOG = LogFactory.getLog(AsyncStatusMgtServiceImpl.class);
-    private static final  AsyncStatusMgtServiceImpl INSTANCE = new AsyncStatusMgtServiceImpl();
-    private static final OrganizationManager organizationManager = new OrganizationManagerImpl();
+    private static final AsyncStatusMgtServiceImpl INSTANCE = new AsyncStatusMgtServiceImpl();
+    private static OrganizationManager organizationManager = AsyncStatusMgtDataHolder.getInstance()
+            .getOrganizationManager();
     private static final AsyncStatusMgtDAO asyncStatusMgtDAO = new AsyncStatusMgtDAOImpl();
     private static final AsyncOperationDataBuffer operationDataBuffer =
             new AsyncOperationDataBuffer(asyncStatusMgtDAO, 100, 3);
@@ -186,21 +187,24 @@ public class AsyncStatusMgtServiceImpl implements AsyncStatusMgtService {
         } catch (OrganizationManagementException e) {
             throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP);
         }
-        List<UnitOperationResponseDTO> unitOperationResponseDTOList = new ArrayList<>();
-        for (UnitOperationDO unitOperationDO : unitOperations) {
-            UnitOperationResponseDTO dto = new UnitOperationResponseDTO.Builder()
-                    .unitOperationId(unitOperationDO.getUnitOperationId())
-                    .operationId(unitOperationDO.getOperationId())
-                    .operationInitiatedResourceId(unitOperationDO.getOperationInitiatedResourceId())
-                    .targetOrgId(unitOperationDO.getTargetOrgId())
-                    .targetOrgName(orgIdToNameMap.get(unitOperationDO.getTargetOrgId()))
-                    .unitOperationStatus(unitOperationDO.getUnitOperationStatus())
-                    .statusMessage(unitOperationDO.getStatusMessage())
-                    .createdTime(unitOperationDO.getCreatedTime())
-                    .build();
-            unitOperationResponseDTOList.add(dto);
+        if (!orgIdToNameMap.isEmpty()){
+            List<UnitOperationResponseDTO> unitOperationResponseDTOList = new ArrayList<>();
+            for (UnitOperationDO unitOperationDO : unitOperations) {
+                UnitOperationResponseDTO dto = new UnitOperationResponseDTO.Builder()
+                        .unitOperationId(unitOperationDO.getUnitOperationId())
+                        .operationId(unitOperationDO.getOperationId())
+                        .operationInitiatedResourceId(unitOperationDO.getOperationInitiatedResourceId())
+                        .targetOrgId(unitOperationDO.getTargetOrgId())
+                        .targetOrgName(orgIdToNameMap.get(unitOperationDO.getTargetOrgId()))
+                        .unitOperationStatus(unitOperationDO.getUnitOperationStatus())
+                        .statusMessage(unitOperationDO.getStatusMessage())
+                        .createdTime(unitOperationDO.getCreatedTime())
+                        .build();
+                unitOperationResponseDTOList.add(dto);
+            }
+            return unitOperationResponseDTOList;
         }
-        return unitOperationResponseDTOList;
+        throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP);
     }
 
     // Helper methods for curser-based pagination and filtering.

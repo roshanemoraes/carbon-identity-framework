@@ -80,22 +80,27 @@ public class OperationResponseDTO {
     }
 
     public String getOperationStatus() {
+
         return operationStatus;
     }
 
     public String getOperationPolicy() {
+
         return operationPolicy;
     }
 
     public Timestamp getCreatedTime() {
+
         return createdTime;
     }
 
     public Timestamp getModifiedTime() {
+
         return modifiedTime;
     }
 
     public static class Builder {
+
         private String operationId;
         private String correlationId;
         private String operationType;

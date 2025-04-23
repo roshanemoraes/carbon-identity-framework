@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,10 +18,14 @@
 
 package org.wso2.carbon.identity.framework.async.status.mgt.internal.component;
 
+import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
+
 /**
  * Data holder for asynchronous operation status management.
  */
 public class AsyncStatusMgtDataHolder {
+
+    private OrganizationManager organizationManager;
 
     private static final AsyncStatusMgtDataHolder INSTANCE = new AsyncStatusMgtDataHolder();
 
@@ -37,5 +41,25 @@ public class AsyncStatusMgtDataHolder {
     public static AsyncStatusMgtDataHolder getInstance() {
 
         return INSTANCE;
+    }
+
+    /**
+     * Get the OrganizationManager.
+     *
+     * @return OrganizationManager instance.
+     */
+    public OrganizationManager getOrganizationManager() {
+
+        return organizationManager;
+    }
+
+    /**
+     * Set the OrganizationManager.
+     *
+     * @param organizationManager OrganizationManager instance.
+     */
+    public void setOrganizationManager(OrganizationManager organizationManager) {
+
+        this.organizationManager = organizationManager;
     }
 }

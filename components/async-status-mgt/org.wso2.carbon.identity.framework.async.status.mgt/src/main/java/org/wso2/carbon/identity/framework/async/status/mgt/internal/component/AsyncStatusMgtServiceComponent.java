@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -25,8 +25,12 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl.AsyncStatusMgtServiceImpl;
+import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
 
 /**
  * OSGi service component for asynchronous operation status management bundle.
@@ -60,5 +64,24 @@ public class AsyncStatusMgtServiceComponent {
         } catch (Throwable e) {
             LOG.error("Error while deactivating Action management component.", e);
         }
+    }
+
+    @Reference(
+            name = "organization.service",
+            service = OrganizationManager.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetOrganizationManager"
+    )
+    protected void setOrganizationManager(OrganizationManager organizationManager) {
+
+        AsyncStatusMgtDataHolder.getInstance().setOrganizationManager(organizationManager);
+        LOG.debug("OrganizationManager set in Async Status Management bundle.");
+    }
+
+    protected void unsetOrganizationManager(OrganizationManager organizationManager) {
+
+        AsyncStatusMgtDataHolder.getInstance().setOrganizationManager(null);
+        LOG.debug("OrganizationManager unset in Async Status Management bundle.");
     }
 }

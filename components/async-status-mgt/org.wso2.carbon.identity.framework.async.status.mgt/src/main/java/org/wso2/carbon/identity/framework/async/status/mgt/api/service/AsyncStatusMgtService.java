@@ -20,7 +20,6 @@ package org.wso2.carbon.identity.framework.async.status.mgt.api.service;
 
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.*;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
 
 import java.util.List;

@@ -1,9 +1,6 @@
 package org.wso2.carbon.identity.framework.async.status.mgt.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -16,10 +13,9 @@ import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncSt
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationResponseDTO;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.service.AsyncStatusMgtService;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.component.AsyncStatusMgtDataHolder;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl.AsyncStatusMgtServiceImpl;
 import org.wso2.carbon.identity.framework.async.status.mgt.util.TestUtils;
 import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
@@ -36,9 +32,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_1;
@@ -74,23 +70,24 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constants.Test
         files = { "dbScripts/async_operation_status.sql" })
 public class AsyncStatusMgtServiceImplTest {
 
-    @Mock
-    private OrganizationManager organizationManager;
-
-    @InjectMocks
     private AsyncStatusMgtService service;
+    private OrganizationManager organizationManager;
+    private final Map<String, String> mockedOrgMap = new HashMap<>();
 
     @BeforeClass
-    public void initTest() throws Exception {
+    public void setUpClass() throws Exception {
 
         service = new AsyncStatusMgtServiceImpl();
+        organizationManager = mock(OrganizationManager.class);
+        AsyncStatusMgtDataHolder.getInstance().setOrganizationManager(organizationManager);
+        mockedOrgMap.put(RESIDENT_ORG_ID_4, "Organization 4");
     }
 
     @BeforeMethod
     public void setUp() throws Exception {
 
         cleanUpDB();
-        MockitoAnnotations.openMocks(this);
+//        MockitoAnnotations.openMocks(this);
     }
 
     @AfterClass
@@ -238,15 +235,13 @@ public class AsyncStatusMgtServiceImplTest {
         String fetchedOperationId = service.getOperations(StringUtils.EMPTY, StringUtils.EMPTY, 5, StringUtils.EMPTY).get(0).getOperationId();
 
         UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                "10084a8d-113f-4211-a0d5-efe36b082211", STATUS_SUCCESS, StringUtils.EMPTY);
+                RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
 
-        Map<String, String> mockedOrgMap = new HashMap<>();
-        mockedOrgMap.put(RESIDENT_ORG_ID_4, "Organization 4");
-        when(organizationManager.getOrganizationIdToNameMap(anyList())).thenReturn(mockedOrgMap);
+//        mockedOrgMap.put(RESIDENT_ORG_ID_4, "Organization 4");
 
         Thread.sleep(4000);
-
+        when(organizationManager.getOrganizationIdToNameMap(anyList())).thenReturn(mockedOrgMap);
         String returnedOperationId = service.getUnitOperationStatusRecords(fetchedOperationId, StringUtils.EMPTY, StringUtils.EMPTY, 10, StringUtils.EMPTY).get(0).getOperationId();
         assertEquals(returnedId, returnedOperationId);
     }
