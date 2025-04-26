@@ -80,6 +80,7 @@
         <module>components/registration-framework</module>
         <module>features/extension-mgt</module>
         <module>components/consent-server-configs-mgt</module>
+        <module>components/async-operation-status-mgt</module>
         <module>features/security-mgt</module>
         <module>features/claim-mgt</module>
         <module>features/identity-core</module>
@@ -118,7 +119,6 @@
         <module>features/servlet-mgt</module>
         <module>features/system-config-mgt</module>
         <module>features/registration-framework</module>
-        <module>components/async-status-mgt</module>
     </modules>
 
 
