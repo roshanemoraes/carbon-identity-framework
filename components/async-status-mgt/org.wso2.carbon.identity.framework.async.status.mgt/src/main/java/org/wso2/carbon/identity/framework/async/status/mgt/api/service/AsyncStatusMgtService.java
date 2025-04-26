@@ -23,7 +23,6 @@ import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationI
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationResponseDTO;
-import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementException;
 
 import java.util.List;
 
@@ -123,9 +122,8 @@ public interface AsyncStatusMgtService {
      * @param filter      A filter expression to further refine the query (e.g., by status or type).
      * @return A list of {@link UnitOperationResponseDTO} objects representing the unit operation status records.
      * @throws AsyncStatusMgtException         If an error occurs while retrieving the unit operation status records.
-     * @throws OrganizationManagementException If an error occurs while resolving organization context.
      */
     List<UnitOperationResponseDTO> getUnitOperationStatusRecords(String operationId, String tenantDomain, String after,
                                                                  String before, Integer limit, String filter)
-            throws AsyncStatusMgtException, OrganizationManagementException;
+            throws AsyncStatusMgtException;
 }

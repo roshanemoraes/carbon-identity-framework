@@ -255,6 +255,7 @@ public class AsyncStatusMgtServiceImplTest {
         String currentTime = StringUtils.EMPTY;
         int i = 0;
         for (OperationInitDTO operation : operations) {
+            Thread.sleep(100);
             if (i == 3) {
                 currentTime = new Timestamp(new Date().getTime()).toString();
                 Thread.sleep(waitTime);
