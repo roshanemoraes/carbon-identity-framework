@@ -35,7 +35,7 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.AND;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.NOT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncStatusMgtConstants.OR;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.Utils.handleClientException;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.AsyncStatusMgtExceptionHandler.handleClientException;
 
 /**
  * This class is basically for creating a binary tree which preserves the precedence order with simple

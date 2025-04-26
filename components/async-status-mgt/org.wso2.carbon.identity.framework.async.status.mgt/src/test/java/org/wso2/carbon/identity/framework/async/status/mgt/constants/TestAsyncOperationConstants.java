@@ -12,6 +12,9 @@ public class TestAsyncOperationConstants {
     public static final String RESIDENT_ORG_ID_4 = "7cb4ab7e-9a25-44bd-a9e0-cf4e07d804dc";
     public static final String RESIDENT_ORG_ID_5 = "440ad5b6-6a41-4da7-aadd-272995d0e5db";
 
+    // Tenant Domains.
+    public static final String TENANT_DOMAIN_1 = "d6fc0b22-5b7f-461b-aef8-775a78187095";
+
     // Correlation ID.
     public static final String CORR_ID_1 = "440abcd-6a41-4da7-aadd-272995d0e5db";
     public static final String CORR_ID_1_PREFIX = "440abcd-6a41-4da7-aadd-272995d0e5d";

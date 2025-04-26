@@ -46,8 +46,10 @@ public enum ErrorMessage {
             "Provided request body content is not in the expected format."),
     ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP("65125", "Error while retrieving org names.",
             "Error while retrieving org names from org id map."),
-    ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID("65124", "Error while retrieving org name.",
-            "Error while retrieving org name from org id.");
+    ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID("65126", "Error while retrieving org name.",
+            "Error while retrieving org name from org id."),
+    ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN("65127", "Error while resolving organization id",
+            "Error while resolving organization id from tenant domain.");
 
     private final String code;
     private final String message;

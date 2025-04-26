@@ -11,9 +11,9 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.const
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.INITIATED_USER_ID_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.MODIFIED_TIME_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.OPERATION_ID_FILTER;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.OPERATION_TYPE_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.POLICY_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.STATUS_FILTER;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.OPERATION_TYPE_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.STATUS_MESSAGE_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.SUBJECT_ID_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.SUBJECT_TYPE_FILTER;
@@ -25,15 +25,15 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.const
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_USER_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.LAST_MODIFIED;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.POLICY;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.RESIDENT_RESOURCE_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS_MESSAGE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.RESIDENT_RESOURCE_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS_MESSAGE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.TARGET_ORG_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_ID;
 
 /**
  * Asynchronous operation status management constants

@@ -18,13 +18,13 @@
 
 package org.wso2.carbon.identity.framework.async.status.mgt.internal.util;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.wso2.carbon.database.utils.jdbc.NamedJdbcTemplate;
 import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
+
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.AsyncStatusMgtExceptionHandler.handleServerException;
 
 /**
  * Util Methods.
@@ -53,40 +53,4 @@ public class Utils {
     public static NamedJdbcTemplate getNewTemplate() {
         return new NamedJdbcTemplate(IdentityDatabaseUtil.getDataSource());
     }
-
-    /**
-     * Throw an OrganizationManagementClientException upon client side error in organization management.
-     *
-     * @param error The error enum.
-     * @param data  The error message data.
-     * @return OrganizationManagementClientException
-     */
-    public static AsyncStatusMgtClientException handleClientException(
-            ErrorMessage error, String... data) {
-
-        String description = error.getDescription();
-        if (ArrayUtils.isNotEmpty(data)) {
-            description = String.format(description, data);
-        }
-        return new AsyncStatusMgtClientException(error.getMessage(), description, error.getCode());
-    }
-
-    /**
-     * Throw an AsyncStatusMgtServerException upon server side error in organization management.
-     *
-     * @param error The error enum.
-     * @param e     The error.
-     * @param data  The error message data.
-     * @return AsyncStatusMgtServerException
-     */
-    public static AsyncStatusMgtServerException handleServerException(
-            ErrorMessage error, Throwable e, String... data) {
-
-        String description = error.getDescription();
-        if (ArrayUtils.isNotEmpty(data)) {
-            description = String.format(description, data);
-        }
-        return new AsyncStatusMgtServerException(error.getMessage(), description, error.getCode(), e);
-    }
-
 }

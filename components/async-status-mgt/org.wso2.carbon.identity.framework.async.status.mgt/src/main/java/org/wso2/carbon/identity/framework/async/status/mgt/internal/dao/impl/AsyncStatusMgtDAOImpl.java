@@ -25,17 +25,18 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.database.utils.jdbc.NamedJdbcTemplate;
 import org.wso2.carbon.database.utils.jdbc.NamedPreparedStatement;
 import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
+import org.wso2.carbon.database.utils.jdbc.exceptions.TransactionException;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.OperationStatus;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
-import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.FilterQueryBuilder;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.OperationDO;
+import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.util.Utils;
 
 import java.sql.Connection;
@@ -59,15 +60,14 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.const
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.CREATE_ASYNC_OPERATION;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.CREATE_ASYNC_OPERATION_UNIT_BATCH;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.DELETE_RECENT_OPERATION_RECORD;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.CREATED_TIME_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATION;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS_NEW;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS_TAIL;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATION;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS_TAIL;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.LIMIT;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.FilterPlaceholders.CREATED_TIME_FILTER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CORRELATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CREATED_AT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.ID;
@@ -75,15 +75,15 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.const
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_USER_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.LAST_MODIFIED;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_TYPE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.POLICY;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.RESIDENT_RESOURCE_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS_MESSAGE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.SUBJECT_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.OPERATION_TYPE;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.RESIDENT_RESOURCE_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.STATUS_MESSAGE;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.TARGET_ORG_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.UNIT_OPERATION_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.SQLConstants.UPDATE_ASYNC_OPERATION;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.Utils.isMSSqlDB;
 
@@ -175,13 +175,18 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     @Override
     public void updateAsyncStatus(String operationId, String status) throws AsyncStatusMgtException {
 
-        try (NamedPreparedStatement statement = new NamedPreparedStatement(IdentityDatabaseUtil
-                .getDBConnection(false), UPDATE_ASYNC_OPERATION)) {
-            statement.setString(STATUS, status);
-            statement.setString(LAST_MODIFIED, new Timestamp(new Date().getTime()).toString());
-            statement.setString(ID, operationId);
-            statement.executeUpdate();
-        } catch (SQLException e) {
+        NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
+        try {
+            namedJdbcTemplate.withTransaction(template -> {
+                template.executeUpdate(UPDATE_ASYNC_OPERATION,
+                        statement -> {
+                            statement.setString(STATUS, status);
+                            statement.setString(LAST_MODIFIED, new Timestamp(new Date().getTime()).toString());
+                            statement.setString(ID, operationId);
+                        });
+                return null;
+            });
+        } catch (TransactionException e) {
             throw new AsyncStatusMgtServerException("Error while updating Async Status information in the system.", e);
         }
     }
@@ -191,60 +196,61 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
             throws AsyncStatusMgtException {
 
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
-
-        try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);
-             NamedPreparedStatement statement = new NamedPreparedStatement(connection,
-                     CREATE_ASYNC_OPERATION_UNIT_BATCH, ID)) {
-
-            for (UnitOperationInitDTO context : queue) {
-                String unitOperationId = UUID.randomUUID().toString();
-                statement.setString(OPERATION_ID, context.getOperationId());
-                statement.setString(UNIT_OPERATION_ID, unitOperationId);
-                statement.setString(RESIDENT_RESOURCE_ID, context.getOperationInitiatedResourceId());
-                statement.setString(TARGET_ORG_ID, context.getTargetOrgId());
-                statement.setString(STATUS, context.getUnitOperationStatus());
-                statement.setString(STATUS_MESSAGE, context.getStatusMessage());
-                statement.setString(CREATED_AT, currentTimestamp);
-                statement.addBatch();
-            }
-            statement.executeBatch();
-        } catch (SQLException e) {
+        NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
+        try {
+            namedJdbcTemplate.withTransaction(template ->
+                template.executeBatchInsert(CREATE_ASYNC_OPERATION_UNIT_BATCH,
+                    statement -> {
+                        for (UnitOperationInitDTO context : queue) {
+                            String unitOperationId = UUID.randomUUID().toString();
+                            statement.setString(OPERATION_ID, context.getOperationId());
+                            statement.setString(UNIT_OPERATION_ID, unitOperationId);
+                            statement.setString(RESIDENT_RESOURCE_ID, context.getOperationInitiatedResourceId());
+                            statement.setString(TARGET_ORG_ID, context.getTargetOrgId());
+                            statement.setString(STATUS, context.getUnitOperationStatus());
+                            statement.setString(STATUS_MESSAGE, context.getStatusMessage());
+                            statement.setString(CREATED_AT, currentTimestamp);
+                            statement.addBatch();
+                        }
+                    }, null));
+        } catch (TransactionException e) {
             throw new AsyncStatusMgtServerException("Error while adding Async Status Units Initial information " +
                     "in the system.", e);
         }
     }
 
     @Override
-    public List<OperationDO> getOperations(Integer limit, List<ExpressionNode> expressionNodes)
-            throws AsyncStatusMgtException {
+    public List<OperationDO> getOperations(String requestInitiatedOrgId, Integer limit,
+                                           List<ExpressionNode> expressionNodes) throws AsyncStatusMgtException {
 
         FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
-        String sqlStmt = getOperationsNewStatusSqlStmt(filterQueryBuilder);
+        String sqlStmt = getOperationsStatusSqlStmt(filterQueryBuilder);
 
         List<OperationDO> operationRecords;
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
             operationRecords = namedJdbcTemplate.executeQuery(sqlStmt,
-                    (resultSet, rowNumber) -> {
-                        OperationDO record = new OperationDO();
-                        record.setOperationId(resultSet.getString(1));
-                        record.setCorrelationId(resultSet.getString(2));
-                        record.setOperationType(resultSet.getString(3));
-                        record.setOperationSubjectType(resultSet.getString(4));
-                        record.setOperationSubjectId(resultSet.getString(5));
-                        record.setResidentOrgId(resultSet.getString(6));
-                        record.setInitiatorId(resultSet.getString(7));
-                        record.setOperationStatus(resultSet.getString(8));
-                        record.setOperationPolicy(resultSet.getString(9));
-                        record.setCreatedTime(Timestamp.valueOf(resultSet.getString(10)));
-                        record.setModifiedTime(Timestamp.valueOf(resultSet.getString(11)));
-                        return record;
-                    },
-                    namedPreparedStatement -> {
-                        setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
-                                filterQueryBuilder.getTimestampFilterAttributes());
-                        namedPreparedStatement.setInt(LIMIT, limit);
-                    });
+                (resultSet, rowNumber) -> {
+                    OperationDO record = new OperationDO();
+                    record.setOperationId(resultSet.getString(1));
+                    record.setCorrelationId(resultSet.getString(2));
+                    record.setOperationType(resultSet.getString(3));
+                    record.setOperationSubjectType(resultSet.getString(4));
+                    record.setOperationSubjectId(resultSet.getString(5));
+                    record.setResidentOrgId(resultSet.getString(6));
+                    record.setInitiatorId(resultSet.getString(7));
+                    record.setOperationStatus(resultSet.getString(8));
+                    record.setOperationPolicy(resultSet.getString(9));
+                    record.setCreatedTime(Timestamp.valueOf(resultSet.getString(10)));
+                    record.setModifiedTime(Timestamp.valueOf(resultSet.getString(11)));
+                    return record;
+                },
+                namedPreparedStatement -> {
+                    setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
+                            filterQueryBuilder.getTimestampFilterAttributes());
+                    namedPreparedStatement.setInt(LIMIT, limit);
+                    namedPreparedStatement.setString(INITIATED_ORG_ID, requestInitiatedOrgId);
+                });
         } catch (DataAccessException e) {
             throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
                     "from the system.", e);
@@ -253,12 +259,12 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     }
 
     @Override
-    public OperationDO getOperation(String operationId) throws AsyncStatusMgtException {
+    public OperationDO getOperation(String operationId, String requestInitiatedOrgId) throws AsyncStatusMgtException {
 
         OperationDO operationRecord;
-        NamedJdbcTemplate jdbcTemplate = Utils.getNewTemplate();
+        NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
-            operationRecord = jdbcTemplate.fetchSingleRecord(GET_OPERATION, (resultSet, rowNumber) -> {
+            operationRecord = namedJdbcTemplate.fetchSingleRecord(GET_OPERATION, (resultSet, rowNumber) -> {
                 OperationDO record = new OperationDO();
                 record.setOperationId(resultSet.getString(1));
                 record.setCorrelationId(resultSet.getString(2));
@@ -272,7 +278,10 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 record.setCreatedTime(Timestamp.valueOf(resultSet.getString(10)));
                 record.setModifiedTime(Timestamp.valueOf(resultSet.getString(11)));
                 return record;
-            }, preparedStatement -> preparedStatement.setString(OPERATION_ID, operationId));
+            }, namedPreparedStatement -> {
+                namedPreparedStatement.setString(OPERATION_ID, operationId);
+                namedPreparedStatement.setString(INITIATED_ORG_ID, requestInitiatedOrgId);
+            });
             return operationRecord;
         } catch (DataAccessException e) {
             throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
@@ -281,8 +290,8 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     }
 
     @Override
-    public List<UnitOperationDO> getUnitOperationRecordsForOperationId(String operationId, Integer limit,
-                                                                       List<ExpressionNode> expressionNodes)
+    public List<UnitOperationDO> getUnitOperations(String operationId, String requestInitiatedOrgId, Integer limit,
+                                                   List<ExpressionNode> expressionNodes)
             throws AsyncStatusMgtServerException {
 
         FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
@@ -292,19 +301,25 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
             unitOperationRecords = namedJdbcTemplate.executeQuery(sqlStmt,
-                    (resultSet, rowNumber) -> {
-                        UnitOperationDO record = new UnitOperationDO();
-                        record.setUnitOperationId(resultSet.getString(1));
-                        record.setOperationId(resultSet.getString(2));
-                        record.setOperationInitiatedResourceId(resultSet.getString(3));
-                        record.setTargetOrgId(resultSet.getString(4));
-                        record.setUnitOperationStatus(resultSet.getString(5));
-                        record.setStatusMessage(resultSet.getString(6));
-                        record.setCreatedTime(Timestamp.valueOf(resultSet.getString(7)));
-                        return record;
-                    },
-                    namedPreparedStatement -> setPreparedStatementParams(namedPreparedStatement,
-                            operationId, limit, filterQueryBuilder));
+                (resultSet, rowNumber) -> {
+                    UnitOperationDO record = new UnitOperationDO();
+                    record.setUnitOperationId(resultSet.getString(1));
+                    record.setOperationId(resultSet.getString(2));
+                    record.setOperationInitiatedResourceId(resultSet.getString(3));
+                    record.setTargetOrgId(resultSet.getString(4));
+                    record.setUnitOperationStatus(resultSet.getString(5));
+                    record.setStatusMessage(resultSet.getString(6));
+                    record.setCreatedTime(Timestamp.valueOf(resultSet.getString(7)));
+                    return record;
+                },
+                namedPreparedStatement -> {
+                    namedPreparedStatement.setString(OPERATION_ID, operationId);
+                    setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
+                            filterQueryBuilder.getTimestampFilterAttributes());
+                    namedPreparedStatement.setInt(LIMIT, limit);
+                    namedPreparedStatement.setString(INITIATED_ORG_ID, requestInitiatedOrgId);
+                });
+
         } catch (DataAccessException e) {
             throw new AsyncStatusMgtServerException("Error while retrieving Async Status Unit information " +
                     "from the system.", e);
@@ -313,12 +328,13 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
     }
 
     @Override
-    public UnitOperationDO getUnitOperation(String unitOperationId) throws AsyncStatusMgtException {
+    public UnitOperationDO getUnitOperation(String unitOperationId, String requestInitiatedOrgId)
+            throws AsyncStatusMgtException {
 
         UnitOperationDO unitOperationRecord;
-        NamedJdbcTemplate jdbcTemplate = Utils.getNewTemplate();
+        NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
-            unitOperationRecord = jdbcTemplate.fetchSingleRecord(GET_UNIT_OPERATION, (resultSet, rowNumber) -> {
+            unitOperationRecord = namedJdbcTemplate.fetchSingleRecord(GET_UNIT_OPERATION, (resultSet, rowNumber) -> {
                 UnitOperationDO record = new UnitOperationDO();
                 record.setUnitOperationId(resultSet.getString(1));
                 record.setOperationId(resultSet.getString(2));
@@ -328,7 +344,10 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                 record.setStatusMessage(resultSet.getString(6));
                 record.setCreatedTime(Timestamp.valueOf(resultSet.getString(7)));
                 return record;
-            }, preparedStatement -> preparedStatement.setString(UNIT_OPERATION_ID, unitOperationId));
+            }, namedPreparedStatement -> {
+                namedPreparedStatement.setString(UNIT_OPERATION_ID, unitOperationId);
+                namedPreparedStatement.setString(INITIATED_ORG_ID, requestInitiatedOrgId);
+            });
             return unitOperationRecord;
         } catch (DataAccessException e) {
             throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
@@ -487,8 +506,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
         return (CREATED_AT.equals(attributeName)) && isMSSqlDB();
     }
 
-    private static String getOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
-            throws AsyncStatusMgtServerException {
+    private static String getOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder) {
 
         if (StringUtils.isNotBlank(filterQueryBuilder.getFilterQuery())) {
             return GET_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + GET_OPERATIONS_TAIL;
@@ -496,17 +514,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
         return GET_OPERATIONS + GET_OPERATIONS_TAIL;
     }
 
-    private static String getOperationsNewStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
-            throws AsyncStatusMgtServerException {
-
-        if (StringUtils.isNotBlank(filterQueryBuilder.getFilterQuery())) {
-            return GET_OPERATIONS_NEW + " WHERE " + filterQueryBuilder.getFilterQuery() + GET_OPERATIONS_TAIL;
-        }
-        return GET_OPERATIONS_NEW + GET_OPERATIONS_TAIL;
-    }
-
-    private static String getUnitOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
-            throws AsyncStatusMgtServerException {
+    private static String getUnitOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder) {
 
         if (StringUtils.isNotBlank(filterQueryBuilder.getFilterQuery())) {
             return GET_UNIT_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + GET_UNIT_OPERATIONS_TAIL;
@@ -518,10 +526,7 @@ public class AsyncStatusMgtDAOImpl implements AsyncStatusMgtDAO {
                                             Integer limit, FilterQueryBuilder filterQueryBuilder)
             throws SQLException {
 
-        namedPreparedStatement.setString(OPERATION_ID, operationId);
-        setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
-                filterQueryBuilder.getTimestampFilterAttributes());
-        namedPreparedStatement.setInt(LIMIT, limit);
+
     }
 
     private void setFilterAttributes(NamedPreparedStatement namedPreparedStatement,

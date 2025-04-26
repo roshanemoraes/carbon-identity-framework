@@ -82,7 +82,7 @@ public class AsyncOperationDataBufferTest {
         assertTrue(dataBuffer.isEmpty());
     }
 
-    private void emptyBuffer(){
+    private void emptyBuffer() {
 
         while (!dataBuffer.isEmpty()) {
             dataBuffer.dequeue();

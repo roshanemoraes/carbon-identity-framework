@@ -99,6 +99,10 @@ public class OperationResponseDTO {
         return modifiedTime;
     }
 
+    /**
+     *
+     * Operation Response Builder.
+     */
     public static class Builder {
 
         private String operationId;

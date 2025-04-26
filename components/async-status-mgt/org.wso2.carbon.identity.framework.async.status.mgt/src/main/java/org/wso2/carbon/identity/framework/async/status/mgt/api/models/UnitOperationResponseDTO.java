@@ -19,6 +19,9 @@ package org.wso2.carbon.identity.framework.async.status.mgt.api.models;
 
 import java.sql.Timestamp;
 
+/**
+ * Unit Operation Response Data Transfer Object.
+ */
 public class UnitOperationResponseDTO {
 
     private final String unitOperationId;
@@ -73,6 +76,9 @@ public class UnitOperationResponseDTO {
         return createdTime;
     }
 
+    /**
+     * Unit Operation Response Builder.
+     */
     public static class Builder {
 
         private String unitOperationId;
