@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.common.testng.WithCarbonHome;
 import org.wso2.carbon.identity.common.testng.WithH2Database;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
@@ -67,7 +67,7 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constants.Test
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_3;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_4;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAIL;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_ONGOING;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_IN_PROGRESS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1_PREFIX;
@@ -129,7 +129,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
     @Test(dataProvider = "operationStatusProvider")
     public void testRegisterOperationStatusWithoutUpdate(String tenantDomain, List<OperationInitDTO> operations,
                                                          int expectedOperationCount)
-            throws AsyncStatusMgtException, OrganizationManagementException {
+            throws AsyncOperationStatusMgtException, OrganizationManagementException {
 
         for (OperationInitDTO op : operations) {
             service.registerOperationStatus(op, false);
@@ -158,7 +158,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
     @Test(dataProvider = "operationStatusWithUpdateProvider", priority = 1)
     public void testRegisterOperationStatusWithUpdate(String tenantDomain, List<OperationInitDTO> operations,
                                                       boolean isUpdate, int expectedSize)
-            throws AsyncStatusMgtException, OrganizationManagementException {
+            throws AsyncOperationStatusMgtException, OrganizationManagementException {
 
         for (OperationInitDTO operation : operations) {
             service.registerOperationStatus(operation, isUpdate);
@@ -186,7 +186,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
     @Test(dataProvider = "paginationTestDataProvider", priority = 2)
     public void testPagination(String after, String before, Integer limit, int expectedCount)
-            throws AsyncStatusMgtException, OrganizationManagementException {
+            throws AsyncOperationStatusMgtException, OrganizationManagementException {
 
         for (int i = 0; i < 10; i++) {
             OperationInitDTO operation = new OperationInitDTO(CORR_ID_1_PREFIX + i, TYPE_USER_SHARE,
@@ -228,7 +228,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
     @Test(dataProvider = "filteringTestDataWithOperations", priority = 3)
     public void testFiltering(List<OperationInitDTO> operations, String filter, int expectedCount)
-            throws AsyncStatusMgtException, OrganizationManagementException {
+            throws AsyncOperationStatusMgtException, OrganizationManagementException {
 
         for (OperationInitDTO operation : operations) {
             service.registerOperationStatus(operation, false);
@@ -268,7 +268,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
     @Test(dataProvider = "createdTimeFilterTestData", priority = 4)
     public void testCreatedTimeFiltering(List<OperationInitDTO> operations, List<String> filters,
                                          List<Integer> expectedCount, int waitTime)
-            throws AsyncStatusMgtException, OrganizationManagementException, InterruptedException {
+            throws AsyncOperationStatusMgtException, OrganizationManagementException, InterruptedException {
 
         String currentTime = StringUtils.EMPTY;
         int i = 0;
@@ -292,7 +292,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
     }
 
     @Test(priority = 4)
-    public void testUpdateOperationStatus() throws AsyncStatusMgtException, OrganizationManagementException {
+    public void testUpdateOperationStatus() throws AsyncOperationStatusMgtException, OrganizationManagementException {
 
         OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
@@ -303,7 +303,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
         OperationResponseDTO fetchedOperation = service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY,
                 StringUtils.EMPTY, null, StringUtils.EMPTY).get(0);
         String initialStatus = fetchedOperation.getOperationStatus();
-        assertEquals(STATUS_ONGOING, initialStatus);
+        assertEquals(STATUS_IN_PROGRESS, initialStatus);
 
         service.updateOperationStatus(initialOperationId, STATUS_SUCCESS);
         assertEquals(STATUS_SUCCESS, service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY,
@@ -314,7 +314,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
     @Test(priority = 5)
     public void testRegisterUnitOperationStatus()
-            throws AsyncStatusMgtException, InterruptedException, OrganizationManagementException {
+            throws AsyncOperationStatusMgtException, InterruptedException, OrganizationManagementException {
 
         OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
@@ -337,7 +337,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
     @Test(priority = 6)
     public void testGetUnitOperationStatusRecords()
-            throws AsyncStatusMgtException, InterruptedException, OrganizationManagementException {
+            throws AsyncOperationStatusMgtException, InterruptedException, OrganizationManagementException {
 
         OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);

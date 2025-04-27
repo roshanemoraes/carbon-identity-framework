@@ -20,8 +20,8 @@ package org.wso2.carbon.identity.framework.async.status.mgt.internal.util;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtClientException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
 
 /**
  * Utility class for Async Status Management.
@@ -38,14 +38,13 @@ public class AsyncOperationStatusMgtExceptionHandler {
      * @param data  The error message data.
      * @return OrganizationManagementClientException
      */
-    public static AsyncStatusMgtClientException handleClientException(
-            ErrorMessage error, String... data) {
+    public static AsyncOperationStatusMgtClientException handleClientException(ErrorMessage error, String... data) {
 
         String description = error.getDescription();
         if (ArrayUtils.isNotEmpty(data)) {
             description = String.format(description, data);
         }
-        return new AsyncStatusMgtClientException(error.getMessage(), description, error.getCode());
+        return new AsyncOperationStatusMgtClientException(error.getMessage(), description, error.getCode());
     }
 
     /**
@@ -56,13 +55,13 @@ public class AsyncOperationStatusMgtExceptionHandler {
      * @param data  The error message data.
      * @return AsyncStatusMgtServerException
      */
-    public static AsyncStatusMgtServerException handleServerException(
+    public static AsyncOperationStatusMgtServerException handleServerException(
             ErrorMessage error, Throwable e, String... data) {
 
         String description = error.getDescription();
         if (ArrayUtils.isNotEmpty(data)) {
             description = String.format(description, data);
         }
-        return new AsyncStatusMgtServerException(error.getMessage(), description, error.getCode(), e);
+        return new AsyncOperationStatusMgtServerException(error.getMessage(), description, error.getCode(), e);
     }
 }

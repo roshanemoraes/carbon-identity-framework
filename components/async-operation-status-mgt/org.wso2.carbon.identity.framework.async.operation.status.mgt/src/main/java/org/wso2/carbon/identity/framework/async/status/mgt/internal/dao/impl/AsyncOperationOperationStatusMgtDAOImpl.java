@@ -29,8 +29,8 @@ import org.wso2.carbon.database.utils.jdbc.exceptions.TransactionException;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.OperationStatus;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncOperationStatusMgtDAO;
@@ -95,7 +95,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     private static final Log LOG = LogFactory.getLog(AsyncOperationOperationStatusMgtDAOImpl.class);
 
     @Override
-    public String registerAsyncStatusWithoutUpdate(OperationInitDTO record) throws AsyncStatusMgtException {
+    public String registerAsyncStatusWithoutUpdate(OperationInitDTO record) throws AsyncOperationStatusMgtException {
 
         String generatedOperationId;
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
@@ -112,7 +112,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
             statement.setString(SUBJECT_ID, record.getOperationSubjectId());
             statement.setString(INITIATED_ORG_ID, record.getResidentOrgId());
             statement.setString(INITIATED_USER_ID, record.getInitiatorId());
-            statement.setString(STATUS, OperationStatus.ONGOING.toString());
+            statement.setString(STATUS, OperationStatus.IN_PROGRESS.toString());
             statement.setString(CREATED_AT, currentTimestamp);
             statement.setString(LAST_MODIFIED, currentTimestamp);
             statement.setString(POLICY, record.getOperationPolicy());
@@ -125,14 +125,14 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 throw new SQLException("Creating operation failed, no ID obtained.");
             }
         } catch (SQLException e) {
-            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information " +
+            throw new AsyncOperationStatusMgtServerException("Error while adding Async Status Initial information " +
                     "in the system.", e);
         }
         return generatedOperationId;
     }
 
     @Override
-    public String registerAsyncStatusWithUpdate(OperationInitDTO record) throws AsyncStatusMgtException {
+    public String registerAsyncStatusWithUpdate(OperationInitDTO record) throws AsyncOperationStatusMgtException {
 
         String generatedOperationId;
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
@@ -152,7 +152,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 statement.setString(SUBJECT_ID, record.getOperationSubjectId());
                 statement.setString(INITIATED_ORG_ID, record.getResidentOrgId());
                 statement.setString(INITIATED_USER_ID, record.getInitiatorId());
-                statement.setString(STATUS, OperationStatus.ONGOING.toString());
+                statement.setString(STATUS, OperationStatus.IN_PROGRESS.toString());
                 statement.setString(CREATED_AT, currentTimestamp);
                 statement.setString(LAST_MODIFIED, currentTimestamp);
                 statement.setString(POLICY, record.getOperationPolicy());
@@ -166,14 +166,14 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 }
             }
         } catch (SQLException e) {
-            throw new AsyncStatusMgtServerException("Error while adding Async Status Initial information " +
+            throw new AsyncOperationStatusMgtServerException("Error while adding Async Status Initial information " +
                     "in the system.", e);
         }
         return generatedOperationId;
     }
 
     @Override
-    public void updateAsyncStatus(String operationId, String status) throws AsyncStatusMgtException {
+    public void updateAsyncStatus(String operationId, String status) throws AsyncOperationStatusMgtException {
 
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
@@ -187,13 +187,14 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 return null;
             });
         } catch (TransactionException e) {
-            throw new AsyncStatusMgtServerException("Error while updating Async Status information in the system.", e);
+            throw new AsyncOperationStatusMgtServerException("Error while updating Async Status information " +
+                    "in the system.", e);
         }
     }
 
     @Override
     public void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationInitDTO> queue)
-            throws AsyncStatusMgtException {
+            throws AsyncOperationStatusMgtException {
 
         String currentTimestamp = new Timestamp(new Date().getTime()).toString();
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
@@ -214,14 +215,15 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                         }
                     }, null));
         } catch (TransactionException e) {
-            throw new AsyncStatusMgtServerException("Error while adding Async Status Units Initial information " +
-                    "in the system.", e);
+            throw new AsyncOperationStatusMgtServerException("Error while adding Async Status Units " +
+                    "Initial information in the system.", e);
         }
     }
 
     @Override
     public List<OperationDO> getOperations(String requestInitiatedOrgId, Integer limit,
-                                           List<ExpressionNode> expressionNodes) throws AsyncStatusMgtException {
+                                           List<ExpressionNode> expressionNodes) throws
+            AsyncOperationStatusMgtException {
 
         FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
         String sqlStmt = getOperationsStatusSqlStmt(filterQueryBuilder);
@@ -252,19 +254,20 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                     namedPreparedStatement.setString(INITIATED_ORG_ID, requestInitiatedOrgId);
                 });
         } catch (DataAccessException e) {
-            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
+            throw new AsyncOperationStatusMgtServerException("Error while retrieving Async Status information " +
                     "from the system.", e);
         }
         return operationRecords;
     }
 
     @Override
-    public OperationDO getOperation(String operationId, String requestInitiatedOrgId) throws AsyncStatusMgtException {
+    public OperationDO getOperation(String operationId, String requestInitiatedOrgId) throws
+            AsyncOperationStatusMgtException {
 
         OperationDO operationRecord;
-        NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
+        NamedJdbcTemplate jdbcTemplate = Utils.getNewTemplate();
         try {
-            operationRecord = namedJdbcTemplate.fetchSingleRecord(GET_OPERATION, (resultSet, rowNumber) -> {
+            operationRecord = jdbcTemplate.fetchSingleRecord(GET_OPERATION, (resultSet, rowNumber) -> {
                 OperationDO record = new OperationDO();
                 record.setOperationId(resultSet.getString(1));
                 record.setCorrelationId(resultSet.getString(2));
@@ -284,7 +287,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
             });
             return operationRecord;
         } catch (DataAccessException e) {
-            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
+            throw new AsyncOperationStatusMgtServerException("Error while retrieving Async Status information " +
                     "from the system.", e);
         }
     }
@@ -292,7 +295,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     @Override
     public List<UnitOperationDO> getUnitOperations(String operationId, String requestInitiatedOrgId, Integer limit,
                                                    List<ExpressionNode> expressionNodes)
-            throws AsyncStatusMgtServerException {
+            throws AsyncOperationStatusMgtServerException {
 
         FilterQueryBuilder filterQueryBuilder = buildFilterQuery(expressionNodes, CREATED_TIME_FILTER);
         String sqlStmt = getUnitOperationsStatusSqlStmt(filterQueryBuilder);
@@ -321,7 +324,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 });
 
         } catch (DataAccessException e) {
-            throw new AsyncStatusMgtServerException("Error while retrieving Async Status Unit information " +
+            throw new AsyncOperationStatusMgtServerException("Error while retrieving Async Status Unit information " +
                     "from the system.", e);
         }
         return unitOperationRecords;
@@ -329,7 +332,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
 
     @Override
     public UnitOperationDO getUnitOperation(String unitOperationId, String requestInitiatedOrgId)
-            throws AsyncStatusMgtException {
+            throws AsyncOperationStatusMgtException {
 
         UnitOperationDO unitOperationRecord;
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
@@ -350,7 +353,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
             });
             return unitOperationRecord;
         } catch (DataAccessException e) {
-            throw new AsyncStatusMgtServerException("Error while retrieving Async Status information " +
+            throw new AsyncOperationStatusMgtServerException("Error while retrieving Async Status information " +
                     "from the system.", e);
         }
     }
@@ -368,7 +371,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     }
 
     private FilterQueryBuilder buildFilterQuery(List<ExpressionNode> expressionNodes, String attributeUsedForCursor)
-            throws AsyncStatusMgtServerException {
+            throws AsyncOperationStatusMgtServerException {
 
         FilterQueryBuilder filterQueryBuilder = new FilterQueryBuilder();
         appendFilterQuery(expressionNodes, filterQueryBuilder, attributeUsedForCursor);
@@ -377,7 +380,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
 
     private void appendFilterQuery(List<ExpressionNode> expressionNodes, FilterQueryBuilder filterQueryBuilder,
                                    String attributeUsedForCursor)
-            throws AsyncStatusMgtServerException {
+            throws AsyncOperationStatusMgtServerException {
 
         int count = 1;
         StringBuilder filter = new StringBuilder();
@@ -463,7 +466,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
 
     private void greaterThanOrEqualFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                                  FilterQueryBuilder filterQueryBuilder)
-            throws AsyncStatusMgtServerException {
+            throws AsyncOperationStatusMgtServerException {
 
         String filterString = String.format(isDateTimeAndMSSql(attributeName) ? " >= CAST(:%s%s; AS DATETIME) AND "
                 : " >= :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
@@ -473,7 +476,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
 
     private void lessThanOrEqualFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                               FilterQueryBuilder filterQueryBuilder)
-            throws AsyncStatusMgtServerException {
+            throws AsyncOperationStatusMgtServerException {
 
         String filterString = String.format(isDateTimeAndMSSql(attributeName) ? " <= CAST(:%s%s; AS DATETIME) AND "
                 : " <= :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
@@ -483,7 +486,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
 
     private void greaterThanFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                           FilterQueryBuilder filterQueryBuilder)
-            throws AsyncStatusMgtServerException {
+            throws AsyncOperationStatusMgtServerException {
 
         String filterString = String.format(isDateTimeAndMSSql(attributeName) ? " > CAST(:%s%s; AS DATETIME) AND "
                 : " > :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
@@ -493,7 +496,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
 
     private void lessThanFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                        FilterQueryBuilder filterQueryBuilder)
-            throws AsyncStatusMgtServerException {
+            throws AsyncOperationStatusMgtServerException {
 
         String filterString = String.format(isDateTimeAndMSSql(attributeName) ? " < CAST(:%s%s; AS DATETIME) AND "
                 : " < :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
@@ -501,7 +504,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value);
     }
 
-    private boolean isDateTimeAndMSSql(String attributeName) throws AsyncStatusMgtServerException {
+    private boolean isDateTimeAndMSSql(String attributeName) throws AsyncOperationStatusMgtServerException {
 
         return (CREATED_AT.equals(attributeName)) && isMSSqlDB();
     }
@@ -520,13 +523,6 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
             return GET_UNIT_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + GET_UNIT_OPERATIONS_TAIL;
         }
         return GET_UNIT_OPERATIONS + GET_UNIT_OPERATIONS_TAIL;
-    }
-
-    private void setPreparedStatementParams(NamedPreparedStatement namedPreparedStatement, String operationId,
-                                            Integer limit, FilterQueryBuilder filterQueryBuilder)
-            throws SQLException {
-
-
     }
 
     private void setFilterAttributes(NamedPreparedStatement namedPreparedStatement,

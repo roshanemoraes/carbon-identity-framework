@@ -20,7 +20,7 @@ package org.wso2.carbon.identity.framework.async.status.mgt.internal.queue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncOperationStatusMgtDAO;
 
@@ -56,7 +56,7 @@ public class AsyncOperationDataBuffer {
      *
      * @param operation The operation to add.
      */
-    public synchronized void add(UnitOperationInitDTO operation) throws AsyncStatusMgtException {
+    public synchronized void add(UnitOperationInitDTO operation) throws AsyncOperationStatusMgtException {
 
         queue.offer(operation);
         if (queue.size() >= threshold) {
@@ -95,7 +95,7 @@ public class AsyncOperationDataBuffer {
     /**
      * Persist queued operations to the database in batch.
      */
-    private synchronized void persistToDatabase() throws AsyncStatusMgtException {
+    private synchronized void persistToDatabase() throws AsyncOperationStatusMgtException {
 
         if (!queue.isEmpty()) {
             asyncOperationStatusMgtDAO.registerAsyncStatusUnit(queue);
@@ -113,7 +113,7 @@ public class AsyncOperationDataBuffer {
                 LOG.debug("Periodic flush triggered.");
                 try {
                     persistToDatabase();
-                } catch (AsyncStatusMgtException e) {  //TODO: to rethrow or handle here?
+                } catch (AsyncOperationStatusMgtException e) {  //TODO: to rethrow or handle here?
                     LOG.error("Error while flushing to the database.", e);
                 }
             }

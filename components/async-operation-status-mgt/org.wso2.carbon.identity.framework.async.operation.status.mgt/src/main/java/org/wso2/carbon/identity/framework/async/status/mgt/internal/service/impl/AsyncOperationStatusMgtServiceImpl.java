@@ -25,8 +25,8 @@ import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.model.Node;
 import org.wso2.carbon.identity.core.model.OperationNode;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtClientException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
@@ -41,6 +41,7 @@ import org.wso2.carbon.identity.framework.async.status.mgt.internal.models.dos.U
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.queue.AsyncOperationDataBuffer;
 import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
 import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementException;
+import org.wso2.carbon.identity.organization.management.service.model.BasicOrganization;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -53,8 +54,8 @@ import java.util.Map;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_REQUEST_BODY;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN;
-import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID;
-import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP;
+import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID;
+import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_BASIC_ORG_DETAILS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncOperationStatusMgtConstants.AND;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncOperationStatusMgtConstants.ASC_SORT_ORDER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncOperationStatusMgtConstants.DESC_SORT_ORDER;
@@ -83,7 +84,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
 
     @Override
     public String registerOperationStatus(OperationInitDTO record, boolean updateIfExists)
-            throws AsyncStatusMgtException {
+            throws AsyncOperationStatusMgtException {
 
         if (updateIfExists) {
             return ASYNC_OPERATION_STATUS_MGT_DAO.registerAsyncStatusWithUpdate(record);
@@ -92,20 +93,21 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
     }
 
     @Override
-    public void updateOperationStatus(String operationId, String status) throws AsyncStatusMgtException {
+    public void updateOperationStatus(String operationId, String status) throws AsyncOperationStatusMgtException {
 
         ASYNC_OPERATION_STATUS_MGT_DAO.updateAsyncStatus(operationId, status);
     }
 
     @Override
-    public void registerUnitOperationStatus(UnitOperationInitDTO unitOperationInitDTO) throws AsyncStatusMgtException {
+    public void registerUnitOperationStatus(UnitOperationInitDTO unitOperationInitDTO) throws
+            AsyncOperationStatusMgtException {
 
         operationDataBuffer.add(unitOperationInitDTO);
     }
 
     @Override
     public List<OperationResponseDTO> getOperations(String tenantDomain, String after, String before, Integer limit,
-                                                    String filter) throws AsyncStatusMgtException {
+                                                    String filter) throws AsyncOperationStatusMgtException {
 
         limit = validateLimit(limit);
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
@@ -135,7 +137,8 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
     }
 
     @Override
-    public OperationResponseDTO getOperation(String operationId, String tenantDomain) throws AsyncStatusMgtException {
+    public OperationResponseDTO getOperation(String operationId, String tenantDomain) throws
+            AsyncOperationStatusMgtException {
 
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
         OperationDO operationDO = ASYNC_OPERATION_STATUS_MGT_DAO.getOperation(operationId, requestInitiatedOrgId);
@@ -157,7 +160,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
 
     @Override
     public UnitOperationResponseDTO getUnitOperation(String unitOperationId, String tenantDomain)
-            throws AsyncStatusMgtException {
+            throws AsyncOperationStatusMgtException {
 
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
         UnitOperationDO unitOperationDO = ASYNC_OPERATION_STATUS_MGT_DAO.getUnitOperation(unitOperationId,
@@ -180,7 +183,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
     public List<UnitOperationResponseDTO> getUnitOperationStatusRecords(String operationId, String tenantDomain,
                                                                         String after, String before, Integer limit,
                                                                         String filter)
-            throws AsyncStatusMgtException {
+            throws AsyncOperationStatusMgtException {
 
         limit = validateLimit(limit);
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
@@ -193,17 +196,17 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         for (UnitOperationDO unitOperationDO : unitOperations) {
             targetOrgIds.add(unitOperationDO.getTargetOrgId());
         }
-        Map<String, String> orgIdToNameMap = getOrganizationIdMap(targetOrgIds);
+        Map<String, BasicOrganization> orgDetails = getBasicOrganizationDetails(targetOrgIds);
 
         List<UnitOperationResponseDTO> unitOperationResponseDTOList = new ArrayList<>();
-        if (!orgIdToNameMap.isEmpty()) {
+        if (!orgDetails.isEmpty()) {
             for (UnitOperationDO unitOperationDO : unitOperations) {
                 UnitOperationResponseDTO dto = new UnitOperationResponseDTO.Builder()
                         .unitOperationId(unitOperationDO.getUnitOperationId())
                         .operationId(unitOperationDO.getOperationId())
                         .operationInitiatedResourceId(unitOperationDO.getOperationInitiatedResourceId())
                         .targetOrgId(unitOperationDO.getTargetOrgId())
-                        .targetOrgName(orgIdToNameMap.get(unitOperationDO.getTargetOrgId()))
+                        .targetOrgName(orgDetails.get(unitOperationDO.getTargetOrgId()).getName())
                         .unitOperationStatus(unitOperationDO.getUnitOperationStatus())
                         .statusMessage(unitOperationDO.getStatusMessage())
                         .createdTime(unitOperationDO.getCreatedTime())
@@ -214,7 +217,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         return unitOperationResponseDTOList;
     }
 
-    private String getOrganizationId(String tenantDomain) throws AsyncStatusMgtClientException {
+    private String getOrganizationId(String tenantDomain) throws AsyncOperationStatusMgtClientException {
 
         try {
             return organizationManager.resolveOrganizationId(tenantDomain);
@@ -223,21 +226,22 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         }
     }
 
-    private Map<String, String> getOrganizationIdMap(List<String> orgIds) throws AsyncStatusMgtClientException {
+    private Map<String, BasicOrganization> getBasicOrganizationDetails(List<String> orgIds) throws
+            AsyncOperationStatusMgtClientException {
 
         try {
-            return organizationManager.getOrganizationIdToNameMap(orgIds);
+            return organizationManager.getBasicOrganizationDetailsByOrgIDs(orgIds);
         } catch (OrganizationManagementException e) {
-            throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP);
+            throw handleClientException(ERROR_WHILE_RETRIEVING_BASIC_ORG_DETAILS);
         }
     }
 
-    private String getOrganizationName(String orgId) throws AsyncStatusMgtClientException {
+    private String getOrganizationName(String orgId) throws AsyncOperationStatusMgtClientException {
 
         try {
             return organizationManager.getOrganizationNameById(orgId);
         } catch (OrganizationManagementException e) {
-            throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID);
+            throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID);
         }
     }
 
@@ -245,7 +249,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
 
     private List<ExpressionNode> getExpressionNodes(String filter, String after, String before,
                                                     String paginationSortOrder)
-            throws AsyncStatusMgtException {
+            throws AsyncOperationStatusMgtException {
 
         List<ExpressionNode> expressionNodes = new ArrayList<>();
         if (StringUtils.isBlank(filter)) {
@@ -265,7 +269,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
     }
 
     private String getPaginatedFilterForDescendingOrder(String paginatedFilter, String after, String before)
-            throws AsyncStatusMgtClientException {
+            throws AsyncOperationStatusMgtClientException {
 
         try {
             if (StringUtils.isNotBlank(before)) {
@@ -292,7 +296,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
      * @param expression The list of expression nodes.
      */
     private void setExpressionNodeList(Node node, List<ExpressionNode> expression)
-            throws AsyncStatusMgtClientException {
+            throws AsyncOperationStatusMgtClientException {
 
         if (node instanceof ExpressionNode) {
             ExpressionNode expressionNode = (ExpressionNode) node;
@@ -321,9 +325,9 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
      *
      * @param limit given limit value.
      * @return validated limit value.
-     * @throws AsyncStatusMgtClientException AsyncStatusMgtClientException.
+     * @throws AsyncOperationStatusMgtClientException AsyncStatusMgtClientException.
      */
-    private int validateLimit(Integer limit) throws AsyncStatusMgtClientException {
+    private int validateLimit(Integer limit) throws AsyncOperationStatusMgtClientException {
 
         int maximumItemsPerPage = IdentityUtil.getMaximumItemPerPage();
         if (limit == null) {

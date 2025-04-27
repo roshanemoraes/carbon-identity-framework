@@ -37,7 +37,6 @@ public class SubOperationStatusQueue {
     private ConcurrentLinkedQueue<SubOperationStatusObject> subOperationList = new ConcurrentLinkedQueue<>();
 
     public SubOperationStatusQueue() {
-
     }
 
     public void add(SubOperationStatusObject subOperationStatusObject) {

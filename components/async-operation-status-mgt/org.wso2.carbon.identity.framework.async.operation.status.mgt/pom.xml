@@ -65,18 +65,6 @@
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.felix</groupId>-->
-<!--                <artifactId>maven-scr-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>generate-scr-scrdescriptor</id>-->
-<!--                        <goals>-->
-<!--                            <goal>scr</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -155,7 +143,6 @@
                             org.wso2.carbon.identity.framework.async.operation.status.mgt.api.*;
                             version="${carbon.identity.package.export.version}"
                         </Export-Package>
-                        <Dynamic-import>*</Dynamic-import>
                         <Import-Package>
                             javax.sql,
                             org.apache.commons.lang; version="${commons-lang.wso2.osgi.version.range}",
@@ -166,7 +153,6 @@
                             org.wso2.carbon.database.utils.jdbc;version="${org.wso2.carbon.database.utils.version.range}",
                             org.wso2.carbon.database.utils.jdbc.exceptions;version="${org.wso2.carbon.database.utils.version.range}",
                             org.wso2.carbon.identity.core.util;version="${carbon.identity.package.import.version.range}",
-                            *;resolution:=optional
                         </Import-Package>
                     </instructions>
                 </configuration>

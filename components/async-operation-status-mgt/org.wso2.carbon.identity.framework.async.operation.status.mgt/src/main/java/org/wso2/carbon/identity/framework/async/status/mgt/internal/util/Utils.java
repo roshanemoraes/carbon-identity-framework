@@ -22,7 +22,7 @@ import org.wso2.carbon.database.utils.jdbc.NamedJdbcTemplate;
 import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtServerException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
 
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.AsyncOperationStatusMgtExceptionHandler.handleServerException;
 
@@ -31,7 +31,8 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.util.
  */
 public class Utils {
 
-    private static boolean isDBTypeOf(String dbType) throws AsyncStatusMgtServerException {
+    private static boolean isDBTypeOf(String dbType) throws AsyncOperationStatusMgtServerException {
+
         try {
             NamedJdbcTemplate jdbcTemplate = getNewTemplate();
             return jdbcTemplate.getDriverName().toLowerCase().contains(dbType) ||
@@ -41,7 +42,8 @@ public class Utils {
         }
     }
 
-    public static boolean isMSSqlDB() throws AsyncStatusMgtServerException {
+    public static boolean isMSSqlDB() throws AsyncOperationStatusMgtServerException {
+
         return isDBTypeOf("microsoft");
     }
 
@@ -51,6 +53,7 @@ public class Utils {
      * @return a new Jdbc Template.
      */
     public static NamedJdbcTemplate getNewTemplate() {
+
         return new NamedJdbcTemplate(IdentityDatabaseUtil.getDataSource());
     }
 }

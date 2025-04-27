@@ -58,7 +58,6 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.internal.const
  */
 public class AsyncOperationStatusMgtConstants {
 
-    public static final String ERROR_PREFIX = "ASM-";
     public static final String DESC_SORT_ORDER = "DESC";
     public static final String ASC_SORT_ORDER = "ASC";
     public static final String FILTER_PLACEHOLDER_PREFIX = "FILTER_ID_";

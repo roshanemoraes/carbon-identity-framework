@@ -38,6 +38,7 @@ public class OperationResponseDTO {
     private final Timestamp modifiedTime;
 
     private OperationResponseDTO(Builder builder) {
+
         this.operationId = builder.operationId;
         this.correlationId = builder.correlationId;
         this.operationType = builder.operationType;
@@ -52,30 +53,37 @@ public class OperationResponseDTO {
     }
 
     public String getOperationId() {
+
         return operationId;
     }
 
     public String getCorrelationId() {
+
         return correlationId;
     }
 
     public String getOperationType() {
+
         return operationType;
     }
 
     public String getOperationSubjectType() {
+
         return operationSubjectType;
     }
 
     public String getOperationSubjectId() {
+
         return operationSubjectId;
     }
 
     public String getResidentOrgId() {
+
         return residentOrgId;
     }
 
     public String getInitiatorId() {
+
         return initiatorId;
     }
 
@@ -118,61 +126,73 @@ public class OperationResponseDTO {
         private Timestamp modifiedTime;
 
         public Builder operationId(String operationId) {
+
             this.operationId = operationId;
             return this;
         }
 
         public Builder correlationId(String correlationId) {
+
             this.correlationId = correlationId;
             return this;
         }
 
         public Builder operationType(String operationType) {
+
             this.operationType = operationType;
             return this;
         }
 
         public Builder operationSubjectType(String operationSubjectType) {
+
             this.operationSubjectType = operationSubjectType;
             return this;
         }
 
         public Builder operationSubjectId(String operationSubjectId) {
+
             this.operationSubjectId = operationSubjectId;
             return this;
         }
 
         public Builder residentOrgId(String residentOrgId) {
+
             this.residentOrgId = residentOrgId;
             return this;
         }
 
         public Builder initiatorId(String initiatorId) {
+
             this.initiatorId = initiatorId;
             return this;
         }
 
         public Builder operationStatus(String operationStatus) {
+
             this.operationStatus = operationStatus;
             return this;
         }
 
         public Builder operationPolicy(String operationPolicy) {
+
             this.operationPolicy = operationPolicy;
             return this;
         }
 
         public Builder createdTime(Timestamp createdTime) {
+
             this.createdTime = createdTime;
             return this;
         }
 
         public Builder modifiedTime(Timestamp modifiedTime) {
+
             this.modifiedTime = modifiedTime;
             return this;
         }
 
         public OperationResponseDTO build() {
+
             return new OperationResponseDTO(this);
         }
     }

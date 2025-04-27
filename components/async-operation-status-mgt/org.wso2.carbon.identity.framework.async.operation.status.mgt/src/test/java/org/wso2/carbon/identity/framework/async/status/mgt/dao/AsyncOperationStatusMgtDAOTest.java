@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.common.testng.WithCarbonHome;
 import org.wso2.carbon.identity.common.testng.WithH2Database;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.internal.dao.AsyncOperationStatusMgtDAO;
@@ -49,7 +49,7 @@ import static org.wso2.carbon.identity.framework.async.status.mgt.constants.Test
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_3;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_4;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAIL;
-import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_ONGOING;
+import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_IN_PROGRESS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_PARTIAL;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
 import static org.wso2.carbon.identity.framework.async.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1;
@@ -111,7 +111,7 @@ public class AsyncOperationStatusMgtDAOTest {
 
             dao.registerAsyncStatusWithoutUpdate(operation2);
             assertEquals(2, getOperationTableSize());
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -135,7 +135,7 @@ public class AsyncOperationStatusMgtDAOTest {
 
             dao.registerAsyncStatusWithUpdate(operation2);
             assertEquals(1, getOperationTableSize());
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -152,7 +152,7 @@ public class AsyncOperationStatusMgtDAOTest {
 
             OperationDO fetchedOperation = dao.getOperations(RESIDENT_ORG_ID_1, 1000, null).get(0);
             String initialStatus = fetchedOperation.getOperationStatus();
-            assertEquals(STATUS_ONGOING, initialStatus);
+            assertEquals(STATUS_IN_PROGRESS, initialStatus);
 
             dao.updateAsyncStatus(initialOperationId, STATUS_SUCCESS);
             assertEquals(1, getOperationTableSize());
@@ -160,7 +160,7 @@ public class AsyncOperationStatusMgtDAOTest {
             String fetchedUpdatedStatus = dao.getOperations(RESIDENT_ORG_ID_1, 1000,
                     null).get(0).getOperationStatus();
             assertEquals(STATUS_SUCCESS, fetchedUpdatedStatus);
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -188,7 +188,7 @@ public class AsyncOperationStatusMgtDAOTest {
 
             assertEquals(2, dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     10, null).size());
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -210,7 +210,7 @@ public class AsyncOperationStatusMgtDAOTest {
             dao.registerAsyncStatusWithoutUpdate(operation2);
             assertEquals(2, dao.getOperations(RESIDENT_ORG_ID_1, 100, null).size());
 
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -233,7 +233,7 @@ public class AsyncOperationStatusMgtDAOTest {
             assertEquals(RESIDENT_ORG_ID_1, record.getResidentOrgId());
             assertEquals(INITIATOR_ID_1, record.getInitiatorId());
             assertEquals(POLICY_SELECTIVE_SHARE, record.getOperationPolicy());
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -261,7 +261,7 @@ public class AsyncOperationStatusMgtDAOTest {
 
             assertEquals(2, dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     100, null).size());
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -294,7 +294,7 @@ public class AsyncOperationStatusMgtDAOTest {
             assertEquals(STATUS_SUCCESS, record.getUnitOperationStatus());
             assertEquals(StringUtils.EMPTY, record.getStatusMessage());
 
-        } catch (AsyncStatusMgtException e) {
+        } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
     }
@@ -309,7 +309,7 @@ public class AsyncOperationStatusMgtDAOTest {
         }
     }
 
-    private int getOperationTableSize() throws AsyncStatusMgtException {
+    private int getOperationTableSize() throws AsyncOperationStatusMgtException {
         return dao.getOperations(RESIDENT_ORG_ID_1, 1000, null).size();
     }
 

@@ -34,6 +34,7 @@ public class UnitOperationResponseDTO {
     private final Timestamp createdTime;
 
     private UnitOperationResponseDTO(Builder builder) {
+
         this.unitOperationId = builder.unitOperationId;
         this.operationId = builder.operationId;
         this.operationInitiatedResourceId = builder.operationInitiatedResourceId;
@@ -45,34 +46,42 @@ public class UnitOperationResponseDTO {
     }
 
     public String getUnitOperationId() {
+
         return unitOperationId;
     }
 
     public String getOperationId() {
+
         return operationId;
     }
 
     public String getOperationInitiatedResourceId() {
+
         return operationInitiatedResourceId;
     }
 
     public String getTargetOrgId() {
+
         return targetOrgId;
     }
 
     public String getTargetOrgName() {
+
         return targetOrgName;
     }
 
     public String getUnitOperationStatus() {
+
         return unitOperationStatus;
     }
 
     public String getStatusMessage() {
+
         return statusMessage;
     }
 
     public Timestamp getCreatedTime() {
+
         return createdTime;
     }
 
@@ -91,46 +100,55 @@ public class UnitOperationResponseDTO {
         private Timestamp createdTime;
 
         public Builder unitOperationId(String unitOperationId) {
+
             this.unitOperationId = unitOperationId;
             return this;
         }
 
         public Builder operationId(String operationId) {
+
             this.operationId = operationId;
             return this;
         }
 
         public Builder operationInitiatedResourceId(String operationInitiatedResourceId) {
+
             this.operationInitiatedResourceId = operationInitiatedResourceId;
             return this;
         }
 
         public Builder targetOrgId(String targetOrgId) {
+
             this.targetOrgId = targetOrgId;
             return this;
         }
 
         public Builder targetOrgName(String targetOrgName) {
+
             this.targetOrgName = targetOrgName;
             return this;
         }
 
         public Builder unitOperationStatus(String unitOperationStatus) {
+
             this.unitOperationStatus = unitOperationStatus;
             return this;
         }
 
         public Builder statusMessage(String statusMessage) {
+
             this.statusMessage = statusMessage;
             return this;
         }
 
         public Builder createdTime(Timestamp createdTime) {
+
             this.createdTime = createdTime;
             return this;
         }
 
         public UnitOperationResponseDTO build() {
+
             return new UnitOperationResponseDTO(this);
         }
     }

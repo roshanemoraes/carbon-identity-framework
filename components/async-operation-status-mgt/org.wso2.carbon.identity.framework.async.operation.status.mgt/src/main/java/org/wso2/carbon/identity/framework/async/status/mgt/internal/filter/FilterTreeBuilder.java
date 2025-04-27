@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.model.Node;
 import org.wso2.carbon.identity.core.model.OperationNode;
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtClientException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtClientException;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
@@ -119,7 +119,7 @@ public class FilterTreeBuilder {
      *
      * @return the filter tree as root.
      */
-    public Node buildTree() throws AsyncStatusMgtClientException {
+    public Node buildTree() throws AsyncOperationStatusMgtClientException {
 
         expression();
         return root;
@@ -128,7 +128,7 @@ public class FilterTreeBuilder {
     /**
      * We build the parser using the recursive descent parser technique.
      */
-    private void expression() throws AsyncStatusMgtClientException {
+    private void expression() throws AsyncOperationStatusMgtClientException {
 
         term();
         while (symbol.equals("or")) {
@@ -143,7 +143,7 @@ public class FilterTreeBuilder {
     /**
      * We build the parser using the recursive descent parser technique.
      */
-    private void term() throws AsyncStatusMgtClientException {
+    private void term() throws AsyncOperationStatusMgtClientException {
 
         factor();
         while (symbol.equals("and")) {
@@ -158,7 +158,7 @@ public class FilterTreeBuilder {
     /**
      * We build the parser using the recursive descent parser technique.
      */
-    private void factor() throws AsyncStatusMgtClientException {
+    private void factor() throws AsyncOperationStatusMgtClientException {
 
         symbol = nextSymbol();
         if (symbol.equals(NOT)) {
@@ -188,7 +188,7 @@ public class FilterTreeBuilder {
      * @param expressionNode the expression node.
      */
     private void validateAndBuildFilterExpression(String filterString, ExpressionNode expressionNode)
-            throws AsyncStatusMgtClientException {
+            throws AsyncOperationStatusMgtClientException {
 
         if (StringUtils.isNotBlank(filterString) && !filterString.equals("-1")) {
             String trimmedFilter = filterString.trim();
@@ -255,7 +255,7 @@ public class FilterTreeBuilder {
      * @param expressionNode filter index.
      */
     private void setExpressionNodeValues(String attributeValue, String operation, String value,
-                                         ExpressionNode expressionNode) throws AsyncStatusMgtClientException {
+                                         ExpressionNode expressionNode) throws AsyncOperationStatusMgtClientException {
 
         if (StringUtils.isNotBlank(attributeValue) || StringUtils.isNotBlank(operation)) {
             expressionNode.setAttributeValue(attributeValue.trim());

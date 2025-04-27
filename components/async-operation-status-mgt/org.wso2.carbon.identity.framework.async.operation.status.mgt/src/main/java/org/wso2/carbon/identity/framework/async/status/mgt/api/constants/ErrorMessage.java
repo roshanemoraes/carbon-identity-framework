@@ -24,32 +24,31 @@ package org.wso2.carbon.identity.framework.async.status.mgt.api.constants;
 public enum ErrorMessage {
 
     // Server errors.
-    ERROR_WHILE_STORING_ASYNC_OPERATION_STATUS("65101", "Error while storing async status.",
+    ERROR_WHILE_STORING_ASYNC_OPERATION_STATUS("65001", "Error while storing async status.",
             "Error while persisting Async Status in the system."),
-    ERROR_WHILE_UPDATING_ASYNC_OPERATION_STATUS("65102", "Error while updating async status.",
+    ERROR_WHILE_UPDATING_ASYNC_OPERATION_STATUS("65002", "Error while updating async status.",
             "Error while updating Async Status in the system."),
-    ERROR_WHILE_STORING_ASYNC_OPERATION_STATUS_UNIT("65103", "Error while storing async status unit.",
+    ERROR_WHILE_STORING_ASYNC_OPERATION_STATUS_UNIT("65003", "Error while storing async status unit.",
             "Error while persisting Async Status Unit in the system."),
-    ERROR_WHILE_RETRIEVING_ASYNC_STATUS("65104",
-            "Error while retrieving Async Status",
+    ERROR_WHILE_RETRIEVING_ASYNC_STATUS("65004", "Error while retrieving Async Status.",
             "Error while retrieving Async Status from the system."),
+    ERROR_WHILE_RETRIEVING_BASIC_ORG_DETAILS("65005", "Error while retrieving org names.",
+            "Error while retrieving org names from org id map."),
+    ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID("65006", "Error while retrieving org name.",
+            "Error while retrieving org name from org id."),
+    ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN("65007", "Error while resolving organization id.",
+            "Error while resolving organization id from tenant domain."),
 
     // Client errors.
-    ERROR_CODE_INVALID_OPERATION_ID("65120", "Invalid Operation ID",
+    ERROR_CODE_INVALID_OPERATION_ID("60001", "Invalid Operation ID.",
             "Operation with ID: %s doesn't exist."),
-    ERROR_CODE_INVALID_UNIT_OPERATION_ID("65121", "Invalid Unit Operation ID",
+    ERROR_CODE_INVALID_UNIT_OPERATION_ID("60002", "Invalid Unit Operation ID.",
             "Unit Operation with ID: %s doesn't exist."),
-    ERROR_CODE_USER_NOT_AUTHORIZED_TO_GET_STATUS("65122", "Unable to get async status.",
-            "Unauthorized request to get asynchronous operation status"),
-    ERROR_CODE_INVALID_LIMIT("65123", "Invalid Limit.", "Invalid limit requested."),
-    ERROR_CODE_INVALID_REQUEST_BODY("65124", "Invalid request.",
-            "Provided request body content is not in the expected format."),
-    ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID_MAP("65125", "Error while retrieving org names.",
-            "Error while retrieving org names from org id map."),
-    ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ID("65126", "Error while retrieving org name.",
-            "Error while retrieving org name from org id."),
-    ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN("65127", "Error while resolving organization id",
-            "Error while resolving organization id from tenant domain.");
+    ERROR_CODE_USER_NOT_AUTHORIZED_TO_GET_STATUS("60003", "Unable to get async status.",
+            "Unauthorized request to get asynchronous operation status."),
+    ERROR_CODE_INVALID_LIMIT("60004", "Invalid Limit.", "Invalid limit requested."),
+    ERROR_CODE_INVALID_REQUEST_BODY("60005", "Invalid request.",
+            "Provided request body content is not in the expected format.");
 
     private final String code;
     private final String message;

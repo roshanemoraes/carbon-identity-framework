@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.identity.framework.async.status.mgt.api.service;
 
-import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncStatusMgtException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
@@ -46,9 +46,10 @@ public interface AsyncOperationStatusMgtService {
      *                       if it already exists. If set to true, the existing record will be updated with
      *                       the new information; if false, a new record will be created.
      * @return The unique identifier (operation ID) of the registered or updated asynchronous operation.
-     * @throws AsyncStatusMgtException If an error occurs while registering or updating the operation status.
+     * @throws AsyncOperationStatusMgtException If an error occurs while registering or updating the operation status.
      */
-    String registerOperationStatus(OperationInitDTO record, boolean updateIfExists) throws AsyncStatusMgtException;
+    String registerOperationStatus(OperationInitDTO record, boolean updateIfExists) throws
+            AsyncOperationStatusMgtException;
 
     /**
      * Updates the status of an existing asynchronous operation identified by its operation ID.
@@ -58,9 +59,9 @@ public interface AsyncOperationStatusMgtService {
      * @param operationId The unique identifier of the asynchronous operation to be updated.
      * @param status      The new status of the operation, represented as a string (e.g., "COMPLETED", "FAILED",
      *                    "IN_PROGRESS").
-     * @throws AsyncStatusMgtException If an error occurs while updating the operation status.
+     * @throws AsyncOperationStatusMgtException If an error occurs while updating the operation status.
      */
-    void updateOperationStatus(String operationId, String status) throws AsyncStatusMgtException;
+    void updateOperationStatus(String operationId, String status) throws AsyncOperationStatusMgtException;
 
     /**
      * Registers the status of a unit operation, which is a sub-task within a larger asynchronous operation.
@@ -70,9 +71,9 @@ public interface AsyncOperationStatusMgtService {
      * @param operation The {@link UnitOperationInitDTO} containing details of the unit operation, including its
      *                  parent operation ID, resident resource ID, target organization, unit operation status,
      *                  status message, and creation timestamp.
-     * @throws AsyncStatusMgtException If an error occurs while registering the unit operation.
+     * @throws AsyncOperationStatusMgtException If an error occurs while registering the unit operation.
      */
-    void registerUnitOperationStatus(UnitOperationInitDTO operation) throws AsyncStatusMgtException;
+    void registerUnitOperationStatus(UnitOperationInitDTO operation) throws AsyncOperationStatusMgtException;
 
     /**
      * Retrieves a list of asynchronous operations based on the provided query parameters.
@@ -84,10 +85,10 @@ public interface AsyncOperationStatusMgtService {
      * @param limit        The maximum number of operations to return.
      * @param filter       A filter expression (e.g., by status, type, or createdTime).
      * @return A list of {@link OperationResponseDTO} objects matching the criteria.
-     * @throws AsyncStatusMgtException If an error occurs while retrieving operations.
+     * @throws AsyncOperationStatusMgtException If an error occurs while retrieving operations.
      */
     List<OperationResponseDTO> getOperations(String tenantDomain, String after, String before, Integer limit,
-                                             String filter) throws AsyncStatusMgtException;
+                                             String filter) throws AsyncOperationStatusMgtException;
 
     /**
      * Retrieves the status and metadata of a specific asynchronous operation.
@@ -95,9 +96,9 @@ public interface AsyncOperationStatusMgtService {
      * @param operationId  The unique identifier of the operation to retrieve.
      * @param tenantDomain The tenant domain associated with the operation.
      * @return The {@link OperationResponseDTO} representing the operation's details.
-     * @throws AsyncStatusMgtException If the operation is not found or an error occurs during retrieval.
+     * @throws AsyncOperationStatusMgtException If the operation is not found or an error occurs during retrieval.
      */
-    OperationResponseDTO getOperation(String operationId, String tenantDomain) throws AsyncStatusMgtException;
+    OperationResponseDTO getOperation(String operationId, String tenantDomain) throws AsyncOperationStatusMgtException;
 
     /**
      * Retrieves the status and details of a specific unit operation by its ID.
@@ -105,10 +106,10 @@ public interface AsyncOperationStatusMgtService {
      * @param unitOperationId The unique identifier of the unit operation.
      * @param tenantDomain    The tenant domain associated with the unit operation.
      * @return A {@link UnitOperationResponseDTO} representing the unit operation's status and metadata.
-     * @throws AsyncStatusMgtException If the unit operation is not found or an error occurs during retrieval.
+     * @throws AsyncOperationStatusMgtException If the unit operation is not found or an error occurs during retrieval.
      */
     UnitOperationResponseDTO getUnitOperation(String unitOperationId, String tenantDomain)
-            throws AsyncStatusMgtException;
+            throws AsyncOperationStatusMgtException;
 
     /**
      * Retrieves the status of unit operations associated with a specific operation ID.
@@ -121,9 +122,10 @@ public interface AsyncOperationStatusMgtService {
      * @param limit       The maximum number of unit operation records to retrieve.
      * @param filter      A filter expression to further refine the query (e.g., by status or type).
      * @return A list of {@link UnitOperationResponseDTO} objects representing the unit operation status records.
-     * @throws AsyncStatusMgtException         If an error occurs while retrieving the unit operation status records.
+     * @throws AsyncOperationStatusMgtException         If an error occurs while retrieving the unit operation status
+     * records.
      */
     List<UnitOperationResponseDTO> getUnitOperationStatusRecords(String operationId, String tenantDomain, String after,
                                                                  String before, Integer limit, String filter)
-            throws AsyncStatusMgtException;
+            throws AsyncOperationStatusMgtException;
 }

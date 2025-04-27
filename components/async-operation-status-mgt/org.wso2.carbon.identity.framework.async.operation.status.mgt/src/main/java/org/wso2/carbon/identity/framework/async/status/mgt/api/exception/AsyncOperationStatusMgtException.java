@@ -21,29 +21,29 @@ package org.wso2.carbon.identity.framework.async.status.mgt.api.exception;
 /**
  * Asynchronous operation status management exception.
  */
-public class AsyncStatusMgtException extends Exception {
+public class AsyncOperationStatusMgtException extends Exception {
 
     private String errorCode;
     private String description;
 
-    public AsyncStatusMgtException(String message) {
+    public AsyncOperationStatusMgtException(String message) {
 
         super(message);
     }
 
-    public AsyncStatusMgtException(String message, Throwable cause) {
+    public AsyncOperationStatusMgtException(String message, Throwable cause) {
 
         super(message, cause);
     }
 
-    public AsyncStatusMgtException(String message, String description, String errorCode) {
+    public AsyncOperationStatusMgtException(String message, String description, String errorCode) {
 
         super(message);
         this.errorCode = errorCode;
         this.description = description;
     }
 
-    public AsyncStatusMgtException(String message, String description, String errorCode, Throwable cause) {
+    public AsyncOperationStatusMgtException(String message, String description, String errorCode, Throwable cause) {
 
         super(message, cause);
         this.errorCode = errorCode;
