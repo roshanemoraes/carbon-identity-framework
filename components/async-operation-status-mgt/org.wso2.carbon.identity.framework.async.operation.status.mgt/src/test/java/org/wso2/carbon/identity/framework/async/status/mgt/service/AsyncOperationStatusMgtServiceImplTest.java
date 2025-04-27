@@ -38,6 +38,7 @@ import org.wso2.carbon.identity.framework.async.status.mgt.internal.service.impl
 import org.wso2.carbon.identity.framework.async.status.mgt.util.TestUtils;
 import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
 import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementException;
+import org.wso2.carbon.identity.organization.management.service.model.BasicOrganization;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -91,7 +92,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
     private AsyncOperationStatusMgtService service;
     private OrganizationManager organizationManager;
-    private final Map<String, String> mockedOrgMap = new HashMap<>();
+    private final Map<String, BasicOrganization> mockedOrgMap = new HashMap<>();
 
     @BeforeClass
     public void setUpClass() throws Exception {
@@ -104,6 +105,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
     @BeforeMethod
     public void setUp() throws Exception {
 
+        mockedOrgMap.clear();
         cleanUpDB();
     }
 
@@ -312,13 +314,32 @@ public class AsyncOperationStatusMgtServiceImplTest {
                 StringUtils.EMPTY).size());
     }
 
-    @Test(priority = 5)
-    public void testRegisterUnitOperationStatus()
-            throws AsyncOperationStatusMgtException, InterruptedException, OrganizationManagementException {
+    @DataProvider(name = "registerUnitOperationStatusTestData")
+    public Object[][] registerUnitOperationStatusTestData() throws InterruptedException {
 
         OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-        String returnedId = service.registerOperationStatus(operation1, false);
+
+        BasicOrganization basicOrganization = new BasicOrganization();
+        basicOrganization.setId(RESIDENT_ORG_ID_4);
+        basicOrganization.setName("Organization 4");
+        basicOrganization.setStatus(StringUtils.EMPTY);
+        basicOrganization.setCreated(StringUtils.EMPTY);
+        basicOrganization.setOrganizationHandle(StringUtils.EMPTY);
+
+        String residentOrgId = RESIDENT_ORG_ID_4;
+        return new Object[][]{
+                { operation1, residentOrgId, basicOrganization },
+        };
+    }
+
+    @Test(dataProvider = "registerUnitOperationStatusTestData", priority = 5)
+    public void testRegisterUnitOperationStatus(OperationInitDTO initDTO, String residentOrgId,
+                                                BasicOrganization basicOrganization)
+            throws AsyncOperationStatusMgtException, InterruptedException, OrganizationManagementException {
+
+
+        String returnedId = service.registerOperationStatus(initDTO, false);
         when(organizationManager.resolveOrganizationId(anyString())).thenReturn(RESIDENT_ORG_ID_1);
 
         String fetchedOperationId = service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY,
@@ -326,23 +347,47 @@ public class AsyncOperationStatusMgtServiceImplTest {
         UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                 RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
+        mockedOrgMap.put(residentOrgId, basicOrganization);
         Thread.sleep(4000);
-        mockedOrgMap.put(RESIDENT_ORG_ID_4, "Organization 4");
-        when(organizationManager.getOrganizationIdToNameMap(anyList())).thenReturn(mockedOrgMap);
+        when(organizationManager.getBasicOrganizationDetailsByOrgIDs(anyList())).thenReturn(mockedOrgMap);
 
         String returnedOperationId = service.getUnitOperationStatusRecords(fetchedOperationId, TENANT_DOMAIN_1,
                 StringUtils.EMPTY, StringUtils.EMPTY, 10, StringUtils.EMPTY).get(0).getOperationId();
         assertEquals(returnedId, returnedOperationId);
     }
 
-    @Test(priority = 6)
-    public void testGetUnitOperationStatusRecords()
-            throws AsyncOperationStatusMgtException, InterruptedException, OrganizationManagementException {
+    @DataProvider(name = "getUnitOperationStatusTestData")
+    public Object[][] getUnitOperationStatusTestData() throws InterruptedException {
 
         OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
                 RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
-        String returnedId = service.registerOperationStatus(operation1, false);
+        BasicOrganization basicOrganization1 = new BasicOrganization();
+        basicOrganization1.setId(RESIDENT_ORG_ID_2);
+        basicOrganization1.setName("Organization 2");
+        basicOrganization1.setStatus(StringUtils.EMPTY);
+        basicOrganization1.setCreated(StringUtils.EMPTY);
+        basicOrganization1.setOrganizationHandle(StringUtils.EMPTY);
+
+        BasicOrganization basicOrganization2 = new BasicOrganization();
+        basicOrganization2.setId(RESIDENT_ORG_ID_3);
+        basicOrganization2.setName("Organization 3");
+        basicOrganization2.setStatus(StringUtils.EMPTY);
+        basicOrganization2.setCreated(StringUtils.EMPTY);
+        basicOrganization2.setOrganizationHandle(StringUtils.EMPTY);
+
+        return new Object[][]{
+                { operation1, Arrays.asList(RESIDENT_ORG_ID_2, RESIDENT_ORG_ID_3),
+                        Arrays.asList(basicOrganization1, basicOrganization2) },
+        };
+    }
+
+    @Test(dataProvider = "getUnitOperationStatusTestData", priority = 6)
+    public void testGetUnitOperationStatusRecords(OperationInitDTO initDTO, List<String> residentOrgIds,
+                                                  List<BasicOrganization> basicOrgs)
+            throws AsyncOperationStatusMgtException, InterruptedException, OrganizationManagementException {
+
+        String returnedId = service.registerOperationStatus(initDTO, false);
         when(organizationManager.resolveOrganizationId(anyString())).thenReturn(RESIDENT_ORG_ID_1);
         String fetchedOperationId = service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY,
                 5, StringUtils.EMPTY).get(0).getOperationId();
@@ -353,11 +398,12 @@ public class AsyncOperationStatusMgtServiceImplTest {
                 RESIDENT_ORG_ID_3, STATUS_FAIL, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
         service.registerUnitOperationStatus(unit2);
+
+        mockedOrgMap.put(residentOrgIds.get(0), basicOrgs.get(0));
+        mockedOrgMap.put(residentOrgIds.get(1), basicOrgs.get(1));
         Thread.sleep(4000);
 
-        mockedOrgMap.put(RESIDENT_ORG_ID_2, "Organization 2");
-        mockedOrgMap.put(RESIDENT_ORG_ID_3, "Organization 3");
-        when(organizationManager.getOrganizationIdToNameMap(anyList())).thenReturn(mockedOrgMap);
+        when(organizationManager.getBasicOrganizationDetailsByOrgIDs(anyList())).thenReturn(mockedOrgMap);
 
         List<UnitOperationResponseDTO> unitOperations = service.getUnitOperationStatusRecords(fetchedOperationId,
                 TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY, 10, StringUtils.EMPTY);

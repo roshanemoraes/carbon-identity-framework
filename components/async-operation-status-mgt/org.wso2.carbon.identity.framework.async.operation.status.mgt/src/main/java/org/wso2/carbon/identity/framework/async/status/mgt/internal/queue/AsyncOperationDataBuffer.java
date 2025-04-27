@@ -110,11 +110,12 @@ public class AsyncOperationDataBuffer {
 
         scheduler.scheduleAtFixedRate(() -> {
             if (!queue.isEmpty()) {
-                LOG.debug("Periodic flush triggered.");
                 try {
                     persistToDatabase();
-                } catch (AsyncOperationStatusMgtException e) {  //TODO: to rethrow or handle here?
-                    LOG.error("Error while flushing to the database.", e);
+                } catch (AsyncOperationStatusMgtException e) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.error("Error while flushing unit operation records to the database.", e);
+                    }
                 }
             }
         }, flushIntervalSeconds, flushIntervalSeconds, TimeUnit.SECONDS);

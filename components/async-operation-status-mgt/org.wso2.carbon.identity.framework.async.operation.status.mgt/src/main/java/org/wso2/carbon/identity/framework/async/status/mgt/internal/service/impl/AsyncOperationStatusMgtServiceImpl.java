@@ -27,6 +27,7 @@ import org.wso2.carbon.identity.core.model.OperationNode;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtException;
+import org.wso2.carbon.identity.framework.async.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.status.mgt.api.models.UnitOperationInitDTO;
@@ -54,8 +55,8 @@ import java.util.Map;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_LIMIT;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_CODE_INVALID_REQUEST_BODY;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN;
-import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_BASIC_ORG_DETAILS;
+import static org.wso2.carbon.identity.framework.async.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncOperationStatusMgtConstants.AND;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncOperationStatusMgtConstants.ASC_SORT_ORDER;
 import static org.wso2.carbon.identity.framework.async.status.mgt.internal.constant.AsyncOperationStatusMgtConstants.DESC_SORT_ORDER;
@@ -201,6 +202,9 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         List<UnitOperationResponseDTO> unitOperationResponseDTOList = new ArrayList<>();
         if (!orgDetails.isEmpty()) {
             for (UnitOperationDO unitOperationDO : unitOperations) {
+                if (StringUtils.isBlank(orgDetails.get(unitOperationDO.getTargetOrgId()).getName())) {
+                    throw new AsyncOperationStatusMgtServerException("Error while retrieving org name from org id.");
+                }
                 UnitOperationResponseDTO dto = new UnitOperationResponseDTO.Builder()
                         .unitOperationId(unitOperationDO.getUnitOperationId())
                         .operationId(unitOperationDO.getOperationId())
