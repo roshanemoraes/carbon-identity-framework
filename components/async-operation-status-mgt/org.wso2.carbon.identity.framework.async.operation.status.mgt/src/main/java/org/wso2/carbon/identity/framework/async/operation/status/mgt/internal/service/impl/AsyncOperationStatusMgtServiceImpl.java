@@ -313,12 +313,6 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
             ExpressionNode expressionNode = (ExpressionNode) node;
             String attributeValue = expressionNode.getAttributeValue();
             if (StringUtils.isNotBlank(attributeValue)) {
-                if (attributeValue.startsWith("attributes.")) {
-                    attributeValue = "attributes";
-                }
-//                if (isFilteringAttributeNotSupported(attributeValue)) {
-//                    throw handleClientException(ERROR_CODE_INVALID_REQUEST_BODY, attributeValue);
-//                }
                 expression.add(expressionNode);
             }
         } else if (node instanceof OperationNode) {

@@ -131,8 +131,8 @@ public class FilterTreeBuilder {
     private void expression() throws AsyncOperationStatusMgtClientException {
 
         term();
-        while (symbol.equals("or")) {
-            OperationNode or = new OperationNode("or");
+        while (symbol.equals(OR)) {
+            OperationNode or = new OperationNode(OR);
             or.setLeftNode(root);
             term();
             or.setRightNode(root);
@@ -146,8 +146,8 @@ public class FilterTreeBuilder {
     private void term() throws AsyncOperationStatusMgtClientException {
 
         factor();
-        while (symbol.equals("and")) {
-            OperationNode and = new OperationNode("and");
+        while (symbol.equalsIgnoreCase(AND)) {
+            OperationNode and = new OperationNode(AND);
             and.setLeftNode(root);
             factor();
             and.setRightNode(root);
