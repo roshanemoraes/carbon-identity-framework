@@ -25,6 +25,8 @@ import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constan
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
 
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtExceptionHandler.handleServerException;
+import static org.wso2.carbon.identity.organization.management.service.constant.SQLConstants.ORACLE;
+import static org.wso2.carbon.identity.organization.management.service.constant.SQLConstants.POSTGRESQL;
 
 /**
  * Util Methods.
@@ -45,6 +47,16 @@ public class Utils {
     public static boolean isMSSqlDB() throws AsyncOperationStatusMgtServerException {
 
         return isDBTypeOf("microsoft");
+    }
+
+    public static boolean isOracleDB() throws AsyncOperationStatusMgtServerException {
+
+        return isDBTypeOf(ORACLE);
+    }
+
+    public static boolean isPostgreSqlDB() throws AsyncOperationStatusMgtServerException {
+
+        return isDBTypeOf(POSTGRESQL);
     }
 
     /**

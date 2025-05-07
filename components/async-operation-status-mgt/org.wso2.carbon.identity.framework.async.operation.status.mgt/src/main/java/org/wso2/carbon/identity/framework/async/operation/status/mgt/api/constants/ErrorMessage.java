@@ -52,8 +52,6 @@ public enum ErrorMessage {
     ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN("65008", "Error while resolving organization id.",
             "Error while resolving organization id from tenant domain.");
 
-
-
     private final String code;
     private final String message;
     private final String description;

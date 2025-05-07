@@ -69,9 +69,13 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.inte
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_OPERATION;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS_TAIL;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS_TAIL_MSSQL;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_OPERATIONS_TAIL_ORACLE;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATION;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS_TAIL;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS_TAIL_MSSQL;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.GET_UNIT_OPERATIONS_TAIL_ORACLE;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.LIMIT;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CORRELATION_ID;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CREATED_AT;
@@ -92,6 +96,7 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.inte
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.UPDATE_ASYNC_OPERATION;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtExceptionHandler.handleServerException;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.Utils.isMSSqlDB;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.Utils.isOracleDB;
 
 /**
  * DAO implementation for Asynchronous Operation Status Management.
@@ -104,7 +109,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     public String registerAsyncStatusWithoutUpdate(OperationInitDTO record) throws AsyncOperationStatusMgtException {
 
         String generatedOperationId;
-        String currentTimestamp = new Timestamp(new Date().getTime()).toString();
+        Timestamp currentTimestamp = new Timestamp(new Date().getTime());
         String operationId = UUID.randomUUID().toString();
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);
@@ -119,8 +124,8 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
             statement.setString(INITIATED_ORG_ID, record.getResidentOrgId());
             statement.setString(INITIATED_USER_ID, record.getInitiatorId());
             statement.setString(STATUS, OperationStatus.IN_PROGRESS.toString());
-            statement.setString(CREATED_AT, currentTimestamp);
-            statement.setString(LAST_MODIFIED, currentTimestamp);
+            statement.setTimeStamp(CREATED_AT, currentTimestamp, null);
+            statement.setTimeStamp(LAST_MODIFIED, currentTimestamp, null);
             statement.setString(POLICY, record.getOperationPolicy());
             statement.executeUpdate();
 
@@ -140,7 +145,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     public String registerAsyncStatusWithUpdate(OperationInitDTO record) throws AsyncOperationStatusMgtException {
 
         String generatedOperationId;
-        String currentTimestamp = new Timestamp(new Date().getTime()).toString();
+        Timestamp currentTimestamp = new Timestamp(new Date().getTime());
         String operationId = UUID.randomUUID().toString();
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false)) {
@@ -158,8 +163,8 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 statement.setString(INITIATED_ORG_ID, record.getResidentOrgId());
                 statement.setString(INITIATED_USER_ID, record.getInitiatorId());
                 statement.setString(STATUS, OperationStatus.IN_PROGRESS.toString());
-                statement.setString(CREATED_AT, currentTimestamp);
-                statement.setString(LAST_MODIFIED, currentTimestamp);
+                statement.setTimeStamp(CREATED_AT, currentTimestamp, null);
+                statement.setTimeStamp(LAST_MODIFIED, currentTimestamp, null);
                 statement.setString(POLICY, record.getOperationPolicy());
                 statement.executeUpdate();
 
@@ -185,8 +190,8 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 template.executeUpdate(UPDATE_ASYNC_OPERATION,
                         statement -> {
                             statement.setString(STATUS, status);
-                            statement.setString(LAST_MODIFIED, new Timestamp(new Date().getTime()).toString());
-                            statement.setString(ID, operationId);
+                            statement.setTimeStamp(LAST_MODIFIED, new Timestamp(new Date().getTime()), null);
+                            statement.setInt(ID, Integer.parseInt(operationId));
                         });
                 return null;
             });
@@ -199,7 +204,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     public void registerAsyncStatusUnit(ConcurrentLinkedQueue<UnitOperationInitDTO> queue)
             throws AsyncOperationStatusMgtException {
 
-        String currentTimestamp = new Timestamp(new Date().getTime()).toString();
+        Timestamp currentTimestamp = new Timestamp(new Date().getTime());
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
             namedJdbcTemplate.withTransaction(template ->
@@ -207,13 +212,13 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                     statement -> {
                         for (UnitOperationInitDTO context : queue) {
                             String unitOperationId = UUID.randomUUID().toString();
-                            statement.setString(OPERATION_ID, context.getOperationId());
+                            statement.setInt(OPERATION_ID, Integer.parseInt(context.getOperationId()));
                             statement.setString(UNIT_OPERATION_ID, unitOperationId);
                             statement.setString(RESIDENT_RESOURCE_ID, context.getOperationInitiatedResourceId());
                             statement.setString(TARGET_ORG_ID, context.getTargetOrgId());
                             statement.setString(STATUS, context.getUnitOperationStatus());
                             statement.setString(STATUS_MESSAGE, context.getStatusMessage());
-                            statement.setString(CREATED_AT, currentTimestamp);
+                            statement.setTimeStamp(CREATED_AT, currentTimestamp, null);
                             statement.addBatch();
                         }
                     }, null));
@@ -337,6 +342,9 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
             unitOperationRecord = namedJdbcTemplate.fetchSingleRecord(GET_UNIT_OPERATION, (resultSet, rowNumber) -> {
+                if (StringUtils.isBlank(resultSet.getString(1))) {
+                    return null;
+                }
                 UnitOperationDO record = new UnitOperationDO();
                 record.setUnitOperationId(resultSet.getString(1));
                 record.setOperationId(resultSet.getString(2));
@@ -507,20 +515,39 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
         return (CREATED_AT.equals(attributeName)) && isMSSqlDB();
     }
 
-    private static String getOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder) {
+    private static String getOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
+            throws AsyncOperationStatusMgtServerException {
+
+        String sqlStmtTail;
+        if (isOracleDB()) {
+            sqlStmtTail = GET_OPERATIONS_TAIL_ORACLE;
+        } else if (isMSSqlDB()) {
+            sqlStmtTail = GET_OPERATIONS_TAIL_MSSQL;
+        } else {
+            sqlStmtTail = GET_OPERATIONS_TAIL;
+        }
 
         if (StringUtils.isNotBlank(filterQueryBuilder.getFilterQuery())) {
-            return GET_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + GET_OPERATIONS_TAIL;
+            return GET_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + sqlStmtTail;
         }
-        return GET_OPERATIONS + GET_OPERATIONS_TAIL;
+        return GET_OPERATIONS + sqlStmtTail;
     }
 
-    private static String getUnitOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder) {
+    private static String getUnitOperationsStatusSqlStmt(FilterQueryBuilder filterQueryBuilder)
+            throws AsyncOperationStatusMgtServerException {
 
-        if (StringUtils.isNotBlank(filterQueryBuilder.getFilterQuery())) {
-            return GET_UNIT_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + GET_UNIT_OPERATIONS_TAIL;
+        String sqlStmtTail;
+        if (isOracleDB()) {
+            sqlStmtTail = GET_UNIT_OPERATIONS_TAIL_ORACLE;
+        } else if (isMSSqlDB()) {
+            sqlStmtTail = GET_UNIT_OPERATIONS_TAIL_MSSQL;
+        } else {
+            sqlStmtTail = GET_UNIT_OPERATIONS_TAIL;
         }
-        return GET_UNIT_OPERATIONS + GET_UNIT_OPERATIONS_TAIL;
+        if (StringUtils.isNotBlank(filterQueryBuilder.getFilterQuery())) {
+            return GET_UNIT_OPERATIONS + " AND " + filterQueryBuilder.getFilterQuery() + sqlStmtTail;
+        }
+        return GET_UNIT_OPERATIONS + sqlStmtTail;
     }
 
     private void setFilterAttributes(NamedPreparedStatement namedPreparedStatement,

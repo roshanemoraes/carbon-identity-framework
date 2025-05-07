@@ -66,8 +66,8 @@ public class TestAsyncOperationConstants {
 
     // Operation Status.
     public static final String STATUS_SUCCESS = "SUCCESS";
-    public static final String STATUS_FAIL = "FAIL";
-    public static final String STATUS_PARTIAL = "PARTIAL";
+    public static final String STATUS_FAILED = "FAIL";
+    public static final String STATUS_PARTIALLY_COMPLETED = "PARTIAL";
     public static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
 
     // Operation Policies.

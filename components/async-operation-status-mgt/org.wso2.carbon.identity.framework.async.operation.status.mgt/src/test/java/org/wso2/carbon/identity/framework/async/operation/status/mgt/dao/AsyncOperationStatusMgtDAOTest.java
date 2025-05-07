@@ -48,9 +48,9 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.cons
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_1;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_3;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_4;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAIL;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAILED;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_IN_PROGRESS;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_PARTIAL;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_PARTIALLY_COMPLETED;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_TYPE_USER;
@@ -179,12 +179,12 @@ public class AsyncOperationStatusMgtDAOTest {
             UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                     RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
             UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                    RESIDENT_ORG_ID_3, STATUS_FAIL, "Invalid User Id.");
+                    RESIDENT_ORG_ID_3, STATUS_FAILED, "Invalid User Id.");
             ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             list.add(unit2);
             dao.registerAsyncStatusUnit(list);
-            dao.updateAsyncStatus(returnedId, STATUS_PARTIAL);
+            dao.updateAsyncStatus(returnedId, STATUS_PARTIALLY_COMPLETED);
 
             assertEquals(2, dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     10, null).size());
@@ -252,12 +252,12 @@ public class AsyncOperationStatusMgtDAOTest {
             UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
                     RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
             UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                    RESIDENT_ORG_ID_3, STATUS_FAIL, "Invalid User Id.");
+                    RESIDENT_ORG_ID_3, STATUS_FAILED, "Invalid User Id.");
             ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             list.add(unit2);
             dao.registerAsyncStatusUnit(list);
-            dao.updateAsyncStatus(returnedId, STATUS_PARTIAL);
+            dao.updateAsyncStatus(returnedId, STATUS_PARTIALLY_COMPLETED);
 
             assertEquals(2, dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     100, null).size());
@@ -282,7 +282,7 @@ public class AsyncOperationStatusMgtDAOTest {
             ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             dao.registerAsyncStatusUnit(list);
-            dao.updateAsyncStatus(returnedId, STATUS_PARTIAL);
+            dao.updateAsyncStatus(returnedId, STATUS_PARTIALLY_COMPLETED);
 
             String addedUnitOpId = dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     100, null).get(0).getUnitOperationId();
@@ -300,6 +300,7 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     private void cleanUpDB() throws Exception {
+
         try (Connection connection = IdentityDatabaseUtil.getDBConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate("DELETE FROM IDN_ASYNC_OPERATION_STATUS");
@@ -310,6 +311,7 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     private int getOperationTableSize() throws AsyncOperationStatusMgtException {
+        
         return dao.getOperations(RESIDENT_ORG_ID_1, 1000, null).size();
     }
 

@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.FAILED;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.PARTIAL;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.PARTIALLY_COMPLETED;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.SUCCESS;
 
 /**
@@ -56,8 +56,8 @@ public class SubOperationStatusQueue {
 
         for (SubOperationStatusObject statusObject : subOperationList) {
             String status = statusObject.getStatus();
-            if (PARTIAL.toString().equals(status)) {
-                return PARTIAL.toString();
+            if (PARTIALLY_COMPLETED.toString().equals(status)) {
+                return PARTIALLY_COMPLETED.toString();
             } else if (FAILED.toString().equals(status)) {
                 allSuccess = false;
             } else if (SUCCESS.toString().equals(status)) {
@@ -70,6 +70,6 @@ public class SubOperationStatusQueue {
         } else if (allFail) {
             return FAILED.toString();
         }
-        return SUCCESS.toString();
+        return PARTIALLY_COMPLETED.toString();
     }
 }

@@ -148,6 +148,10 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
         OperationDO operationDO = ASYNC_OPERATION_STATUS_MGT_DAO.getOperation(operationId, requestInitiatedOrgId);
 
+        if (operationDO == null) {
+            return null;
+        }
+
         return new OperationResponseDTO.Builder()
                 .operationId(operationDO.getOperationId())
                 .correlationId(operationDO.getCorrelationId())
@@ -170,6 +174,9 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
         UnitOperationDO unitOperationDO = ASYNC_OPERATION_STATUS_MGT_DAO.getUnitOperation(unitOperationId,
                 requestInitiatedOrgId);
+        if (unitOperationDO == null) {
+            return null;
+        }
         String targetOrgName = getOrganizationName(unitOperationDO.getTargetOrgId());
 
         return new UnitOperationResponseDTO.Builder()

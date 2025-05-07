@@ -25,5 +25,5 @@ public enum OperationStatus {
     IN_PROGRESS,
     SUCCESS,
     FAILED,
-    PARTIAL
+    PARTIALLY_COMPLETED
 }
