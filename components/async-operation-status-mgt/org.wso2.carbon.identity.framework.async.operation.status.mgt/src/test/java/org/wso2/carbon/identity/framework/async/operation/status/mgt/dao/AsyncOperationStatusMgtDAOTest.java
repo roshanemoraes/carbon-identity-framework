@@ -106,8 +106,6 @@ public class AsyncOperationStatusMgtDAOTest {
 
             String insertedOperationId1 = dao.registerAsyncStatusWithoutUpdate(operation1);
             assertTrue(StringUtils.isNotBlank(insertedOperationId1), "Async Op_1 Status Addition Failed.");
-            assertTrue(Integer.parseInt(insertedOperationId1) > 0, "Expected a positive non-zero " +
-                    "integer as the result for a clean record insertion to the database.");
 
             dao.registerAsyncStatusWithoutUpdate(operation2);
             assertEquals(2, getOperationTableSize());
@@ -130,8 +128,6 @@ public class AsyncOperationStatusMgtDAOTest {
 
             String insertedOperationId1 = dao.registerAsyncStatusWithUpdate(operation1);
             assertTrue(StringUtils.isNotBlank(insertedOperationId1), "Async Op_1 Status Addition Failed.");
-            assertTrue(Integer.parseInt(insertedOperationId1) > 0, "Expected a positive non-zero " +
-                    "integer as the result for a clean record insertion to the database.");
 
             dao.registerAsyncStatusWithUpdate(operation2);
             assertEquals(1, getOperationTableSize());
@@ -144,9 +140,8 @@ public class AsyncOperationStatusMgtDAOTest {
     public void testUpdateAsyncStatus() {
 
         try {
-            OperationInitDTO
-                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
-                    RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
+            OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER,
+                    SUBJECT_ID_1, RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
             String initialOperationId = dao.registerAsyncStatusWithUpdate(operation1);
 
@@ -169,9 +164,8 @@ public class AsyncOperationStatusMgtDAOTest {
     public void testRegisterAsyncStatusUnit() {
 
         try {
-            OperationInitDTO
-                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
-                    RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
+            OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER,
+                    SUBJECT_ID_1, RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
             String returnedId = dao.registerAsyncStatusWithUpdate(operation1);
             String fetchedOperationId = dao.getOperations(RESIDENT_ORG_ID_1, 1000,
                     null).get(0).getOperationId();
@@ -270,9 +264,8 @@ public class AsyncOperationStatusMgtDAOTest {
     public void testGetUnitOperation() {
 
         try {
-            OperationInitDTO
-                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
-                    RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
+            OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER,
+                    SUBJECT_ID_1, RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
             String returnedId = dao.registerAsyncStatusWithUpdate(operation1);
             String fetchedOperationId = dao.getOperations(RESIDENT_ORG_ID_1, 1000,
                     null).get(0).getOperationId();

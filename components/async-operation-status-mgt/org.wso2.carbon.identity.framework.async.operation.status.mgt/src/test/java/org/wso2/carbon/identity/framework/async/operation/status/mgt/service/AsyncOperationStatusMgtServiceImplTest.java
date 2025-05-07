@@ -415,7 +415,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
         List<UnitOperationResponseDTO> unitOperations = service.getUnitOperationStatusRecords(fetchedOperationId,
                 TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY, 10, StringUtils.EMPTY);
         when(organizationManager.getOrganizationNameById(RESIDENT_ORG_ID_2)).thenReturn(basicOrgs.get(0).getName());
-        UnitOperationResponseDTO unitOperation = service.getUnitOperation(unitOperations.get(0).getUnitOperationId(),
+        UnitOperationResponseDTO unitOperation = service.getUnitOperation(unitOperations.get(1).getUnitOperationId(),
                 TENANT_DOMAIN_1);
 
         assertEquals(RESIDENT_ORG_ID_1, unitOperation.getOperationInitiatedResourceId());

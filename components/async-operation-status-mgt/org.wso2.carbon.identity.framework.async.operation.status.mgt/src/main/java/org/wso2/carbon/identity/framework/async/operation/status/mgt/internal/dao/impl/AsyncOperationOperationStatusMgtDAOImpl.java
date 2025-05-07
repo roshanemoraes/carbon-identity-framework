@@ -40,7 +40,6 @@ import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.mo
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.Utils;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -79,7 +78,6 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.inte
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.LIMIT;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CORRELATION_ID;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.CREATED_AT;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.ID;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_ORG_ID;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.INITIATED_USER_ID;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.SQLPlaceholders.LAST_MODIFIED;
@@ -108,13 +106,12 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     @Override
     public String registerAsyncStatusWithoutUpdate(OperationInitDTO record) throws AsyncOperationStatusMgtException {
 
-        String generatedOperationId;
         Timestamp currentTimestamp = new Timestamp(new Date().getTime());
         String operationId = UUID.randomUUID().toString();
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);
              NamedPreparedStatement statement = new NamedPreparedStatement(connection,
-                     CREATE_ASYNC_OPERATION, ID)) {
+                     CREATE_ASYNC_OPERATION, OPERATION_ID)) {
 
             statement.setString(OPERATION_ID, operationId);
             statement.setString(CORRELATION_ID, record.getCorrelationId());
@@ -128,23 +125,15 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
             statement.setTimeStamp(LAST_MODIFIED, currentTimestamp, null);
             statement.setString(POLICY, record.getOperationPolicy());
             statement.executeUpdate();
-
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                generatedOperationId = generatedKeys.getString(1);
-            } else {
-                throw new SQLException("Creating operation failed, no ID obtained.");
-            }
+            return operationId;
         } catch (SQLException e) {
             throw handleServerException(ERROR_WHILE_PERSISTING_ASYNC_OPERATION_STATUS, e);
         }
-        return generatedOperationId;
     }
 
     @Override
     public String registerAsyncStatusWithUpdate(OperationInitDTO record) throws AsyncOperationStatusMgtException {
 
-        String generatedOperationId;
         Timestamp currentTimestamp = new Timestamp(new Date().getTime());
         String operationId = UUID.randomUUID().toString();
 
@@ -153,8 +142,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                     record.getOperationSubjectId());
 
             try (NamedPreparedStatement statement = new NamedPreparedStatement(connection,
-                    CREATE_ASYNC_OPERATION, ID)) {
-
+                    CREATE_ASYNC_OPERATION, OPERATION_ID)) {
                 statement.setString(OPERATION_ID, operationId);
                 statement.setString(CORRELATION_ID, record.getCorrelationId());
                 statement.setString(OPERATION_TYPE, record.getOperationType());
@@ -167,18 +155,11 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 statement.setTimeStamp(LAST_MODIFIED, currentTimestamp, null);
                 statement.setString(POLICY, record.getOperationPolicy());
                 statement.executeUpdate();
-
-                ResultSet generatedKeys = statement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    generatedOperationId = generatedKeys.getString(1);
-                } else {
-                    throw new SQLException("Creating operation failed, no ID obtained.");
-                }
             }
+            return operationId;
         } catch (SQLException e) {
             throw handleServerException(ERROR_WHILE_PERSISTING_ASYNC_OPERATION_STATUS, e);
         }
-        return generatedOperationId;
     }
 
     @Override
@@ -191,7 +172,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                         statement -> {
                             statement.setString(STATUS, status);
                             statement.setTimeStamp(LAST_MODIFIED, new Timestamp(new Date().getTime()), null);
-                            statement.setInt(ID, Integer.parseInt(operationId));
+                            statement.setString(OPERATION_ID, operationId);
                         });
                 return null;
             });
@@ -211,9 +192,8 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 template.executeBatchInsert(CREATE_ASYNC_OPERATION_UNIT_BATCH,
                     statement -> {
                         for (UnitOperationInitDTO context : queue) {
-                            String unitOperationId = UUID.randomUUID().toString();
-                            statement.setInt(OPERATION_ID, Integer.parseInt(context.getOperationId()));
-                            statement.setString(UNIT_OPERATION_ID, unitOperationId);
+                            statement.setString(UNIT_OPERATION_ID, UUID.randomUUID().toString());
+                            statement.setString(OPERATION_ID, context.getOperationId());
                             statement.setString(RESIDENT_RESOURCE_ID, context.getOperationInitiatedResourceId());
                             statement.setString(TARGET_ORG_ID, context.getTargetOrgId());
                             statement.setString(STATUS, context.getUnitOperationStatus());
