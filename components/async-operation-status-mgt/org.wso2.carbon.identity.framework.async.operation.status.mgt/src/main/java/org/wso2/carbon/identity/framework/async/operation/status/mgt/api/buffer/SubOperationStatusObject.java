@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.identity.framework.async.operation.status.mgt.api.buffer;
 
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
+
 /**
  * Represents the status of a single sub-operation within an asynchronous operation.
  * This object holds a status value (e.g., "SUCCESS" or "FAIL") that can be used
@@ -27,14 +29,9 @@ public class SubOperationStatusObject {
 
     private String status;
 
-    public SubOperationStatusObject(String status) {
+    public SubOperationStatusObject(OperationStatus status) {
 
-        this.status = status;
-    }
-
-    public SubOperationStatusObject() {
-
-        this.status = null;
+        this.status = status.toString();
     }
 
     public String getStatus() {
@@ -42,8 +39,8 @@ public class SubOperationStatusObject {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OperationStatus status) {
 
-        this.status = status;
+        this.status = status.toString();
     }
 }

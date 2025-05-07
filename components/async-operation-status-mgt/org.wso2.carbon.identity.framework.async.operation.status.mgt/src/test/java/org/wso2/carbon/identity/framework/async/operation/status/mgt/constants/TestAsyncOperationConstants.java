@@ -23,12 +23,17 @@ package org.wso2.carbon.identity.framework.async.operation.status.mgt.constants;
  */
 public class TestAsyncOperationConstants {
 
-    // Organizations.
+    // Organization IDs.
     public static final String RESIDENT_ORG_ID_1 = "10084a8d-113f-4211-a0d5-efe36b082211";
     public static final String RESIDENT_ORG_ID_2 = "c524c30a-cbd4-4169-ac9d-1ee3edf1bf16";
     public static final String RESIDENT_ORG_ID_3 = "cd5a1dcb-fff2-4c14-a073-c07b3caf1757";
     public static final String RESIDENT_ORG_ID_4 = "7cb4ab7e-9a25-44bd-a9e0-cf4e07d804dc";
-    public static final String RESIDENT_ORG_ID_5 = "440ad5b6-6a41-4da7-aadd-272995d0e5db";
+
+    // Organization Names.
+    public static final String RESIDENT_ORG_NAME_1 = "Organization 1";
+    public static final String RESIDENT_ORG_NAME_2 = "Organization 2";
+    public static final String RESIDENT_ORG_NAME_3 = "Organization 3";
+    public static final String RESIDENT_ORG_NAME_4 = "Organization 4";
 
     // Tenant Domains.
     public static final String TENANT_DOMAIN_1 = "d6fc0b22-5b7f-461b-aef8-775a78187095";
@@ -46,14 +51,9 @@ public class TestAsyncOperationConstants {
     public static final String SUBJECT_ID_2 = "558e57e7-ff6b-4c31-a1eb-2a0e2d635b2a";
     public static final String SUBJECT_ID_3 = "668e57e7-ff6b-4c31-a1eb-2a0e2d635b2b";
     public static final String SUBJECT_ID_4 = "778e57e7-ff6b-4c31-a1eb-2a0e2d635b2c";
-    public static final String SUBJECT_ID_5 = "888e57e7-ff6b-4c31-a1eb-2a0e2d635b2c";
 
     // Operation Initiators.
     public static final String INITIATOR_ID_1 = "443k57a1-gl6b-4c31-a1eb-2a0e2d635b2a";
-    public static final String INITIATOR_ID_2 = "553k57a1-gl6b-4c31-a1eb-2a0e2d635b2a";
-    public static final String INITIATOR_ID_3 = "663k57a1-gl6b-4c31-a1eb-2a0e2d635b2b";
-    public static final String INITIATOR_ID_4 = "773k57a1-gl6b-4c31-a1eb-2a0e2d635b2c";
-    public static final String INITIATOR_ID_5 = "883k57a1-gl6b-4c31-a1eb-2a0e2d635b2c";
 
     // Operation Types.
     public static final String TYPE_USER_SHARE = "B2B_USER_SHARE";
@@ -66,8 +66,8 @@ public class TestAsyncOperationConstants {
 
     // Operation Status.
     public static final String STATUS_SUCCESS = "SUCCESS";
-    public static final String STATUS_FAILED = "FAIL";
-    public static final String STATUS_PARTIALLY_COMPLETED = "PARTIAL";
+    public static final String STATUS_FAILED = "FAILED";
+    public static final String STATUS_PARTIALLY_COMPLETED = "PARTIALLY_COMPLETED";
     public static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
 
     // Operation Policies.

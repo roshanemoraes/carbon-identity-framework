@@ -71,6 +71,9 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.cons
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_2;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_3;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_4;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_NAME_2;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_NAME_3;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_NAME_4;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAILED;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_IN_PROGRESS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
@@ -327,7 +330,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
         BasicOrganization basicOrganization = new BasicOrganization();
         basicOrganization.setId(RESIDENT_ORG_ID_4);
-        basicOrganization.setName("Organization 4");
+        basicOrganization.setName(RESIDENT_ORG_NAME_4);
         basicOrganization.setStatus(StringUtils.EMPTY);
         basicOrganization.setCreated(StringUtils.EMPTY);
         basicOrganization.setOrganizationHandle(StringUtils.EMPTY);
@@ -369,14 +372,14 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
         BasicOrganization basicOrganization1 = new BasicOrganization();
         basicOrganization1.setId(RESIDENT_ORG_ID_2);
-        basicOrganization1.setName("Organization 2");
+        basicOrganization1.setName(RESIDENT_ORG_NAME_2);
         basicOrganization1.setStatus(StringUtils.EMPTY);
         basicOrganization1.setCreated(StringUtils.EMPTY);
         basicOrganization1.setOrganizationHandle(StringUtils.EMPTY);
 
         BasicOrganization basicOrganization2 = new BasicOrganization();
         basicOrganization2.setId(RESIDENT_ORG_ID_3);
-        basicOrganization2.setName("Organization 3");
+        basicOrganization2.setName(RESIDENT_ORG_NAME_3);
         basicOrganization2.setStatus(StringUtils.EMPTY);
         basicOrganization2.setCreated(StringUtils.EMPTY);
         basicOrganization2.setOrganizationHandle(StringUtils.EMPTY);
@@ -432,7 +435,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
 
         BasicOrganization basicOrganization1 = new BasicOrganization();
         basicOrganization1.setId(RESIDENT_ORG_ID_2);
-        basicOrganization1.setName("Organization 2");
+        basicOrganization1.setName(RESIDENT_ORG_NAME_2);
         basicOrganization1.setStatus(StringUtils.EMPTY);
         basicOrganization1.setCreated(StringUtils.EMPTY);
         basicOrganization1.setOrganizationHandle(StringUtils.EMPTY);

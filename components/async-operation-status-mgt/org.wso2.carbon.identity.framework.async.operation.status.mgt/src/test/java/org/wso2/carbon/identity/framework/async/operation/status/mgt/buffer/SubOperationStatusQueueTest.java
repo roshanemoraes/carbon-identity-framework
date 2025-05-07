@@ -22,12 +22,15 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.buffer.SubOperationStatusObject;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.buffer.SubOperationStatusQueue;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAILED;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_PARTIALLY_COMPLETED;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
 
 public class SubOperationStatusQueueTest {
@@ -35,18 +38,18 @@ public class SubOperationStatusQueueTest {
     @DataProvider(name = "operationStatusProvider")
     public Object[][] operationStatusProvider() {
 
-        SubOperationStatusObject obj1 = new SubOperationStatusObject(STATUS_SUCCESS);
-        SubOperationStatusObject obj2 = new SubOperationStatusObject("FAILED");
-        SubOperationStatusObject obj3 = new SubOperationStatusObject("PARTIALLY_COMPLETED");
+        SubOperationStatusObject obj1 = new SubOperationStatusObject(OperationStatus.SUCCESS);
+        SubOperationStatusObject obj2 = new SubOperationStatusObject(OperationStatus.FAILED);
+        SubOperationStatusObject obj3 = new SubOperationStatusObject(OperationStatus.PARTIALLY_COMPLETED);
 
         return new Object[][]{
                 {Collections.emptyList(), STATUS_SUCCESS},
                 {Collections.singletonList(obj1), STATUS_SUCCESS},
-                {Collections.singletonList(obj2), "FAILED"},
-                {Collections.singletonList(obj3), "PARTIALLY_COMPLETED"},
-                {Arrays.asList(obj1, obj2), "PARTIALLY_COMPLETED"},
-                {Arrays.asList(obj1, obj3), "PARTIALLY_COMPLETED"},
-                {Arrays.asList(obj2, obj3), "PARTIALLY_COMPLETED"},
+                {Collections.singletonList(obj2), STATUS_FAILED},
+                {Collections.singletonList(obj3), STATUS_PARTIALLY_COMPLETED},
+                {Arrays.asList(obj1, obj2), STATUS_PARTIALLY_COMPLETED},
+                {Arrays.asList(obj1, obj3), STATUS_PARTIALLY_COMPLETED},
+                {Arrays.asList(obj2, obj3), STATUS_PARTIALLY_COMPLETED},
         };
     }
 
