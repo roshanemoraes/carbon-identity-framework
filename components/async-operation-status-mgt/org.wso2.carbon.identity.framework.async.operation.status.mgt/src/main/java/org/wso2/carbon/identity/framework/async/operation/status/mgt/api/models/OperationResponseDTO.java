@@ -36,6 +36,7 @@ public class OperationResponseDTO {
     private final String operationPolicy;
     private final Timestamp createdTime;
     private final Timestamp modifiedTime;
+    private final UnitOperationStatusCount unitStatusCount;
 
     private OperationResponseDTO(Builder builder) {
 
@@ -50,6 +51,7 @@ public class OperationResponseDTO {
         this.operationPolicy = builder.operationPolicy;
         this.createdTime = builder.createdTime;
         this.modifiedTime = builder.modifiedTime;
+        this.unitStatusCount = builder.unitStatusCount;
     }
 
     public String getOperationId() {
@@ -107,6 +109,11 @@ public class OperationResponseDTO {
         return modifiedTime;
     }
 
+    public UnitOperationStatusCount getUnitStatusCount() {
+
+        return unitStatusCount;
+    }
+
     /**
      *
      * Operation Response Builder.
@@ -124,6 +131,7 @@ public class OperationResponseDTO {
         private String operationPolicy;
         private Timestamp createdTime;
         private Timestamp modifiedTime;
+        private UnitOperationStatusCount unitStatusCount;
 
         public Builder operationId(String operationId) {
 
@@ -188,6 +196,12 @@ public class OperationResponseDTO {
         public Builder modifiedTime(Timestamp modifiedTime) {
 
             this.modifiedTime = modifiedTime;
+            return this;
+        }
+
+        public Builder unitStatusCount(UnitOperationStatusCount unitStatusCount) {
+
+            this.unitStatusCount = unitStatusCount;
             return this;
         }
 

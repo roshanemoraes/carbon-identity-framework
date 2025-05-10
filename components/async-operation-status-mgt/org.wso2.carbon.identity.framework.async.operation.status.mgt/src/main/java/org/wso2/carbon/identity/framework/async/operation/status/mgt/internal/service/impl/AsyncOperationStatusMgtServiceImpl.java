@@ -36,7 +36,6 @@ import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.co
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao.AsyncOperationStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao.impl.AsyncOperationOperationStatusMgtDAOImpl;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.filter.FilterTreeBuilder;
-import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.OperationDO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.queue.AsyncOperationDataBuffer;
 import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
@@ -117,28 +116,8 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         limit = validateLimit(limit);
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
         List<ExpressionNode> expressionNodes = getExpressionNodes(filter, after, before, DESC_SORT_ORDER);
-        List<OperationDO> operationDOList = ASYNC_OPERATION_STATUS_MGT_DAO.getOperations(requestInitiatedOrgId, limit,
+        return ASYNC_OPERATION_STATUS_MGT_DAO.getOperations(requestInitiatedOrgId, limit,
                 expressionNodes);
-
-        List<OperationResponseDTO> operationResponseDTOList = new ArrayList<>();
-        for (OperationDO operationDO : operationDOList) {
-
-            OperationResponseDTO dto = new OperationResponseDTO.Builder()
-                    .operationId(operationDO.getOperationId())
-                    .correlationId(operationDO.getCorrelationId())
-                    .operationType(operationDO.getOperationType())
-                    .operationSubjectType(operationDO.getOperationSubjectType())
-                    .operationSubjectId(operationDO.getOperationSubjectId())
-                    .residentOrgId(operationDO.getResidentOrgId())
-                    .initiatorId(operationDO.getInitiatorId())
-                    .operationStatus(operationDO.getOperationStatus())
-                    .operationPolicy(operationDO.getOperationPolicy())
-                    .createdTime(operationDO.getCreatedTime())
-                    .modifiedTime(operationDO.getModifiedTime())
-                    .build();
-            operationResponseDTOList.add(dto);
-        }
-        return operationResponseDTOList;
     }
 
     @Override
@@ -146,25 +125,7 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
             AsyncOperationStatusMgtException {
 
         String requestInitiatedOrgId = getOrganizationId(tenantDomain);
-        OperationDO operationDO = ASYNC_OPERATION_STATUS_MGT_DAO.getOperation(operationId, requestInitiatedOrgId);
-
-        if (operationDO == null) {
-            return null;
-        }
-
-        return new OperationResponseDTO.Builder()
-                .operationId(operationDO.getOperationId())
-                .correlationId(operationDO.getCorrelationId())
-                .operationType(operationDO.getOperationType())
-                .operationSubjectType(operationDO.getOperationSubjectType())
-                .operationSubjectId(operationDO.getOperationSubjectId())
-                .residentOrgId(operationDO.getResidentOrgId())
-                .initiatorId(operationDO.getInitiatorId())
-                .operationStatus(operationDO.getOperationStatus())
-                .operationPolicy(operationDO.getOperationPolicy())
-                .createdTime(operationDO.getCreatedTime())
-                .modifiedTime(operationDO.getModifiedTime())
-                .build();
+        return ASYNC_OPERATION_STATUS_MGT_DAO.getOperation(operationId, requestInitiatedOrgId);
     }
 
     @Override

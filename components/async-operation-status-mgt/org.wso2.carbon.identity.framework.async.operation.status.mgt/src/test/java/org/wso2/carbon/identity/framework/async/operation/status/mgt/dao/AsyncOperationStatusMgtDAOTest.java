@@ -29,10 +29,10 @@ import org.wso2.carbon.identity.common.testng.WithH2Database;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationInitDTO;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.UnitOperationInitDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao.AsyncOperationStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao.impl.AsyncOperationOperationStatusMgtDAOImpl;
-import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.OperationDO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.UnitOperationDO;
 
 import java.sql.Connection;
@@ -145,7 +145,7 @@ public class AsyncOperationStatusMgtDAOTest {
 
             String initialOperationId = dao.registerAsyncStatusWithUpdate(operation1);
 
-            OperationDO fetchedOperation = dao.getOperations(RESIDENT_ORG_ID_1, 1000, null).get(0);
+            OperationResponseDTO fetchedOperation = dao.getOperations(RESIDENT_ORG_ID_1, 1000, null).get(0);
             String initialStatus = fetchedOperation.getOperationStatus();
             assertEquals(STATUS_IN_PROGRESS, initialStatus);
 
@@ -220,7 +220,7 @@ public class AsyncOperationStatusMgtDAOTest {
             dao.registerAsyncStatusWithoutUpdate(operation1);
             String fetchedOperationId = dao.getOperations(RESIDENT_ORG_ID_1, 100,
                     null).get(0).getOperationId();
-            OperationDO record = dao.getOperation(fetchedOperationId, RESIDENT_ORG_ID_1);
+            OperationResponseDTO record = dao.getOperation(fetchedOperationId, RESIDENT_ORG_ID_1);
 
             assertEquals(TYPE_USER_SHARE, record.getOperationType());
             assertEquals(SUBJECT_ID_1, record.getOperationSubjectId());

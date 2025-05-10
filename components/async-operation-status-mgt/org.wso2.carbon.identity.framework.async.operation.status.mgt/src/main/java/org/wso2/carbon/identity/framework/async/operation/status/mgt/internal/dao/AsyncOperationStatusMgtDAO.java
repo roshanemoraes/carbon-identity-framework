@@ -21,8 +21,8 @@ package org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.d
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationInitDTO;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.UnitOperationInitDTO;
-import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.OperationDO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.UnitOperationDO;
 
 import java.util.List;
@@ -71,10 +71,11 @@ public interface AsyncOperationStatusMgtDAO {
      * @param requestInitiatedOrgId The ID of the organization that initiated the request.
      * @param limit                 The maximum number of operation records to retrieve.
      * @param expressionNodes       A list of {@link ExpressionNode} objects used to filter the query.
-     * @return A list of {@link OperationDO} objects matching the criteria.
+     * @return A list of {@link OperationResponseDTO} objects matching the criteria.
      * @throws AsyncOperationStatusMgtException If an error occurs while retrieving operations.
      */
-    List<OperationDO> getOperations(String requestInitiatedOrgId, Integer limit, List<ExpressionNode> expressionNodes)
+    List<OperationResponseDTO> getOperations(String requestInitiatedOrgId, Integer limit,
+                                             List<ExpressionNode> expressionNodes)
             throws AsyncOperationStatusMgtException;
 
     /**
@@ -82,10 +83,11 @@ public interface AsyncOperationStatusMgtDAO {
      *
      * @param operationId           The unique identifier of the asynchronous operation.
      * @param requestInitiatedOrgId The ID of the organization that initiated the request.
-     * @return The {@link OperationDO} representing the asynchronous operation.
+     * @return The {@link OperationResponseDTO} representing the asynchronous operation.
      * @throws AsyncOperationStatusMgtException If the operation is not found or an error occurs during retrieval.
      */
-    OperationDO getOperation(String operationId, String requestInitiatedOrgId) throws AsyncOperationStatusMgtException;
+    OperationResponseDTO getOperation(String operationId, String requestInitiatedOrgId)
+            throws AsyncOperationStatusMgtException;
 
     /**
      * Retrieves a list of unit operation records for a specific operation ID.

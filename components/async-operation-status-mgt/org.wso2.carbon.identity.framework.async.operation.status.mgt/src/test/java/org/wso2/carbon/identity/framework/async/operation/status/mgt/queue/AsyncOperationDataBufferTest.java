@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.identity.framework.async.operation.status.mgt.queue;
 
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -58,12 +57,6 @@ public class AsyncOperationDataBufferTest {
     void beforeEach() {
 
         emptyBuffer();
-    }
-
-    @AfterClass
-    void tearDown() {
-
-        dataBuffer.shutdown();
     }
 
     @Test

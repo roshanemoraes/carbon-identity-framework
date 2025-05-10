@@ -27,6 +27,7 @@ import java.util.Map;
  * Filter query builder class.
  */
 public class FilterQueryBuilder {
+
     private Map<String, String> stringParameters = new HashMap<>();
     private List<String> timestampParameters = new ArrayList<>();
     private int count = 1;

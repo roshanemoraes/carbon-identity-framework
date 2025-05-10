@@ -50,7 +50,9 @@ public enum ErrorMessage {
     ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID("65007", "Error while retrieving org name.",
             "Error while retrieving org name from org id."),
     ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN("65008", "Error while resolving organization id.",
-            "Error while resolving organization id from tenant domain.");
+            "Error while resolving organization id from tenant domain."),
+    ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS_UNIT_COUNT("65009", "Error while retrieving async operation " +
+            "status unit count.", "Error while retrieving Async Operation Status unit count from the system.");
 
     private final String code;
     private final String message;

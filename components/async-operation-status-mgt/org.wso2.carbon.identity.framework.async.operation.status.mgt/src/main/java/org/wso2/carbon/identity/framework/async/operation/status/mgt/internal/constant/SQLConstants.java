@@ -76,6 +76,11 @@ public class SQLConstants {
     public static final String DELETE_RECENT_OPERATION_RECORD = "DELETE FROM IDN_ASYNC_OPERATION_STATUS WHERE " +
             "OPERATION_TYPE = :OPERATION_TYPE; AND SUBJECT_ID = :SUBJECT_ID; AND CORRELATION_ID != :CORRELATION_ID; ";
 
+    public static final String GET_UNIT_OPERATION_STATUS_COUNT = "SELECT STATUS, COUNT(*) as count FROM " +
+            "IDN_ASYNC_OPERATION_STATUS_UNIT WHERE OPERATION_ID = ( SELECT OPERATION_ID FROM " +
+            "IDN_ASYNC_OPERATION_STATUS WHERE OPERATION_ID = :OPERATION_ID; AND " +
+            "INITIATED_ORG_ID = :INITIATED_ORG_ID;) GROUP BY STATUS";
+
     /**
      * SQL Placeholders.
      */
@@ -121,7 +126,5 @@ public class SQLConstants {
         public static final String INITIATED_RESOURCE_ID_FILTER = "initiatedResourceId";
         public static final String TARGET_ORG_ID_FILTER = "targetOrgId";
         public static final String STATUS_MESSAGE_FILTER = "statusMessage";
-
     }
-
 }
