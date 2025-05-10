@@ -19,6 +19,7 @@
 package org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao;
 
 import org.wso2.carbon.identity.core.model.ExpressionNode;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationResponseDTO;
@@ -122,5 +123,5 @@ public interface AsyncOperationStatusMgtDAO {
      * @param status      The new status to be assigned to the operation.
      * @throws AsyncOperationStatusMgtException If an error occurs while updating the operation status.
      */
-    void updateAsyncStatus(String operationID, String status) throws AsyncOperationStatusMgtException;
+    void updateAsyncStatus(String operationID, OperationStatus status) throws AsyncOperationStatusMgtException;
 }

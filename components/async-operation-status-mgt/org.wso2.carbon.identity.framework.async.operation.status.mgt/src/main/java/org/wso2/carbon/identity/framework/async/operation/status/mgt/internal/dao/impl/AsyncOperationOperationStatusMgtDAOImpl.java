@@ -169,14 +169,14 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
     }
 
     @Override
-    public void updateAsyncStatus(String operationId, String status) throws AsyncOperationStatusMgtException {
+    public void updateAsyncStatus(String operationId, OperationStatus status) throws AsyncOperationStatusMgtException {
 
         NamedJdbcTemplate namedJdbcTemplate = Utils.getNewTemplate();
         try {
             namedJdbcTemplate.withTransaction(template -> {
                 template.executeUpdate(UPDATE_ASYNC_OPERATION,
                         statement -> {
-                            statement.setString(STATUS, status);
+                            statement.setString(STATUS, status.toString());
                             statement.setTimeStamp(LAST_MODIFIED, new Timestamp(new Date().getTime()), null);
                             statement.setString(OPERATION_ID, operationId);
                         });

@@ -18,7 +18,8 @@
 
 package org.wso2.carbon.identity.framework.async.operation.status.mgt.api.buffer;
 
-import java.util.Iterator;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.FAILED;
@@ -26,7 +27,7 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.SUCCESS;
 
 /**
- * A thread-safe queue that holds {@link SubOperationStatusObject} instances representing
+ * A thread-safe queue that holds {@link OperationStatus} instances representing
  * the status of individual sub-operations within an asynchronous operation.
  * <p>
  * Provides utility methods to add sub-operation statuses, iterate over them, and
@@ -34,42 +35,36 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.
  */
 public class SubOperationStatusQueue {
 
-    private ConcurrentLinkedQueue<SubOperationStatusObject> subOperationList = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<OperationStatus> subOperationList = new ConcurrentLinkedQueue<>();
 
     public SubOperationStatusQueue() {
     }
 
-    public void add(SubOperationStatusObject subOperationStatusObject) {
+    public void add(OperationStatus status) {
 
-        this.subOperationList.add(subOperationStatusObject);
+        this.subOperationList.add(status);
     }
 
-    public Iterator<SubOperationStatusObject> iterator() {
-
-        return this.subOperationList.iterator();
-    }
-
-    public String getOperationStatus() {
+    public OperationStatus getOperationStatus() {
 
         boolean allSuccess = true;
         boolean allFail = true;
 
-        for (SubOperationStatusObject statusObject : subOperationList) {
-            String status = statusObject.getStatus();
-            if (PARTIALLY_COMPLETED.toString().equals(status)) {
-                return PARTIALLY_COMPLETED.toString();
-            } else if (FAILED.toString().equals(status)) {
+        for (OperationStatus status : subOperationList) {
+            if (PARTIALLY_COMPLETED.equals(status)) {
+                return PARTIALLY_COMPLETED;
+            } else if (FAILED.equals(status)) {
                 allSuccess = false;
-            } else if (SUCCESS.toString().equals(status)) {
+            } else if (SUCCESS.equals(status)) {
                 allFail = false;
             }
         }
 
         if (allSuccess) {
-            return SUCCESS.toString();
+            return SUCCESS;
         } else if (allFail) {
-            return FAILED.toString();
+            return FAILED;
         }
-        return PARTIALLY_COMPLETED.toString();
+        return PARTIALLY_COMPLETED;
     }
 }

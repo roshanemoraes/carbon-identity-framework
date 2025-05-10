@@ -20,7 +20,6 @@ package org.wso2.carbon.identity.framework.async.operation.status.mgt.buffer;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.buffer.SubOperationStatusObject;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.buffer.SubOperationStatusQueue;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
 
@@ -29,36 +28,32 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAILED;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_PARTIALLY_COMPLETED;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.FAILED;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.PARTIALLY_COMPLETED;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.SUCCESS;
 
 public class SubOperationStatusQueueTest {
 
     @DataProvider(name = "operationStatusProvider")
     public Object[][] operationStatusProvider() {
 
-        SubOperationStatusObject obj1 = new SubOperationStatusObject(OperationStatus.SUCCESS);
-        SubOperationStatusObject obj2 = new SubOperationStatusObject(OperationStatus.FAILED);
-        SubOperationStatusObject obj3 = new SubOperationStatusObject(OperationStatus.PARTIALLY_COMPLETED);
-
         return new Object[][]{
-                {Collections.emptyList(), STATUS_SUCCESS},
-                {Collections.singletonList(obj1), STATUS_SUCCESS},
-                {Collections.singletonList(obj2), STATUS_FAILED},
-                {Collections.singletonList(obj3), STATUS_PARTIALLY_COMPLETED},
-                {Arrays.asList(obj1, obj2), STATUS_PARTIALLY_COMPLETED},
-                {Arrays.asList(obj1, obj3), STATUS_PARTIALLY_COMPLETED},
-                {Arrays.asList(obj2, obj3), STATUS_PARTIALLY_COMPLETED},
+                {Collections.emptyList(), SUCCESS},
+                {Collections.singletonList(SUCCESS), SUCCESS},
+                {Collections.singletonList(FAILED), FAILED},
+                {Collections.singletonList(PARTIALLY_COMPLETED), PARTIALLY_COMPLETED},
+                {Arrays.asList(SUCCESS, FAILED), PARTIALLY_COMPLETED},
+                {Arrays.asList(SUCCESS, PARTIALLY_COMPLETED), PARTIALLY_COMPLETED},
+                {Arrays.asList(FAILED, PARTIALLY_COMPLETED), PARTIALLY_COMPLETED},
         };
     }
 
     @Test(dataProvider = "operationStatusProvider")
-    public void testRegisterOperationStatusWithoutUpdate(List<SubOperationStatusObject> statusList,
-                                                         String expectedStatus) {
+    public void testRegisterOperationStatusWithoutUpdate(List<OperationStatus> statusList,
+                                                         OperationStatus expectedStatus) {
 
         SubOperationStatusQueue subOperationList = new SubOperationStatusQueue();
-        for (SubOperationStatusObject obj : statusList) {
+        for (OperationStatus obj : statusList) {
             subOperationList.add(obj);
         }
         assertEquals(expectedStatus, subOperationList.getOperationStatus());

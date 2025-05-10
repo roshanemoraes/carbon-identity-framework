@@ -37,10 +37,16 @@ import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.mo
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.FAILED;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.IN_PROGRESS;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.PARTIALLY_COMPLETED;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.SUCCESS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_1;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_2;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.INITIATOR_ID_1;
@@ -48,10 +54,6 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.cons
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_1;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_3;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_ID_4;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAILED;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_IN_PROGRESS;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_PARTIALLY_COMPLETED;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_TYPE_USER;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.TYPE_USER_SHARE;
@@ -65,7 +67,7 @@ public class AsyncOperationStatusMgtDAOTest {
     private AsyncOperationStatusMgtDAO dao;
 
     @BeforeClass
-    public void initTest() throws Exception {
+    public void initTest() {
 
         dao = new AsyncOperationOperationStatusMgtDAOImpl();
     }
@@ -77,18 +79,18 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     @DataProvider(name = "asyncOperationDetailProvider")
-    public Object[][] asyncOperationDetailProvider() throws Exception {
+    public Object[][] asyncOperationDetailProvider() {
+
+        OperationInitDTO
+                operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+                RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
+
+        OperationInitDTO
+                operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
+                RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
 
         return new Object[][] {
-                {new OperationInitDTO(
-                        "56565656565655",
-                        TYPE_USER_SHARE,
-                        "B2B_APPLICATION",
-                        "23d7ab3f-023e-43ba-980b-c0fd59aeacf9",
-                        "10084a8d-113f-4211-a0d5-efe36b082211",
-                        "53c191dd-3f9f-454b-8a56-9ad72b5e4f30",
-                        "SHARE_WITH_ALL"
-                )},
+                {Arrays.asList(operation1, operation2)},
         };
     }
 
@@ -115,21 +117,13 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     @Test(dataProvider = "asyncOperationDetailProvider", priority = 2)
-    public void testRegisterOperationWithUpdateSuccess(OperationInitDTO testData) {
+    public void testRegisterOperationWithUpdateSuccess(List<OperationInitDTO> dtoList) {
 
         try {
-            OperationInitDTO
-                    operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
-                    RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-
-            OperationInitDTO
-                    operation2 = new OperationInitDTO(CORR_ID_2, TYPE_USER_SHARE, SUBJECT_TYPE_USER, SUBJECT_ID_1,
-                    RESIDENT_ORG_ID_1, INITIATOR_ID_1, POLICY_SELECTIVE_SHARE);
-
-            String insertedOperationId1 = dao.registerAsyncStatusWithUpdate(operation1);
+            String insertedOperationId1 = dao.registerAsyncStatusWithUpdate(dtoList.get(0));
             assertTrue(StringUtils.isNotBlank(insertedOperationId1), "Async Op_1 Status Addition Failed.");
 
-            dao.registerAsyncStatusWithUpdate(operation2);
+            dao.registerAsyncStatusWithUpdate(dtoList.get(1));
             assertEquals(1, getOperationTableSize());
         } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
@@ -147,14 +141,14 @@ public class AsyncOperationStatusMgtDAOTest {
 
             OperationResponseDTO fetchedOperation = dao.getOperations(RESIDENT_ORG_ID_1, 1000, null).get(0);
             String initialStatus = fetchedOperation.getOperationStatus();
-            assertEquals(STATUS_IN_PROGRESS, initialStatus);
+            assertEquals(IN_PROGRESS.toString(), initialStatus);
 
-            dao.updateAsyncStatus(initialOperationId, STATUS_SUCCESS);
+            dao.updateAsyncStatus(initialOperationId, SUCCESS);
             assertEquals(1, getOperationTableSize());
 
             String fetchedUpdatedStatus = dao.getOperations(RESIDENT_ORG_ID_1, 1000,
                     null).get(0).getOperationStatus();
-            assertEquals(STATUS_SUCCESS, fetchedUpdatedStatus);
+            assertEquals(SUCCESS.toString(), fetchedUpdatedStatus);
         } catch (AsyncOperationStatusMgtException e) {
             Assert.fail();
         }
@@ -171,14 +165,14 @@ public class AsyncOperationStatusMgtDAOTest {
                     null).get(0).getOperationId();
 
             UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                    RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
+                    RESIDENT_ORG_ID_4, SUCCESS, StringUtils.EMPTY);
             UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                    RESIDENT_ORG_ID_3, STATUS_FAILED, "Invalid User Id.");
+                    RESIDENT_ORG_ID_3, FAILED, "Invalid User Id.");
             ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             list.add(unit2);
             dao.registerAsyncStatusUnit(list);
-            dao.updateAsyncStatus(returnedId, STATUS_PARTIALLY_COMPLETED);
+            dao.updateAsyncStatus(returnedId, PARTIALLY_COMPLETED);
 
             assertEquals(2, dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     10, null).size());
@@ -244,14 +238,14 @@ public class AsyncOperationStatusMgtDAOTest {
                     null).get(0).getOperationId();
 
             UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                    RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
+                    RESIDENT_ORG_ID_4, SUCCESS, StringUtils.EMPTY);
             UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                    RESIDENT_ORG_ID_3, STATUS_FAILED, "Invalid User Id.");
+                    RESIDENT_ORG_ID_3, FAILED, "Invalid User Id.");
             ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             list.add(unit2);
             dao.registerAsyncStatusUnit(list);
-            dao.updateAsyncStatus(returnedId, STATUS_PARTIALLY_COMPLETED);
+            dao.updateAsyncStatus(returnedId, PARTIALLY_COMPLETED);
 
             assertEquals(2, dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     100, null).size());
@@ -271,11 +265,11 @@ public class AsyncOperationStatusMgtDAOTest {
                     null).get(0).getOperationId();
 
             UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                    RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
+                    RESIDENT_ORG_ID_4, SUCCESS, StringUtils.EMPTY);
             ConcurrentLinkedQueue<UnitOperationInitDTO> list = new ConcurrentLinkedQueue<>();
             list.add(unit1);
             dao.registerAsyncStatusUnit(list);
-            dao.updateAsyncStatus(returnedId, STATUS_PARTIALLY_COMPLETED);
+            dao.updateAsyncStatus(returnedId, PARTIALLY_COMPLETED);
 
             String addedUnitOpId = dao.getUnitOperations(fetchedOperationId, RESIDENT_ORG_ID_1,
                     100, null).get(0).getUnitOperationId();
@@ -284,7 +278,7 @@ public class AsyncOperationStatusMgtDAOTest {
             assertEquals(returnedId, record.getOperationId());
             assertEquals(RESIDENT_ORG_ID_1, record.getOperationInitiatedResourceId());
             assertEquals(RESIDENT_ORG_ID_4, record.getTargetOrgId());
-            assertEquals(STATUS_SUCCESS, record.getUnitOperationStatus());
+            assertEquals(SUCCESS.toString(), record.getUnitOperationStatus());
             assertEquals(StringUtils.EMPTY, record.getStatusMessage());
 
         } catch (AsyncOperationStatusMgtException e) {
@@ -307,5 +301,4 @@ public class AsyncOperationStatusMgtDAOTest {
         
         return dao.getOperations(RESIDENT_ORG_ID_1, 1000, null).size();
     }
-
 }

@@ -60,6 +60,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_PERSISTING_ASYNC_OPERATION_STATUS;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.FAILED;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.IN_PROGRESS;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus.SUCCESS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_1;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_1_PREFIX;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.CORR_ID_2;
@@ -74,9 +77,6 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.cons
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_NAME_2;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_NAME_3;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.RESIDENT_ORG_NAME_4;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_FAILED;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_IN_PROGRESS;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.STATUS_SUCCESS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_1_PREFIX;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.constants.TestAsyncOperationConstants.SUBJECT_ID_2;
@@ -313,10 +313,10 @@ public class AsyncOperationStatusMgtServiceImplTest {
         OperationResponseDTO fetchedOperation = service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY,
                 StringUtils.EMPTY, null, StringUtils.EMPTY).get(0);
         String initialStatus = fetchedOperation.getOperationStatus();
-        assertEquals(STATUS_IN_PROGRESS, initialStatus);
+        assertEquals(IN_PROGRESS.toString(), initialStatus);
 
-        service.updateOperationStatus(initialOperationId, STATUS_SUCCESS);
-        assertEquals(STATUS_SUCCESS, service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY,
+        service.updateOperationStatus(initialOperationId, SUCCESS);
+        assertEquals(SUCCESS.toString(), service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY,
                 null, StringUtils.EMPTY).get(0).getOperationStatus());
         assertEquals(1, service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY, null,
                 StringUtils.EMPTY).size());
@@ -353,7 +353,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
         String fetchedOperationId = service.getOperations(TENANT_DOMAIN_1, StringUtils.EMPTY, StringUtils.EMPTY,
                 5, StringUtils.EMPTY).get(0).getOperationId();
         UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                RESIDENT_ORG_ID_4, STATUS_SUCCESS, StringUtils.EMPTY);
+                RESIDENT_ORG_ID_4, SUCCESS, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
         mockedOrgMap.put(residentOrgId, basicOrganization);
         Thread.sleep(4000);
@@ -401,9 +401,9 @@ public class AsyncOperationStatusMgtServiceImplTest {
                 5, StringUtils.EMPTY).get(0).getOperationId();
 
         UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                RESIDENT_ORG_ID_2, STATUS_SUCCESS, StringUtils.EMPTY);
+                RESIDENT_ORG_ID_2, SUCCESS, StringUtils.EMPTY);
         UnitOperationInitDTO unit2 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                RESIDENT_ORG_ID_3, STATUS_FAILED, StringUtils.EMPTY);
+                RESIDENT_ORG_ID_3, FAILED, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
         service.registerUnitOperationStatus(unit2);
 
@@ -421,7 +421,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
         assertEquals(RESIDENT_ORG_ID_1, unitOperation.getOperationInitiatedResourceId());
         assertEquals(RESIDENT_ORG_ID_2, unitOperation.getTargetOrgId());
         assertEquals(basicOrgs.get(0).getName(), unitOperation.getTargetOrgName());
-        assertEquals(STATUS_SUCCESS, unitOperation.getUnitOperationStatus());
+        assertEquals(SUCCESS.toString(), unitOperation.getUnitOperationStatus());
         assertEquals(StringUtils.EMPTY, unitOperation.getStatusMessage());
         assertEquals(2, unitOperations.size());
         assertEquals(returnedId, unitOperations.get(0).getOperationId());
@@ -457,7 +457,7 @@ public class AsyncOperationStatusMgtServiceImplTest {
                 5, StringUtils.EMPTY).get(0).getOperationId();
 
         UnitOperationInitDTO unit1 = new UnitOperationInitDTO(returnedId, RESIDENT_ORG_ID_1,
-                RESIDENT_ORG_ID_2, STATUS_SUCCESS, StringUtils.EMPTY);
+                RESIDENT_ORG_ID_2, SUCCESS, StringUtils.EMPTY);
         service.registerUnitOperationStatus(unit1);
         mockedOrgMap.put(residentOrgIds.get(0), basicOrgs.get(0));
         Thread.sleep(4000);

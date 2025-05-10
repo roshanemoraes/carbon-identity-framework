@@ -25,6 +25,7 @@ import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.model.Node;
 import org.wso2.carbon.identity.core.model.OperationNode;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationInitDTO;
@@ -97,7 +98,8 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
     }
 
     @Override
-    public void updateOperationStatus(String operationId, String status) throws AsyncOperationStatusMgtException {
+    public void updateOperationStatus(String operationId, OperationStatus status)
+            throws AsyncOperationStatusMgtException {
 
         ASYNC_OPERATION_STATUS_MGT_DAO.updateAsyncStatus(operationId, status);
     }

@@ -64,12 +64,6 @@ public class TestAsyncOperationConstants {
     public static final String SUBJECT_TYPE_USER = "USER";
     public static final String SUBJECT_TYPE_APPLICATION = "APPLICATION";
 
-    // Operation Status.
-    public static final String STATUS_SUCCESS = "SUCCESS";
-    public static final String STATUS_FAILED = "FAILED";
-    public static final String STATUS_PARTIALLY_COMPLETED = "PARTIALLY_COMPLETED";
-    public static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
-
     // Operation Policies.
     public static final String POLICY_SHARE_WITH_ALL = "SHARE_WITH_ALL";
     public static final String POLICY_SELECTIVE_SHARE = "SELECTIVE_SHARE";

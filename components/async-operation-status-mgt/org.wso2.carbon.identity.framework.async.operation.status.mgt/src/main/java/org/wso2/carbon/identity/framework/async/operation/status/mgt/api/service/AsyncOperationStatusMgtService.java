@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.identity.framework.async.operation.status.mgt.api.service;
 
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationResponseDTO;
@@ -57,11 +58,11 @@ public interface AsyncOperationStatusMgtService {
      * 'IN_PROGRESS' to 'COMPLETED' or 'FAILED'.
      *
      * @param operationId The unique identifier of the asynchronous operation to be updated.
-     * @param status      The new status of the operation, represented as a string (e.g., "COMPLETED", "FAILED",
+     * @param status      The new status of the operation, represented as an Enum (e.g., "COMPLETED", "FAILED",
      *                    "IN_PROGRESS").
      * @throws AsyncOperationStatusMgtException If an error occurs while updating the operation status.
      */
-    void updateOperationStatus(String operationId, String status) throws AsyncOperationStatusMgtException;
+    void updateOperationStatus(String operationId, OperationStatus status) throws AsyncOperationStatusMgtException;
 
     /**
      * Registers the status of a unit operation, which is a sub-task within a larger asynchronous operation.
