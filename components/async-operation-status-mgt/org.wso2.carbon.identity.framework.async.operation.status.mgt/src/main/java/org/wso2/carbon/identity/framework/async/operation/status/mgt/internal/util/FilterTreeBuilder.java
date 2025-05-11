@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.filter;
+package org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
@@ -126,7 +126,7 @@ public class FilterTreeBuilder {
     }
 
     /**
-     * We build the parser using the recursive descent parser technique.
+     * Build the parser using the recursive descent parser technique.
      */
     private void expression() throws AsyncOperationStatusMgtClientException {
 
@@ -141,7 +141,7 @@ public class FilterTreeBuilder {
     }
 
     /**
-     * We build the parser using the recursive descent parser technique.
+     * Build the parser using the recursive descent parser technique.
      */
     private void term() throws AsyncOperationStatusMgtClientException {
 
@@ -156,7 +156,7 @@ public class FilterTreeBuilder {
     }
 
     /**
-     * We build the parser using the recursive descent parser technique.
+     * Build the parser using the recursive descent parser technique.
      */
     private void factor() throws AsyncOperationStatusMgtClientException {
 
@@ -182,7 +182,7 @@ public class FilterTreeBuilder {
     }
 
     /**
-     * Validate the simple filter and build a ExpressionNode
+     * Validate the simple filter and build a ExpressionNode.
      *
      * @param filterString   the filter string.
      * @param expressionNode the expression node.
@@ -247,7 +247,7 @@ public class FilterTreeBuilder {
     }
 
     /**
-     * create an expression node from the given values
+     * Create an expression node from the given values.
      *
      * @param attributeValue Attribute value.
      * @param operation      operation value.
@@ -257,29 +257,27 @@ public class FilterTreeBuilder {
     private void setExpressionNodeValues(String attributeValue, String operation, String value,
                                          ExpressionNode expressionNode) throws AsyncOperationStatusMgtClientException {
 
-        if (StringUtils.isNotBlank(attributeValue) || StringUtils.isNotBlank(operation)) {
-            expressionNode.setAttributeValue(attributeValue.trim());
-            expressionNode.setOperation(operation.trim());
-            if (value != null) {
-                expressionNode.setValue(value.trim());
-            }
-        } else {
+        if (StringUtils.isBlank(attributeValue) && StringUtils.isBlank(operation)) {
             throw handleClientException(ERROR_CODE_INVALID_REQUEST_BODY, attributeValue, operation);
+        }
+        expressionNode.setAttributeValue(attributeValue.trim());
+        expressionNode.setOperation(operation.trim());
+        if (StringUtils.isNotBlank(value)) {
+            expressionNode.setValue(value.trim());
         }
     }
 
     /**
-     * returns the first item in the list and rearrange the list
+     * Returns the first item in the list and rearrange the list.
      */
     private String nextSymbol() {
 
-        if (tokenList.size() == 0) {
+        if (tokenList.isEmpty()) {
             // No tokens are present in the list anymore/at all.
             return String.valueOf(-1);
-        } else {
-            String value = tokenList.get(0);
-            tokenList.remove(0);
-            return value;
         }
+        String value = tokenList.get(0);
+        tokenList.remove(0);
+        return value;
     }
 }

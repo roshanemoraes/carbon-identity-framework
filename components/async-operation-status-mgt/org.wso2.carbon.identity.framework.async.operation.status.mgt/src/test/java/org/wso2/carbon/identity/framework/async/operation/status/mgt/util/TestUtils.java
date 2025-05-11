@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.base.CarbonBaseConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.internal.CarbonContextDataHolder;
-import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.Utils;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtDbUtil;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.core.util.DatabaseUtil;
 
@@ -95,7 +95,7 @@ public class TestUtils {
         CarbonContextDataHolder carbonContextHolder
                 = (CarbonContextDataHolder) carbonContextHolderField.get(CarbonContext.getThreadLocalCarbonContext());
         carbonContextHolder.setUserRealm(mock(UserRealm.class));
-        setStatic(Utils.class.getDeclaredField("dataSource"), dataSource);
+        setStatic(AsyncOperationStatusMgtDbUtil.class.getDeclaredField("dataSource"), dataSource);
     }
 
     private static void setStatic(Field field, Object newValue) throws Exception {

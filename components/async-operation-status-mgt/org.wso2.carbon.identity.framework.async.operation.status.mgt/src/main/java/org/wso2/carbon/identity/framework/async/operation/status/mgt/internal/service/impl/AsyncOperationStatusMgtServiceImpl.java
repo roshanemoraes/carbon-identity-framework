@@ -36,9 +36,9 @@ import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.service
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.component.AsyncOperationStatusMgtDataHolder;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao.AsyncOperationStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao.impl.AsyncOperationOperationStatusMgtDAOImpl;
-import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.filter.FilterTreeBuilder;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.queue.AsyncOperationDataBuffer;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.FilterTreeBuilder;
 import org.wso2.carbon.identity.organization.management.service.OrganizationManager;
 import org.wso2.carbon.identity.organization.management.service.exception.OrganizationManagementException;
 import org.wso2.carbon.identity.organization.management.service.model.BasicOrganization;

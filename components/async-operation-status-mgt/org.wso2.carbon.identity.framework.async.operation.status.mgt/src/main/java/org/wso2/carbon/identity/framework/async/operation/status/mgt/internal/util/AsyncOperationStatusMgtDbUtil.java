@@ -31,7 +31,7 @@ import static org.wso2.carbon.identity.organization.management.service.constant.
 /**
  * Util Methods.
  */
-public class Utils {
+public class AsyncOperationStatusMgtDbUtil {
 
     private static boolean isDBTypeOf(String dbType) throws AsyncOperationStatusMgtServerException {
 
