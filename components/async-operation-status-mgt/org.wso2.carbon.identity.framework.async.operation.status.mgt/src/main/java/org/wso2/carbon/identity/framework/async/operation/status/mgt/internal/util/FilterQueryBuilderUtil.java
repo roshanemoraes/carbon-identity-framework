@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.database.utils.jdbc.NamedPreparedStatement;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.FilterQueryBuilder;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -53,7 +54,7 @@ public class FilterQueryBuilderUtil {
         return filterQueryBuilder;
     }
 
-    public static void appendFilterQuery(List<ExpressionNode> expressionNodes, FilterQueryBuilder filterQueryBuilder)
+    private static void appendFilterQuery(List<ExpressionNode> expressionNodes, FilterQueryBuilder filterQueryBuilder)
             throws AsyncOperationStatusMgtServerException {
 
         int count = 1;
@@ -122,20 +123,7 @@ public class FilterQueryBuilderUtil {
         }
     }
 
-    public static void setFilterAttributes(NamedPreparedStatement namedPreparedStatement,
-                                     Map<String, String> filterAttributeValue, List<String> timestampTypeAttributes)
-            throws SQLException {
-
-        for (Map.Entry<String, String> entry : filterAttributeValue.entrySet()) {
-            if (timestampTypeAttributes.contains(entry.getKey())) {
-                namedPreparedStatement.setTimeStamp(entry.getKey(), Timestamp.valueOf(entry.getValue()), null);
-            } else {
-                namedPreparedStatement.setString(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    public static void equalFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
+    private static void equalFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                           FilterQueryBuilder filterQueryBuilder) {
 
         String filterString = String.format(" = :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
@@ -143,7 +131,7 @@ public class FilterQueryBuilderUtil {
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value);
     }
 
-    public static void startWithFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
+    private static void startWithFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                               FilterQueryBuilder filterQueryBuilder) {
 
         String filterString = String.format(" like :%s%s; AND ", FILTER_PLACEHOLDER_PREFIX, count);
@@ -151,7 +139,7 @@ public class FilterQueryBuilderUtil {
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value + "%");
     }
 
-    public static void greaterThanOrEqualFilterBuilder(int count, String value, String attributeName,
+    private static void greaterThanOrEqualFilterBuilder(int count, String value, String attributeName,
                                                        StringBuilder filter,
                                                        FilterQueryBuilder filterQueryBuilder)
             throws AsyncOperationStatusMgtServerException {
@@ -162,7 +150,7 @@ public class FilterQueryBuilderUtil {
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value);
     }
 
-    public static void lessThanOrEqualFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
+    private static void lessThanOrEqualFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                                     FilterQueryBuilder filterQueryBuilder)
             throws AsyncOperationStatusMgtServerException {
 
@@ -172,7 +160,7 @@ public class FilterQueryBuilderUtil {
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value);
     }
 
-    public static void greaterThanFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
+    private static void greaterThanFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                                 FilterQueryBuilder filterQueryBuilder)
             throws AsyncOperationStatusMgtServerException {
 
@@ -182,7 +170,7 @@ public class FilterQueryBuilderUtil {
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value);
     }
 
-    public static void lessThanFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
+    private static void lessThanFilterBuilder(int count, String value, String attributeName, StringBuilder filter,
                                              FilterQueryBuilder filterQueryBuilder)
             throws AsyncOperationStatusMgtServerException {
 
@@ -192,7 +180,7 @@ public class FilterQueryBuilderUtil {
         filterQueryBuilder.setFilterAttributeValue(FILTER_PLACEHOLDER_PREFIX, value);
     }
 
-    public static boolean isDateTimeAndMSSql(String attributeName) throws AsyncOperationStatusMgtServerException {
+    private static boolean isDateTimeAndMSSql(String attributeName) throws AsyncOperationStatusMgtServerException {
 
         return (CREATED_AT.equals(attributeName)) && isMSSqlDB();
     }

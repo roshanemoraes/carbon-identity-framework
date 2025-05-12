@@ -22,11 +22,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.database.utils.jdbc.NamedJdbcTemplate;
+import org.wso2.carbon.database.utils.jdbc.NamedPreparedStatement;
 import org.wso2.carbon.database.utils.jdbc.exceptions.DataAccessException;
 import org.wso2.carbon.database.utils.jdbc.exceptions.TransactionException;
 import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtException;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtRuntimeException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationResponseDTO;
@@ -35,13 +37,14 @@ import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.dao.AsyncOperationStatusMgtDAO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.dos.UnitOperationDO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtDbUtil;
-import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.FilterQueryBuilder;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models.FilterQueryBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -49,6 +52,7 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_PERSISTING_ASYNC_OPERATION_STATUS_UNIT;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS_UNIT;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS_UNIT_COUNT;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.ErrorMessage.ERROR_WHILE_UPDATING_ASYNC_OPERATION_STATUS;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.CREATE_ASYNC_OPERATION;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.constant.SQLConstants.CREATE_ASYNC_OPERATION_UNIT_BATCH;
@@ -85,8 +89,8 @@ import static org.wso2.carbon.identity.framework.async.operation.status.mgt.inte
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtDbUtil.isMSSqlDB;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtDbUtil.isOracleDB;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtExceptionHandler.handleServerException;
+import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.AsyncOperationStatusMgtExceptionHandler.throwRuntimeException;
 import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.FilterQueryBuilderUtil.buildFilterQuery;
-import static org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util.FilterQueryBuilderUtil.setFilterAttributes;
 
 /**
  * DAO implementation for Asynchronous Operation Status Management.
@@ -176,8 +180,9 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                     try {
                         return createOperationResponseDTO(resultSet);
                     } catch (DataAccessException e) {
-                        throw new RuntimeException(e);
+                        throwRuntimeException(ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS_UNIT_COUNT.getMessage(), e);
                     }
+                    return null;
                 },
                 namedPreparedStatement -> {
                     setFilterAttributes(namedPreparedStatement, filterQueryBuilder.getFilterAttributeValue(),
@@ -185,7 +190,7 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                     namedPreparedStatement.setInt(LIMIT, limit);
                     namedPreparedStatement.setString(INITIATED_ORG_ID, requestInitiatedOrgId);
                 });
-        } catch (DataAccessException e) {
+        } catch (AsyncOperationStatusMgtRuntimeException | DataAccessException e) {
             throw handleServerException(ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS, e);
         }
         return operationRecords;
@@ -202,14 +207,15 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
                 try {
                     return createOperationResponseDTO(resultSet);
                 } catch (DataAccessException e) {
-                    throw new RuntimeException(e);
+                    throwRuntimeException(ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS_UNIT_COUNT.getMessage(), e);
                 }
+                return null;
             }, namedPreparedStatement -> {
                 namedPreparedStatement.setString(OPERATION_ID, operationId);
                 namedPreparedStatement.setString(INITIATED_ORG_ID, requestInitiatedOrgId);
             });
             return operationRecord;
-        } catch (DataAccessException e) {
+        } catch (AsyncOperationStatusMgtRuntimeException | DataAccessException e) {
             throw handleServerException(ERROR_WHILE_RETRIEVING_ASYNC_OPERATION_STATUS, e);
         }
     }
@@ -402,5 +408,18 @@ public class AsyncOperationOperationStatusMgtDAOImpl implements AsyncOperationSt
         record.setStatusMessage(resultSet.getString(STATUS_MESSAGE));
         record.setCreatedTime(Timestamp.valueOf(resultSet.getString(CREATED_AT)));
         return record;
+    }
+
+    private void setFilterAttributes(NamedPreparedStatement namedPreparedStatement,
+                                           Map<String, String> filterAttributeValue, List<String> timestampTypeAttributes)
+            throws SQLException {
+
+        for (Map.Entry<String, String> entry : filterAttributeValue.entrySet()) {
+            if (timestampTypeAttributes.contains(entry.getKey())) {
+                namedPreparedStatement.setTimeStamp(entry.getKey(), Timestamp.valueOf(entry.getValue()), null);
+            } else {
+                namedPreparedStatement.setString(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }

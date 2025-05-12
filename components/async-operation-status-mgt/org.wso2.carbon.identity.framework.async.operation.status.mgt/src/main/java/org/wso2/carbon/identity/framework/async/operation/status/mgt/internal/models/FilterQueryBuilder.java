@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.util;
+package org.wso2.carbon.identity.framework.async.operation.status.mgt.internal.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;

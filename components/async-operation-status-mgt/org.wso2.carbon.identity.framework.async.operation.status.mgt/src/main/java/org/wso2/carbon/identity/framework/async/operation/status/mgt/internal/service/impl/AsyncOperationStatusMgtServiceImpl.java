@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.OperationStatus;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtException;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationInitDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.OperationResponseDTO;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.models.UnitOperationInitDTO;
@@ -198,36 +199,35 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
         return unitOperationResponseDTOList;
     }
 
-    private String getOrganizationId(String tenantDomain) throws AsyncOperationStatusMgtClientException {
+    private String getOrganizationId(String tenantDomain) throws AsyncOperationStatusMgtServerException {
 
         try {
             return getOrganizationManager().resolveOrganizationId(tenantDomain);
         } catch (OrganizationManagementException e) {
-            throw handleClientException(ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN);
+            throw handleServerException(ERROR_WHILE_RESOLVING_ORG_ID_FROM_TENANT_DOMAIN, e);
         }
     }
 
     private Map<String, BasicOrganization> getBasicOrganizationDetails(List<String> orgIds) throws
-            AsyncOperationStatusMgtClientException {
+            AsyncOperationStatusMgtServerException {
 
         try {
             return getOrganizationManager().getBasicOrganizationDetailsByOrgIDs(orgIds);
         } catch (OrganizationManagementException e) {
-            throw handleClientException(ERROR_WHILE_RETRIEVING_BASIC_ORG_DETAILS);
+            throw handleServerException(ERROR_WHILE_RETRIEVING_BASIC_ORG_DETAILS, e);
         }
     }
 
-    private String getOrganizationName(String orgId) throws AsyncOperationStatusMgtClientException {
+    private String getOrganizationName(String orgId) throws AsyncOperationStatusMgtServerException {
 
         try {
             return getOrganizationManager().getOrganizationNameById(orgId);
         } catch (OrganizationManagementException e) {
-            throw handleClientException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID);
+            throw handleServerException(ERROR_WHILE_RETRIEVING_ORG_NAME_FROM_ORG_ID, e);
         }
     }
 
     // Helper methods for curser-based pagination and filtering.
-
     private List<ExpressionNode> getExpressionNodes(String filter, String after, String before,
                                                     String paginationSortOrder)
             throws AsyncOperationStatusMgtException {
@@ -330,5 +330,4 @@ public class AsyncOperationStatusMgtServiceImpl implements AsyncOperationStatusM
 
         return AsyncOperationStatusMgtDataHolder.getInstance().getOrganizationManager();
     }
-
 }

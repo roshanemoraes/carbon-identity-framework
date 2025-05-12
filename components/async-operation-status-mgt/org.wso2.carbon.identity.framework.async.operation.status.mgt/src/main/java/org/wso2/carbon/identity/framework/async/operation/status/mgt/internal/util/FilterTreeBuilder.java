@@ -190,7 +190,7 @@ public class FilterTreeBuilder {
     private void validateAndBuildFilterExpression(String filterString, ExpressionNode expressionNode)
             throws AsyncOperationStatusMgtClientException {
 
-        if (StringUtils.isNotBlank(filterString) && !filterString.equals("-1")) {
+        if (StringUtils.isBlank(filterString) || filterString.equals("-1")) {
             String trimmedFilter = filterString.trim();
             String[] filterParts;
 

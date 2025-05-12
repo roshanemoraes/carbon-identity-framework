@@ -22,13 +22,14 @@ import org.apache.commons.lang.ArrayUtils;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.constants.ErrorMessage;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtClientException;
 import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtServerException;
+import org.wso2.carbon.identity.framework.async.operation.status.mgt.api.exception.AsyncOperationStatusMgtRuntimeException;
 
 /**
  * Utility class for Async Status Management.
  */
 public class AsyncOperationStatusMgtExceptionHandler {
 
-    private AsyncOperationStatusMgtExceptionHandler(){
+    private AsyncOperationStatusMgtExceptionHandler() {
     }
 
     /**
@@ -63,5 +64,18 @@ public class AsyncOperationStatusMgtExceptionHandler {
             description = String.format(description, data);
         }
         return new AsyncOperationStatusMgtServerException(error.getMessage(), description, error.getCode(), e);
+    }
+
+    /**
+     * Throw Async Operation Status Management runtime exception.
+     *
+     * @param errorMessage Error message.
+     * @param e            Throwable.
+     * @throws AsyncOperationStatusMgtRuntimeException If an error occurs from the server in the runtime.
+     */
+    public static void throwRuntimeException(String errorMessage, Throwable e)
+            throws AsyncOperationStatusMgtRuntimeException {
+
+        throw new AsyncOperationStatusMgtRuntimeException(errorMessage, e);
     }
 }
