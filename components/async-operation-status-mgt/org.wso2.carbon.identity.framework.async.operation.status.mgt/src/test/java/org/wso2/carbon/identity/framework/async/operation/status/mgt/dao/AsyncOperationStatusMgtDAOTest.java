@@ -155,7 +155,7 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     @Test(priority = 4)
-    public void testRegisterAsyncStatusUnit() {
+    public void testRegisterAsyncStatusUnit() throws Exception {
 
         try {
             OperationInitDTO operation1 = new OperationInitDTO(CORR_ID_1, TYPE_USER_SHARE, SUBJECT_TYPE_USER,
@@ -182,7 +182,7 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     @Test(priority = 5)
-    public void testGetOperationRecords() {
+    public void testGetOperationRecords() throws Exception {
 
         try {
             OperationInitDTO
@@ -204,7 +204,7 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     @Test(priority = 6)
-    public void testGetOperation() {
+    public void testGetOperation() throws Exception {
 
         try {
             OperationInitDTO
@@ -227,7 +227,7 @@ public class AsyncOperationStatusMgtDAOTest {
     }
 
     @Test(priority = 7)
-    public void testGetUnitOperations() {
+    public void testGetUnitOperations() throws Exception {
 
         try {
             OperationInitDTO
