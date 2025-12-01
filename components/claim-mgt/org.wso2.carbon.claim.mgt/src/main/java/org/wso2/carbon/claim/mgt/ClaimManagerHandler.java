@@ -23,18 +23,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonException;
-import org.wso2.carbon.claim.mgt.internal.ClaimManagementServiceComponent;
-import org.wso2.carbon.core.util.AdminServicesUtil;
 import org.wso2.carbon.core.util.AnonymousSessionUtil;
 import org.wso2.carbon.identity.claim.metadata.mgt.ClaimMetadataManagementServiceImpl;
 import org.wso2.carbon.identity.claim.metadata.mgt.exception.ClaimMetadataException;
 import org.wso2.carbon.identity.claim.metadata.mgt.model.ExternalClaim;
 import org.wso2.carbon.identity.claim.metadata.mgt.model.LocalClaim;
 import org.wso2.carbon.user.api.Claim;
+import org.wso2.carbon.user.api.ClaimManager;
 import org.wso2.carbon.user.api.ClaimMapping;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.UserRealm;
-import org.wso2.carbon.user.api.ClaimManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,18 +42,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public enum ClaimManagerHandler {
-
-    INSTANCE;
+public class ClaimManagerHandler {
 
     private static final Log log = LogFactory.getLog(ClaimManagerHandler.class);
-    // Maintains a single instance of UserStore.
+
+    private final ClaimManagementServiceComponentWrapper componentWrapper;
+    private final AdminServiceWrapper adminServiceWrapper;
+    private final MetadataServiceSupplier metadataServiceSupplier;
+
+    private ClaimManagerHandler(ClaimManagementServiceComponentWrapper componentWrapper,
+                                AdminServiceWrapper adminServiceWrapper,
+                                MetadataServiceSupplier metadataServiceSupplier) {
+
+        this.componentWrapper = componentWrapper;
+        this.adminServiceWrapper = adminServiceWrapper;
+        this.metadataServiceSupplier = metadataServiceSupplier;
+    }
 
     public static ClaimManagerHandler getInstance() {
+
         if (log.isDebugEnabled()) {
             log.debug("ClaimManagerHandler singleton instance created successfully");
         }
-        return INSTANCE;
+        return Holder.INSTANCE;
+    }
+
+    static ClaimManagerHandler createForTesting(ClaimManagementServiceComponentWrapper componentWrapper,
+                                               AdminServiceWrapper adminServiceWrapper,
+                                               MetadataServiceSupplier metadataServiceSupplier) {
+
+        return new ClaimManagerHandler(componentWrapper, adminServiceWrapper, metadataServiceSupplier);
+    }
+
+    private static class Holder {
+
+        private static final ClaimManagerHandler INSTANCE = new ClaimManagerHandler(
+                new ClaimManagementServiceComponentWrapper(), new AdminServiceWrapper(),
+                new MetadataServiceSupplier());
     }
 
     /**
@@ -68,7 +91,7 @@ public enum ClaimManagerHandler {
         ClaimManager claimManager;
 
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager != null) {
                 // There can be cases - we get a request for an external user
@@ -84,6 +107,8 @@ public enum ClaimManagerHandler {
 
                 return claims;
             }
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for loading supported claims", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims", e);
         }
@@ -99,7 +124,7 @@ public enum ClaimManagerHandler {
         ClaimManager claimManager;
 
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager == null) {
                 // There can be cases - we get a request for an external user store - where we don'
@@ -109,6 +134,8 @@ public enum ClaimManagerHandler {
 
             return claimManager.getAllSupportClaimMappingsByDefault();
 
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for loading supported claim mappings", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims", e);
         }
@@ -122,7 +149,7 @@ public enum ClaimManagerHandler {
         ClaimManager claimManager;
 
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager == null) {
                 // There can be cases - we get a request for an external user store - where we don'
@@ -132,6 +159,8 @@ public enum ClaimManagerHandler {
 
             return claimManager.getAllClaimMappings();
 
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for loading claim mappings", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims", e);
         }
@@ -141,9 +170,9 @@ public enum ClaimManagerHandler {
 
         try {
             int tenantId =
-                    ClaimManagementServiceComponent.getRealmService().getTenantManager().getTenantId(tenantDomain);
+                    componentWrapper.getRealmService().getTenantManager().getTenantId(tenantDomain);
             ClaimManager claimManager =
-                    ClaimManagementServiceComponent.getRealmService().getTenantUserRealm(tenantId).getClaimManager();
+                    componentWrapper.getRealmService().getTenantUserRealm(tenantId).getClaimManager();
             if (claimManager == null) {
                 // There can be cases - we get a request for an external user store - where we don'
                 // have a claims administrator.
@@ -164,9 +193,9 @@ public enum ClaimManagerHandler {
 
         try {
             int tenantId =
-                    ClaimManagementServiceComponent.getRealmService().getTenantManager().getTenantId(tenantDomain);
+                    componentWrapper.getRealmService().getTenantManager().getTenantId(tenantDomain);
             ClaimManager claimManager =
-                    ClaimManagementServiceComponent.getRealmService().getTenantUserRealm(tenantId).getClaimManager();
+                    componentWrapper.getRealmService().getTenantUserRealm(tenantId).getClaimManager();
             if (claimManager == null) {
                 // There can be cases - we get a request for an external user store - where we don'
                 // have a claims administrator.
@@ -185,11 +214,13 @@ public enum ClaimManagerHandler {
         ClaimMapping claimMapping = null;
         ClaimManager claimManager;
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager != null) {
                 claimMapping = claimManager.getClaimMapping(claimURI);
             }
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for retrieving claim mapping", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while retrieving claim", e);
         }
@@ -203,7 +234,7 @@ public enum ClaimManagerHandler {
     public ClaimMapping[] getAllSupportedClaimMappings(String dialectUri) throws ClaimManagementException {
         ClaimManager claimManager;
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager == null) {
                 // There can be cases - we get a request for an external user store - where we don'
@@ -212,6 +243,8 @@ public enum ClaimManagerHandler {
             }
             return claimManager.getAllClaimMappings(dialectUri);
 
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for loading supported claim mappings", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims", e);
         }
@@ -230,7 +263,7 @@ public enum ClaimManagerHandler {
         ClaimMapping[] mappings = null;
 
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager == null) {
                 // There can be cases - we get a request for an external user store - where we don'
@@ -247,6 +280,8 @@ public enum ClaimManagerHandler {
             }
 
             return reqClaims.toArray(new Claim[reqClaims.size()]);
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for loading claims", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while loading supported claims from the dialect "
                                                + dialectUri, e);
@@ -260,7 +295,7 @@ public enum ClaimManagerHandler {
     public void updateClaimMapping(ClaimMapping mapping) throws ClaimManagementException {
         ClaimManager claimManager = null;
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
 
             String primaryDomainName = realm.getRealmConfiguration().getUserStoreProperty(
                     UserCoreConstants.RealmConfig.PROPERTY_DOMAIN_NAME);
@@ -283,9 +318,10 @@ public enum ClaimManagerHandler {
                 // have a claims administrator.
                 claimManager.updateClaimMapping(mapping);
             }
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for claim update", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while updating claim mapping", e);
-
         }
     }
 
@@ -296,16 +332,17 @@ public enum ClaimManagerHandler {
     public void addNewClaimMapping(ClaimMapping mapping) throws ClaimManagementException {
         ClaimManager claimManager = null;
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager != null) {
                 // There can be cases - we get a request for an external user store - where we don'
                 // have a claims administrator.
                 claimManager.addNewClaimMapping(mapping);
             }
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for new claim mapping", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while adding new claim mapping", e);
-
         }
     }
 
@@ -319,7 +356,7 @@ public enum ClaimManagerHandler {
         Claim claim = null;
         ClaimManager claimManager = null;
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager != null) {
                 // There can be cases - we get a request for an external user store - where we don'
@@ -330,6 +367,8 @@ public enum ClaimManagerHandler {
                 mapping = new ClaimMapping(claim, null);
                 claimManager.deleteClaimMapping(mapping);
             }
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for removing claim mapping", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while removing new claim mapping", e);
         }
@@ -343,7 +382,7 @@ public enum ClaimManagerHandler {
         ClaimManager claimManager;
         claimManager = null;
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager != null) {
                 mapping = mappings.getClaimMapping();
@@ -351,6 +390,8 @@ public enum ClaimManagerHandler {
                     claimManager.addNewClaimMapping(aMapping);
                 }
             }
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for new claim dialect", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while removing new claim mapping", e);
         }
@@ -364,7 +405,7 @@ public enum ClaimManagerHandler {
         ClaimMapping[] mapping;
         ClaimManager claimManager;
         try {
-            UserRealm realm = getRealm();
+            UserRealm realm = adminServiceWrapper.getUserRealm();
             claimManager = realm.getClaimManager();
             if (claimManager != null) {
                 mapping = claimManager.getAllClaimMappings(dialectUri);
@@ -374,16 +415,10 @@ public enum ClaimManagerHandler {
                     }
                 }
             }
+        } catch (CarbonException e) {
+            throw new ClaimManagementException("Error occurred while resolving user realm for removing claim dialect", e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             throw new ClaimManagementException("Error occurred while removing new claim dialect", e);
-        }
-    }
-
-    private UserRealm getRealm() throws ClaimManagementException {
-        try {
-            return AdminServicesUtil.getUserRealm();
-        } catch (CarbonException e) {
-            throw new ClaimManagementException("Error while trying get User Realm.", e);
         }
     }
 
@@ -471,7 +506,7 @@ public enum ClaimManagerHandler {
 
 
         try {
-            ClaimMetadataManagementServiceImpl claimMetadataService = new ClaimMetadataManagementServiceImpl();
+            ClaimMetadataManagementServiceImpl claimMetadataService = metadataServiceSupplier.getService();
 
             if (otherDialectURI.equals(UserCoreConstants.DEFAULT_CARBON_DIALECT) ) {
 

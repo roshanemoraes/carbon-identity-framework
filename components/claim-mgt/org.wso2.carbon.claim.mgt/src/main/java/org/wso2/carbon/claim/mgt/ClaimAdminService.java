@@ -34,6 +34,23 @@ import java.util.Map.Entry;
 
 public class ClaimAdminService {
 
+    private final ClaimManagerHandlerSupplier handlerSupplier;
+
+    public ClaimAdminService() {
+
+        this(new ClaimManagerHandlerSupplier());
+    }
+
+    ClaimAdminService(ClaimManagerHandlerSupplier handlerSupplier) {
+
+        this.handlerSupplier = handlerSupplier;
+    }
+
+    private ClaimManagerHandler handler() {
+
+        return handlerSupplier.getHandler();
+    }
+
     /**
      * @throws ClaimManagementException
      */
@@ -45,7 +62,7 @@ public class ClaimAdminService {
         List<ClaimDialect> claims = null;
         ClaimDialect dto = null;
 
-        claimMappings = ClaimManagerHandler.getInstance().getAllClaimMappings();
+        claimMappings = handler().getAllClaimMappings();
 
         if (claimMappings == null || claimMappings.length == 0) {
             return new ClaimDialectDTO[0];
@@ -101,7 +118,7 @@ public class ClaimAdminService {
         ClaimMapping[] claimMappings;
         ClaimDialect claimDialect;
 
-        claimMappings = ClaimManagerHandler.getInstance().getAllSupportedClaimMappings(dialectUri);
+        claimMappings = handler().getAllSupportedClaimMappings(dialectUri);
 
         class ClaimComparator implements Comparator<ClaimMapping> {
             @Override
@@ -138,7 +155,7 @@ public class ClaimAdminService {
         /*Convert the simple structure of ClaimMapping received, to the complex structure
         of ClaimMapping which is used in the back end. */
         ClaimMapping claimMapping = convertClaimMappingDTOToClaimMapping(claimMappingDTO);
-        ClaimManagerHandler.getInstance().updateClaimMapping(claimMapping);
+        handler().updateClaimMapping(claimMapping);
     }
 
     /**
@@ -149,7 +166,7 @@ public class ClaimAdminService {
         /*Convert the simple structure of ClaimMapping received, to the complex structure
         of ClaimMapping which is used in the back end. */
         ClaimMapping claimMapping = convertClaimMappingDTOToClaimMapping(claimMappingDTO);
-        ClaimManagerHandler handler = ClaimManagerHandler.getInstance();
+        ClaimManagerHandler handler = handler();
         ClaimMapping currentMapping = handler.getClaimMapping(
                 claimMapping.getClaim().getClaimUri());
         if (currentMapping != null) {
@@ -165,7 +182,7 @@ public class ClaimAdminService {
      * @throws ClaimManagementException
      */
     public void removeClaimMapping(String dialectUri, String claimUri) throws ClaimManagementException {
-        ClaimManagerHandler.getInstance().removeClaimMapping(dialectUri, claimUri);
+        handler().removeClaimMapping(dialectUri, claimUri);
     }
 
     /**
@@ -175,14 +192,14 @@ public class ClaimAdminService {
         /*Convert the simple structure of ClaimDialectDTO received, to the complex structure
         of ClaimDialect which is used in the back end. */
         ClaimDialect claimDialect = convertClaimDialectDTOToClaimDialect(claimDialectDTO);
-        ClaimManagerHandler.getInstance().addNewClaimDialect(claimDialect);
+        handler().addNewClaimDialect(claimDialect);
     }
 
     /**
      * @param
      */
     public void removeClaimDialect(String dialectUri) throws ClaimManagementException {
-        ClaimManagerHandler.getInstance().removeClaimDialect(dialectUri);
+        handler().removeClaimDialect(dialectUri);
     }
 
     private ClaimDialectDTO[] convertClaimDialectArrayToClaimDialectDTOArray(

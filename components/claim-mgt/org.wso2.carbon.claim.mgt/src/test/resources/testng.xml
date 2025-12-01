@@ -21,6 +21,8 @@
 <suite name="org.wso2.carbon.claim.mgt.suite">
     <test name="org.wso2.carbon.claim.mgt.tests" preserve-order="true" parallel="false">
         <classes>
+            <class name="org.wso2.carbon.claim.mgt.ClaimAdminServiceTest"/>
+            <class name="org.wso2.carbon.claim.mgt.ClaimManagerHandlerTest"/>
         </classes>
     </test>
 </suite>
