@@ -30,6 +30,7 @@
             <class name="org.wso2.carbon.identity.application.mgt.dao.impl.ApplicationDAOImplTest"/>
             <class name="org.wso2.carbon.identity.application.mgt.listener.ConsoleAuthorizedAPIListenerTest"/>
             <class name="org.wso2.carbon.identity.application.mgt.listener.MyAccountAuthorizedAPIListenerTest"/>
+            <class name="org.wso2.carbon.identity.application.mgt.AbstractInboundAuthenticatorConfigTest"/>
         </classes>
     </test>
 </suite>
