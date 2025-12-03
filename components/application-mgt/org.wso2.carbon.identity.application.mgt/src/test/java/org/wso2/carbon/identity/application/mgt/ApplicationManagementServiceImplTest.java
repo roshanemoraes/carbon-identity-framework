@@ -168,10 +168,12 @@ import static org.wso2.carbon.utils.multitenancy.MultitenantConstants.SUPER_TENA
  */
 @Test
 @WithH2Database(jndiName = "jdbc/WSO2IdentityDB", files = {"dbscripts/identity.sql"})
+
 public class ApplicationManagementServiceImplTest {
 
     private static final String SAMPLE_TENANT_DOMAIN = "tenant domain";
     private static final String APPLICATION_NAME_1 = "Test application1";
+    private static final String APPLICATION_NAME_1_ALT = "Test application1 - alt";
     private static final String APPLICATION_NAME_2 = "Test application2";
     private static final String APPLICATION_NAME_3 = "Test application3";
     private static final String APPLICATION_TEMPLATE_ID_1 = "Test_template_1";
@@ -279,7 +281,7 @@ public class ApplicationManagementServiceImplTest {
         serviceProvider1.setApplicationName(APPLICATION_NAME_1);
 
         ServiceProvider serviceProvider2 = new ServiceProvider();
-        serviceProvider2.setApplicationName(APPLICATION_NAME_2);
+        serviceProvider2.setApplicationName(APPLICATION_NAME_1_ALT);
 
         return new Object[][]{
                 {serviceProvider1, SUPER_TENANT_DOMAIN_NAME, USERNAME_1},
@@ -292,18 +294,19 @@ public class ApplicationManagementServiceImplTest {
             throws Exception {
 
         ServiceProvider inputSP = (ServiceProvider) serviceProvider;
+        deleteIfExists(inputSP.getApplicationName(), tenantDomain, username);
         addApplicationConfigurations(inputSP);
 
         // Adding new application.
-        ServiceProvider addedSP = applicationManagementService.addApplication(inputSP, tenantDomain,
-                username);
+        deleteIfExists(inputSP.getApplicationName(), tenantDomain, username);
+        ServiceProvider addedSP = applicationManagementService.addApplication(inputSP, tenantDomain, username);
 
         Assert.assertEquals(addedSP.getApplicationName(), inputSP.getApplicationName());
         Assert.assertEquals(addedSP.getOwner().getUserName(), inputSP.getOwner().getUserName());
 
-        //  Retrieving added application.
-        ServiceProvider retrievedSP = applicationManagementService.getApplicationExcludingFileBasedSPs
-                (inputSP.getApplicationName(), tenantDomain);
+        // Retrieving added application.
+        ServiceProvider retrievedSP = applicationManagementService
+                .getApplicationExcludingFileBasedSPs(inputSP.getApplicationName(), tenantDomain);
 
         Assert.assertEquals(retrievedSP.getApplicationID(), inputSP.getApplicationID());
         Assert.assertEquals(retrievedSP.getOwner().getUserName(), inputSP.getOwner().getUserName());
@@ -381,14 +384,16 @@ public class ApplicationManagementServiceImplTest {
                                                       String tenantDomain, String username) throws
             IdentityApplicationManagementException {
 
-        applicationManagementService.addApplication((ServiceProvider) serviceProvider, tenantDomain, username);
+        ServiceProvider initialServiceProvider = (ServiceProvider) serviceProvider;
+        deleteIfExists(initialServiceProvider.getApplicationName(), tenantDomain, username);
+        applicationManagementService.addApplication(initialServiceProvider, tenantDomain, username);
 
         try {
             Assert.assertThrows(IdentityApplicationManagementClientException.class, () -> applicationManagementService.
                     addApplication((ServiceProvider) newServiceProvider, tenantDomain, username));
         } finally {
-            applicationManagementService.deleteApplication(((ServiceProvider) serviceProvider).getApplicationName(),
-                    tenantDomain, username);
+            applicationManagementService.deleteApplication(initialServiceProvider.getApplicationName(), tenantDomain,
+                    username);
         }
     }
 
@@ -412,6 +417,7 @@ public class ApplicationManagementServiceImplTest {
             throws IdentityApplicationManagementException {
 
         ServiceProvider inputSP = (ServiceProvider) serviceProvider;
+        deleteIfExists(inputSP.getApplicationName(), tenantDomain, username);
 
         // Adding application.
         ServiceProvider addedSP = applicationManagementService.addApplication(inputSP, tenantDomain,
@@ -435,7 +441,7 @@ public class ApplicationManagementServiceImplTest {
 
         ServiceProvider inputSP = (ServiceProvider) serviceProvider;
 
-        // Adding application.
+        deleteIfExists(inputSP.getApplicationName(), tenantDomain, username);
         ServiceProvider addedSP = applicationManagementService.addApplication(inputSP, tenantDomain, username);
 
         // Retrieving added application info.
@@ -458,6 +464,7 @@ public class ApplicationManagementServiceImplTest {
         ServiceProvider serviceProvider2 = new ServiceProvider();
         serviceProvider2.setApplicationName(APPLICATION_NAME_2);
 
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2);
         applicationManagementService.addApplication(serviceProvider1, SUPER_TENANT_DOMAIN_NAME, USERNAME_1);
         applicationManagementService.addApplication(serviceProvider2, SUPER_TENANT_DOMAIN_NAME, USERNAME_1);
     }
@@ -474,7 +481,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(applicationBasicInfo[1].getApplicationName(), APPLICATION_NAME_1);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+        deleteIfExists(APPLICATION_NAME_1, SUPER_TENANT_DOMAIN_NAME, USERNAME_1);
     }
 
     @Test
@@ -489,7 +496,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(applicationBasicInfo[1].getApplicationName(), APPLICATION_NAME_1);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @Test
@@ -506,7 +513,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(applicationBasicInfo2[0].getApplicationName(), APPLICATION_NAME_1);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "getOAuthApplicationDataProvider")
@@ -549,7 +556,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(applicationBasicInfo[0].getApplicationName(), expectedResult);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "getAppsExcludingSystemPortalsDataProvider")
@@ -573,6 +580,7 @@ public class ApplicationManagementServiceImplTest {
         ServiceProvider serviceProvider3 = new ServiceProvider();
         serviceProvider3.setApplicationName(APPLICATION_NAME_3);
 
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
         applicationManagementService.addApplication(serviceProvider1, SUPER_TENANT_DOMAIN_NAME, USERNAME_1);
         applicationManagementService.addApplication(serviceProvider2, SUPER_TENANT_DOMAIN_NAME, USERNAME_1);
         applicationManagementService.addApplication(serviceProvider3, SUPER_TENANT_DOMAIN_NAME, USERNAME_1);
@@ -591,7 +599,7 @@ public class ApplicationManagementServiceImplTest {
             Assert.assertEquals(applicationBasicInfo.length, 2);
         }
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @Test(dataProvider = "getAppsExcludingSystemPortalsDataProvider")
@@ -608,7 +616,7 @@ public class ApplicationManagementServiceImplTest {
             Assert.assertEquals(applicationBasicInfo.length, expectedResult);
         }
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+        
     }
 
     @Test
@@ -625,7 +633,7 @@ public class ApplicationManagementServiceImplTest {
                             "", true), 2);
         }
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @Test(dataProvider = "getAppsExcludingSystemPortalsDataProvider")
@@ -642,7 +650,7 @@ public class ApplicationManagementServiceImplTest {
                             filter, true), expectedResult);
         }
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "organizationDataProvider")
@@ -736,7 +744,7 @@ public class ApplicationManagementServiceImplTest {
             Assert.assertEquals(inboundAuthenticationRequestConfig.getInboundAuthKey(),
                     APPLICATION_INBOUND_AUTH_KEY_OAUTH2);
         }
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
     
     private ApplicationInboundAuthConfigHandler customSAML2InboundAuthConfigHandler(boolean isOrganization) {
@@ -879,7 +887,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(applicationBasicInfo[0].getApplicationName(), expectedResult);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @Test()
@@ -887,6 +895,7 @@ public class ApplicationManagementServiceImplTest {
             throws IdentityApplicationManagementException {
 
         ServiceProvider serviceProvider = new ServiceProvider();
+        deleteIfExists(APPLICATION_NAME_1, tenantDomain, username);
         serviceProvider.setApplicationName(APPLICATION_NAME_1);
         // Adding new application.
         String resourceId = applicationManagementService.createApplication(serviceProvider,
@@ -898,7 +907,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(applicationUUID, resourceId);
 
         // Deleting added application.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @Test
@@ -931,7 +940,7 @@ public class ApplicationManagementServiceImplTest {
                 USERNAME_1), 2);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "getOAuthApplicationCountDataProvider")
@@ -976,7 +985,7 @@ public class ApplicationManagementServiceImplTest {
                 filter), expectedResult);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "getSAMLApplicationCountDataProvider")
@@ -1023,7 +1032,7 @@ public class ApplicationManagementServiceImplTest {
                 filter), expectedResult);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "getIdentityProviderDataProvider")
@@ -1156,7 +1165,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(actual.getApplicationVersion(), ApplicationConstants.ApplicationVersion.LATEST_APP_VERSION);
 
         // Deleting all added application.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "testAddApplicationWithIsManagementApplicationData")
@@ -1178,7 +1187,7 @@ public class ApplicationManagementServiceImplTest {
         addApplicationConfigurations(inputSP);
         inputSP.setManagementApp(isManagementApp);
 
-        // Adding new application.
+        deleteIfExists(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME, REGISTRY_SYSTEM_USERNAME);
         ServiceProvider addedSP = applicationManagementService.addApplication(inputSP, SUPER_TENANT_DOMAIN_NAME,
                 REGISTRY_SYSTEM_USERNAME);
         Assert.assertEquals(addedSP.isManagementApp(), isManagementApp);
@@ -1199,9 +1208,7 @@ public class ApplicationManagementServiceImplTest {
 
         Assert.assertEquals(retrievedSP.isManagementApp(), isManagementApp);
 
-        // Deleting added application.
-        applicationManagementService.deleteApplication(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME,
-                REGISTRY_SYSTEM_USERNAME);
+        deleteIfExists(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME, REGISTRY_SYSTEM_USERNAME);
     }
 
     @DataProvider(name = "testAddApplicationWithAPIBasedAuthenticationData")
@@ -1224,7 +1231,7 @@ public class ApplicationManagementServiceImplTest {
         addApplicationConfigurations(inputSP);
         inputSP.setAPIBasedAuthenticationEnabled(isAPIBasedAuthenticationEnabled);
 
-        // Adding new application.
+        deleteIfExists(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME, REGISTRY_SYSTEM_USERNAME);
         ServiceProvider addedSP = applicationManagementService.addApplication(inputSP, SUPER_TENANT_DOMAIN_NAME,
                 REGISTRY_SYSTEM_USERNAME);
         Assert.assertEquals(addedSP.isAPIBasedAuthenticationEnabled(), isAPIBasedAuthenticationEnabled);
@@ -1245,9 +1252,7 @@ public class ApplicationManagementServiceImplTest {
 
         Assert.assertEquals(retrievedSP.isAPIBasedAuthenticationEnabled(), !isAPIBasedAuthenticationEnabled);
 
-        // Deleting added application.
-        applicationManagementService.deleteApplication(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME,
-                REGISTRY_SYSTEM_USERNAME);
+        deleteIfExists(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME, REGISTRY_SYSTEM_USERNAME);
     }
 
     @DataProvider(name = "testAddApplicationWithAttestationData")
@@ -1282,7 +1287,7 @@ public class ApplicationManagementServiceImplTest {
         clientAttestationMetaData.setAndroidAttestationServiceCredentials(androidCredentials);
         inputSP.setClientAttestationMetaData(clientAttestationMetaData);
 
-        // Adding new application.
+        deleteIfExists(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME, REGISTRY_SYSTEM_USERNAME);
         ServiceProvider addedSP = applicationManagementService.addApplication(inputSP, SUPER_TENANT_DOMAIN_NAME,
                 REGISTRY_SYSTEM_USERNAME);
         Assert.assertEquals(addedSP.getClientAttestationMetaData().isAttestationEnabled(), isAttestationEnabled);
@@ -1318,9 +1323,7 @@ public class ApplicationManagementServiceImplTest {
 
         Assert.assertEquals(retrievedSP.getClientAttestationMetaData().isAttestationEnabled(), !isAttestationEnabled);
         Assert.assertNull(retrievedSP.getClientAttestationMetaData().getAndroidAttestationServiceCredentials());
-        // Deleting added application.
-        applicationManagementService.deleteApplication(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME,
-                REGISTRY_SYSTEM_USERNAME);
+        deleteIfExists(inputSP.getApplicationName(), SUPER_TENANT_DOMAIN_NAME, REGISTRY_SYSTEM_USERNAME);
     }
 
     @DataProvider(name = "trustedAppMetadataDataProvider")
@@ -1441,7 +1444,7 @@ public class ApplicationManagementServiceImplTest {
         Assert.assertEquals(appleTrustedApps.get(0).getThumbprints(), new String[0]);
 
         // Deleting all added applications.
-        applicationManagementService.deleteApplications(SUPER_TENANT_ID);
+                deleteApplicationsIfExist(APPLICATION_NAME_1, APPLICATION_NAME_2, APPLICATION_NAME_3);
     }
 
     @DataProvider(name = "addApplicationWithTemplateIdAndTemplateVersionData")
@@ -2320,6 +2323,32 @@ public class ApplicationManagementServiceImplTest {
         config.setAllowedAudience(allowedAudience);
         config.setRoles(roles);
         return config;
+    }
+
+    private void deleteIfExists(String applicationName, String tenantDomain, String username) {
+
+        try {
+            ServiceProvider existing = applicationManagementService.getApplicationExcludingFileBasedSPs(applicationName,
+                    tenantDomain);
+            if (existing != null) {
+                applicationManagementService.deleteApplication(applicationName, tenantDomain, username);
+            }
+        } catch (IdentityApplicationManagementException e) {
+            log.warn("Error while attempting to remove existing application '" + applicationName + "' in tenant '"
+                    + tenantDomain + "'", e);
+        }
+    }
+
+    private void deleteIfExists(String applicationName, String tenantDomain) {
+
+        deleteIfExists(applicationName, tenantDomain, USERNAME_1);
+    }
+
+    private void deleteApplicationsIfExist(String... applicationNames) {
+
+        for (String applicationName : applicationNames) {
+            deleteIfExists(applicationName, SUPER_TENANT_DOMAIN_NAME, USERNAME_1);
+        }
     }
 
     /**

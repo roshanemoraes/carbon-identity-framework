@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "https://checkstyle.org/dtds/suppressions_1_1.dtd">
+<suppressions>
+    <suppress files="ApplicationDAOImpl\.java" checks="LineLength"/>
+    <suppress files="ApplicationManagementServiceImpl\.java" checks="LineLength"/>
+    <suppress files="ApplicationManagementServiceImpl\.java" checks="ParameterNumber"/>
+    <suppress files="ApplicationManagementServiceImpl\.java" checks="FileLength"/>
+    <suppress files="ApplicationManagementServiceImpl\.java" checks="JavadocStyle"/>
+    <suppress files="ApplicationManagementServiceImplTest\.java" checks="JavadocType"/>
+    <suppress files="ApplicationMgtUtilAdditionalTest\.java" checks="LineLength"/>
+    
+    
+    
+</suppressions>
